@@ -29,6 +29,7 @@ A Python-based automation tool designed to streamline tasks for Central Piedmont
 - Efficient handling of course-related operations
 - Utilization of Selenium WebDriver for robust web automation
 - Implementation of configuration management for flexible usage
+
 This tool demonstrates practical application of Python programming and web automation techniques to enhance educational administrative processes.
 
 
@@ -39,6 +40,7 @@ A comprehensive trading application that combines multiple components for crypto
 - Data analysis and visualization capabilities
 - Automated trade execution and management
 - Modular architecture allowing for easy expansion and customization
+
 This application showcases advanced software engineering practices, including system integration, algorithmic trading, and data-driven decision making in the context of cryptocurrency markets
 
 
@@ -49,6 +51,7 @@ A Python-based WebSocket client for interacting with the Deribit cryptocurrency 
 - Real-time market data subscription capabilities
 - Efficient handling of API responses and error messages
 - Customizable message handlers for flexible data processing
+
 This client demonstrates advanced Python programming techniques, including asynchronous programming and WebSocket protocol implementation, tailored for cryptocurrency trading applications
 
 ---
