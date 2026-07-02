@@ -1,102 +1,56 @@
-# Hi there, I'm Christopher Queen 👋
+# Applied AI Engineer | LLM · RAG · Agents · Full-stack
 
-### CEO | AI Consultant | Tech Enthusiast
+**I build LLM systems end-to-end — understand the problem, build the thing, deploy it, prove it works.**
 
----
+Full-stack engineer with 15+ years shipping production software, now focused on applied AI. I work the way a forward-deployed engineer does: embed with the problem, translate ambiguity into a running system, and own it through to production.
 
-## 🧑‍💻 About Me
-
-I'm Christopher Queen, the CEO of [Christopher Queen Consulting](https://github.com/christopherqueenconsulting), where we empower businesses to unlock their full potential through the transformative power of AI. With a deep passion for technology and innovation, I specialize in AI strategy, data analytics, and e-commerce solutions, guiding companies toward success in the digital age.
-
-### 🔧 **Skills & Expertise:**
-- **AI & Machine Learning**: Leveraging AI to drive business growth and efficiency.
-- **Data Analytics**: Transforming complex data into actionable insights.
-- **E-commerce Solutions**: Expert in Magento and custom web development.
-- **Project Management**: Leading successful tech implementations from concept to completion.
-
-### 🎯 **Interests:**
-- **Programming Languages**: Python, Java, PHP, JavaScript
-- **Technologies**: TensorFlow, Magento, Data Visualization
-- **Fields**: AI Ethics, Predictive Modeling, Cybersecurity
+```text
+Python · TypeScript/Node · AWS · LLMs · RAG · Agents · Real-time systems
+```
 
 ---
 
-## 🚀 Featured Projects
+## 🔨 What I'm building
 
-### [CPCC Task Automation](https://github.com/gitchrisqueen/cpcc_task_automation)
-A Python-based automation tool designed to streamline tasks for Central Piedmont Community College (CPCC). This project leverages Selenium WebDriver to automate web interactions, particularly focusing on course-related tasks within the college's systems. Key features include:
-- Automated login and navigation through CPCC's web interfaces
-- Efficient handling of course-related operations
-- Utilization of Selenium WebDriver for robust web automation
-- Implementation of configuration management for flexible usage
+- **[CPCC Task Automation](https://github.com/gitchrisqueen/cpcc_task_automation)** — a GenAI platform (Streamlit · LangChain · OpenRouter/GPT-5 · Selenium) that automates instructor admin work — attendance, feedback, and rubric grading — with a human review step and draft-only write-back. Collapses ~5–10 hrs/week into ~15 min. [▶ Live app](https://cpcc-task-automation.streamlit.app/) (invite-only). My strongest applied-AI build.
+- **[LinkedIn Engagement Manager (LEM)](https://github.com/christopherqueenconsulting/linkedin_engagement_manager)** — an automated solution for managing engagement and post interactions on LinkedIn.
+- **[Secur-o-aMA](https://github.com/gitchrisqueen/Secur-o-aMA)** — applied LLM for security, built on Meta's LLaMA. Exploring how open models handle security-focused tasks.
+- **Autonomous agents** — hands-on work with agent frameworks (LangChain, Auto-GPT lineage): tool use, planning loops, and guardrails.
+- **[Trading App](https://github.com/gitchrisqueen/trading-app)** — real-time trading & market-data infrastructure: async Python systems (including a Deribit WebSocket client) for live market data and order flow.
 
-This tool demonstrates practical application of Python programming and web automation techniques to enhance educational administrative processes.
+## 🧩 Open-source contributions
 
+I ship fixes and features into the AI-agent ecosystem — a mix of merged PRs and active in-review work across major projects:
 
-### [Trading App](https://github.com/gitchrisqueen/trading-app)
-A comprehensive trading application that combines multiple components for cryptocurrency market analysis and automated trading. This project integrates various tools and services to create a robust trading ecosystem. Key features include:
-- Integration with the Deribit exchange API for real-time market data and trading
-- Implementation of trading strategies and algorithms
-- Data analysis and visualization capabilities
-- Automated trade execution and management
-- Modular architecture allowing for easy expansion and customization
+- **LangChain** — [#14668](https://github.com/langchain-ai/langchain/pull/14668): merged fix for a bug in the agent tool-input parser (issue #14663). Plus additional PRs ([#15422](https://github.com/langchain-ai/langchain/pull/15422), [devcontainer build](https://github.com/langchain-ai/langchain/pull/15251)).
+- **PostHog** — [posthog-openclaw #35](https://github.com/PostHog/posthog-openclaw/pull/35) & [#15](https://github.com/PostHog/posthog-openclaw/pull/15): env-var fallbacks for host/API key, schema caching, and clearer missing-key warnings.
+- **mem0** — session-memory scoping to unique UUIDs ([#4574](https://github.com/mem0ai/mem0/pull/4574)), provider env-var handling ([#4987](https://github.com/mem0ai/mem0/pull/4987)), and a hook migration with parallel recall ([#5077](https://github.com/mem0ai/mem0/pull/5077)).
+- **OpenClaw** — [#72932](https://github.com/openclaw/openclaw/pull/72932): defer pre-ready startup maintenance in fast mode (gateway).
+- **Lossless-Claw** (Martian Engineering) — [#418](https://github.com/Martian-Engineering/lossless-claw/pull/418) manual-compaction fix and [#303](https://github.com/Martian-Engineering/lossless-claw/pull/303) SQLite busy-timeout increase.
+- **Google Workspace MCP** — [#644](https://github.com/taylorwilsdon/google_workspace_mcp/pull/644): default single-user email to an env var.
 
-This application showcases advanced software engineering practices, including system integration, algorithmic trading, and data-driven decision making in the context of cryptocurrency markets
+<sub>Full list: [PRs authored across other orgs →](https://github.com/pulls?q=is%3Apr+author%3Agitchrisqueen+-user%3Agitchrisqueen+-user%3Achristopherqueenconsulting)</sub>
 
+## 🛠️ Tech I work in
 
-### [Deribit v2 WebSocket Client](https://github.com/gitchrisqueen/deribit-v2-ws-gitchrisqueen)
-A Python-based WebSocket client for interacting with the Deribit cryptocurrency derivatives exchange API (v2). This project provides a robust and efficient way to connect to Deribit's WebSocket API, enabling real-time data streaming and trading operations. Key features include:
-- Asynchronous WebSocket communication using Python's asyncio library
-- Support for public and authenticated API methods
-- Real-time market data subscription capabilities
-- Efficient handling of API responses and error messages
-- Customizable message handlers for flexible data processing
+**Languages:** Python · TypeScript · JavaScript · Node.js · Java · SQL
+**AI/LLM:** OpenAI API · LangChain · RAG · Agents · Prompt engineering · Evals · Vector databases (pgvector / Chroma)
+**Backend & data:** FastAPI · REST · MySQL · MongoDB · async / real-time systems
+**Cloud & DevOps:** AWS (Lambda, S3, EC2) · Docker · CI/CD · Git
+**Frontend:** React · HTML5 · CSS · Streamlit
 
-This client demonstrates advanced Python programming techniques, including asynchronous programming and WebSocket protocol implementation, tailored for cryptocurrency trading applications
+## 🚀 Currently
 
----
+Shipping applied-AI projects (RAG + evals, agents, MCP) and available for **remote full-time roles** and **select contract engagements**. I run [Christopher Queen Consulting, LLC](https://christopherqueenconsulting.com) — the vehicle I use to deliver AI engineering for clients.
 
-## 🌟 Proud Contributions
+## 🎱 Off the keyboard
 
-### [LangChain - Identified Bug in Agent Tool Input Parsing](https://github.com/langchain-ai/langchain/issues/14663)
-I made a significant contribution to the LangChain project by identifying and reporting a critical bug:
-- Discovered an issue in the LangChain Agent's parsing of tool inputs when using alias field names
-- The bug caused filtering out of valid inputs due to mismatches between field names and their aliases
-- Provided a detailed bug report with system information, code examples, and expected behavior
-- Demonstrated the issue's impact on the _parse_input function in langchain_core/tools.py
+Reader, billiards player, and aquarist (yes, I keep the tanks alive too).
 
-This contribution highlights my ability to identify complex issues in open-source frameworks and provide comprehensive bug reports, contributing to the improvement of LangChain's functionality and reliability.
+## 📫 Connect
 
+- LinkedIn: [linkedin.com/in/christopherqueen](https://www.linkedin.com/in/christopherqueen)
+- Email: christopher.queen@gmail.com
+- Consulting: [christopherqueenconsulting.com](https://christopherqueenconsulting.com)
 
 ---
-
-## 📫 How to Reach Me
-
-- **Email**: [christopher.queen@gmail.com](mailto:christopher.queen@gmail.com)
-- **LinkedIn**: [Christopher Queen](https://linkedin.com/in/christopherqueen)
-- **Twitter**: [@ConsultChrisQ](https://twitter.com/consultchrisq)
-
----
-
-## 📝 Blog & Articles
-
-I occasionally write about AI, technology, and my experiences in the field. Check out some of my articles:
-- [Why AI Ethics Matter](https://www.linkedin.com/posts/christopherqueen_aiethics-riskmanagement-sustainableinnovation-activity-7216448998088282112-AWae?utm_source=share&utm_medium=member_desktop)
-- [The Future of AI in Business](https://www.linkedin.com/posts/christopherqueen_ready-to-make-chatgpt-a-part-of-your-team-activity-7217144875786379266-bQDs?utm_source=share&utm_medium=member_desktop)
-- [Top Reasons Magento Should Be Your eCommerce Platform](https://www.christopherqueenconsulting.com/top-reasons-magento-should-be-your-ecommerce-platform/)
-
----
-
-## 🎸 Fun Facts
-
-- **🎶 Guitar Virtuoso**: When I'm not coding, you can find me strumming away on my guitar, trying to nail that perfect riff.
-- **🎱 Pool Shark**: Challenge me to a game of billiards, and you'll see why they call me the "cue-ball commander"!
-- **🐠 Reef Wrangler**: I keep a saltwater aquarium, where I manage my own little underwater kingdom—complete with colorful corals and curious fish.
-
----
-
-
-## 👥 Let’s Connect!
-
-I'm always open to collaboration, discussions, and new opportunities. Feel free to connect with me, explore my work, or just say hi!
-
