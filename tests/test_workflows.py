@@ -205,6 +205,26 @@ def test_ci_triggers_have_no_path_filter():
         assert not value or ("paths" not in value and "paths-ignore" not in value)
 
 
+def test_ci_push_ignores_only_the_output_branch():
+    trig = triggers(load("ci"))
+    assert trig["push"] == {"branches-ignore": ["output"]}
+    assert not trig["pull_request"]
+    code = "\n".join(l for l in text("ci").splitlines() if not l.lstrip().startswith("#"))
+    assert "paths" not in code
+
+
+def test_snake_lint_steps_pass_the_same_max_bytes_as_the_size_loop():
+    for name, job_id in (("snake", "generate-snake"), ("snake", "publish"), ("ci", "snake-dry-run")):
+        block = "\n".join(s.get("run", "") for s in steps(jobs(name)[job_id]))
+        lint_calls = re.findall(r"lint_svg\.py[^\n]*(?:\\\n[^\n]*)*", block)
+        assert lint_calls, f"{name}/{job_id} has no lint call"
+        for call in lint_calls:
+            assert "--max-bytes 1500000" in call, f"{name}/{job_id}"
+            assert "--min-bytes 5000" in call
+    gen = "\n".join(s.get("run", "") for s in steps(jobs("snake")["generate-snake"]))
+    assert '-gt 1500000' in gen
+
+
 @pytest.mark.parametrize("name,workflow_file", [("profile", "profile.yml"), ("snake", "snake.yml")])
 def test_writer_workflow_triggers(name, workflow_file):
     trig = triggers(load(name))
@@ -569,3 +589,165 @@ def test_maintenance_labels_match_the_workflows():
         load(name)["jobs"]["report"]["env"]["LABEL"] for name in ("profile", "snake")
     }
     assert created == used
+
+
+@pytest.mark.parametrize("name", NAMES)
+def test_scheduled_workflows_never_pass_allow_shrink(name):
+    assert "allow-shrink" not in text(name)
+
+
+# ------------------------------------------------- maintenance doc: operations
+
+
+def data_files_doc() -> str:
+    return (ROOT / "docs" / "DATA-FILES.md").read_text(encoding="utf-8")
+
+
+def fenced_blocks(doc: str) -> list[str]:
+    return re.findall(r"^```[a-z]*\n(.*?)^```", doc, flags=re.S | re.M)
+
+
+def section(doc: str, start: str, end: str) -> str:
+    a = doc.index(start)
+    return doc[a : doc.index(end, a)]
+
+
+PATH_RE = re.compile(
+    r"(?<![\w/.:-])((?:\.github|scripts|data|docs|assets|tests)/[\w./*-]*[\w*]|README\.md|requirements-ci\.txt)"
+)
+
+
+@pytest.mark.parametrize("doc_name", ["MAINTENANCE.md", "DATA-FILES.md"])
+def test_every_repo_path_named_in_the_docs_resolves(doc_name):
+    doc = (ROOT / "docs" / doc_name).read_text(encoding="utf-8")
+    found = set(PATH_RE.findall(doc))
+    assert found, "the path pattern found nothing"
+    for token in sorted(found):
+        if any(ch in token for ch in "*"):
+            assert list(ROOT.glob(token)), f"{doc_name}: glob matches nothing: {token}"
+        else:
+            assert (ROOT / token).exists(), f"{doc_name}: path does not exist: {token}"
+
+
+def test_maintenance_points_to_the_data_files_doc():
+    doc = maintenance()
+    assert "docs/DATA-FILES.md" in doc
+    assert "data/README-notes.md" not in doc
+    assert (ROOT / "docs" / "DATA-FILES.md").is_file()
+
+
+def test_data_files_doc_covers_every_file_and_field():
+    doc = data_files_doc()
+    for needle in (
+        "data/allowlist.json", "data/pr-notes.json", "data/flagships.json",
+        "github_user", "exclude_org", "merged_upstream", "flagships", "excluded_prs",
+        "owner/repo#N", "140 characters", "name", "repo", "workflow", "check",
+        "issue 14631", "Daily pipeline run", "does not mean the data is healthy",
+    ):
+        assert needle in doc, f"DATA-FILES.md is missing: {needle}"
+    assert "Daily pipeline run" in maintenance()
+    assert "not that the data is healthy" in maintenance() or "does not mean the data is healthy" in maintenance()
+
+
+def test_every_gh_command_in_the_runbook_names_the_repository():
+    for number, line in enumerate(maintenance().splitlines(), 1):
+        for match in re.finditer(r"\bgh (?!auth )[^`\n]*", line):
+            assert "gitchrisqueen/gitchrisqueen" in match.group(0), f"line {number}: {match.group(0)[:80]}"
+
+
+def test_where_to_run_paragraph_comes_first_and_covers_the_basics():
+    doc = maintenance()
+    assert doc.index("## Where to run these commands") < doc.index("## How it works")
+    block = section(doc, "## Where to run these commands", "## How it works")
+    for needle in ("--repo gitchrisqueen/gitchrisqueen", "git -C <clone>", "gh auth setup-git", "cd ..", "scratch clone"):
+        assert needle in block, needle
+    seed = doc[doc.index("3. Seed the `output` branch") :]
+    assert seed.index("`cd ..`") < seed.index("```")  # the note comes before the code block
+    assert "gh auth setup-git" in fenced_blocks(seed)[0]
+    assert fenced_blocks(seed)[0].rstrip().endswith("cd ..")
+
+
+def test_drills_wait_for_the_run_and_assert_only_afterwards():
+    drills = section(maintenance(), "### After the pull request is merged", "### If the first run")
+    blocks = [b for b in fenced_blocks(drills) if "gh workflow run" in b]
+    assert len(blocks) == 5
+    for block in blocks:
+        lines = [l for l in block.splitlines() if l.strip()]
+        for i, line in enumerate(lines):
+            if "gh workflow run" in line:
+                nxt = lines[i + 1]
+                assert "sleep 15" in nxt and "gh run list" in nxt and "databaseId" in nxt, nxt
+                assert 'gh run watch "${id}"' in nxt and "--exit-status || true" in nxt
+                assert "--event workflow_dispatch" in nxt
+        last_watch = max(i for i, l in enumerate(lines) if "gh run watch" in l)
+        first_dispatch = min(i for i, l in enumerate(lines) if "gh workflow run" in l)
+        for i, line in enumerate(lines):
+            if "gh issue list" in line or line.startswith("after=") or 'test "${before}"' in line:
+                assert i > last_watch, f"assertion before the watch: {line[:60]}"
+            if line.startswith("before="):
+                assert i < first_dispatch, "the 'before' value must be taken before dispatch"
+    assert "`event` must be `workflow_dispatch`" in drills and "`createdAt`" in drills
+
+
+def test_snake_drill_compares_before_and_after_with_ls_remote():
+    drills = section(maintenance(), "7. Fault-injection drill for the snake workflow", "8. Rehearse")
+    block = fenced_blocks(drills)[0]
+    assert block.count("git ls-remote") == 2
+    assert block.index("before=") < block.index("gh workflow run") < block.index("gh run watch") < block.index("after=")
+
+
+def test_monitoring_is_described_as_a_manual_weekly_task():
+    doc = maintenance()
+    mon = section(doc, "## Monitoring and the 60-day rule", "## Detection table")
+    assert "manual task owned by the repository owner" in mon
+    assert "Nothing in this repository watches the workflows" in mon
+    for needle in (
+        "--workflow profile.yml --status success", "--workflow snake.yml --status success",
+        "actions/workflows --jq", "commits/output --jq .commit.committer.date", "date -u",
+    ):
+        assert needle in mon, needle
+    assert "scheduled check" not in doc
+    assert "runs every 7 days" not in doc
+    detection = section(doc, "## Detection table", "## Rollback")
+    assert "the scheduled check is the alert" not in detection
+    assert "weekly manual check" in detection
+
+
+def test_prerequisites_include_watching_issues_with_a_check_command():
+    pre = section(maintenance(), "## Prerequisites, with a check for each", "Create the labels")
+    row = next(l for l in pre.splitlines() if l.startswith("| You are watching Issues"))
+    assert "gh api repos/gitchrisqueen/gitchrisqueen/subscription" in row
+    assert "subscribed" in row and "ignored" in row
+
+
+def test_ci_notes_cover_the_live_api_and_cost():
+    doc = maintenance()
+    assert "reads the live GitHub API" in doc and "re-run fixes it" in doc
+    assert "public" in doc and "standard GitHub-hosted runner" in doc
+    assert "except a push to the `output` branch" in doc
+
+
+def test_rollback_step_one_cancels_in_progress_runs():
+    step = section(maintenance(), "1. Stop the writers", "2. Restore the README")
+    assert "gh workflow disable profile.yml" in step and "gh workflow disable snake.yml" in step
+    assert "gh run cancel <run-id> --repo gitchrisqueen/gitchrisqueen" in step
+    assert step.index("gh workflow disable") < step.index("gh run cancel")
+
+
+def test_remove_a_merged_row_procedure_is_documented():
+    doc = maintenance()
+    block = section(doc, "## Remove a row from the merged block", "\x00") if False else doc[doc.index("## Remove a row from the merged block") :]
+    for needle in (
+        "shrunken result", "fewer rows than the base", "--allow-shrink", "data/allowlist.json", "README.md",
+        "update_profile.py --readme README.md --allow-shrink", "guard_publish.py", "guard: ok", "excluded_prs",
+    ):
+        assert needle in block, needle
+    assert "never pass the flag" in block
+
+
+def test_panthera_check_text_is_pinned_in_the_data_file():
+    import json
+
+    flags = json.loads((ROOT / "data" / "flagships.json").read_text(encoding="utf-8"))["flagships"]
+    check = next(e["check"] for e in flags if e["repo"].endswith("/panthera"))
+    assert check == "Daily pipeline run"

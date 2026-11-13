@@ -91,7 +91,7 @@ jobs:
       - name: Lint and size-check the SVGs
         run: |
           set -euo pipefail
-          python scripts/lint_svg.py --profile chart --require-opaque-background --min-bytes 5000 --expect rect=100 dist/*.svg
+          python scripts/lint_svg.py --profile chart --require-opaque-background --min-bytes 5000 --max-bytes 1500000 --expect rect=100 dist/*.svg
           for f in snake.svg snake-dark.svg snake-static-light.svg snake-static-dark.svg; do
             size=$(stat -c %s "dist/${f}")
             echo "${f}: ${size} bytes"
@@ -154,7 +154,7 @@ jobs:
               exit 1
             fi
           done
-          python scripts/lint_svg.py --profile chart --require-opaque-background --min-bytes 5000 --expect rect=100 \
+          python scripts/lint_svg.py --profile chart --require-opaque-background --min-bytes 5000 --max-bytes 1500000 --expect rect=100 \
             "${SNAKE_DIR}/snake.svg" "${SNAKE_DIR}/snake-dark.svg" \
             "${SNAKE_DIR}/snake-static-light.svg" "${SNAKE_DIR}/snake-static-dark.svg"
           sha256sum "${SNAKE_DIR}"/*.svg

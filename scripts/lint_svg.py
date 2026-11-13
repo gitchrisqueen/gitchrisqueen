@@ -3,7 +3,8 @@
 
 Usage:
     python scripts/lint_svg.py FILE... [--require-opaque-background]
-        [--profile banner|chart] [--min-bytes N] [--expect TAG[=N]]...
+        [--profile banner|chart] [--min-bytes N] [--max-bytes N]
+        [--expect TAG[=N]]...
 
 Exit status: 0 when every file passes, 1 when any file has a violation,
 2 on a usage error.
@@ -20,10 +21,16 @@ Checks for every profile:
   * rejected attributes: any `on*` event handler; any `href` / `xlink:href`
     that is not a `#fragment`; any `url()` that is not `url(#fragment)`;
     `javascript:` anywhere; inline `animation` in a style attribute;
-  * rejected CSS: `@import`, non-fragment `url()`, `expression(`;
+  * rejected CSS: `@import`, non-fragment `url()`, `expression(`; and, in
+    style-element text, style attributes and every other attribute value
+    (after comment stripping and HTML-unescaping, case-insensitive): any
+    backslash (CSS escapes can spell `url(`), `://`, `image-set(`, `image(`,
+    `src(`, `cross-fade(` and `@font-face`;
+  * no processing instruction other than a leading `<?xml ...?>` declaration
+    (a `<?xml-stylesheet ...?>` can pull in an external stylesheet);
   * the root element is `svg` with a numeric four-part viewBox;
-  * the file is at least `--min-bytes` bytes and contains each `--expect`ed
-    element at least N times;
+  * the file is at least `--min-bytes` bytes (and at most `--max-bytes` when
+    given) and contains each `--expect`ed element at least N times;
   * an animated file (one with `@keyframes` or an `animation` declaration)
     must contain `@media (prefers-reduced-motion: reduce){*{animation:none!important}}`;
   * a file whose name ends in `-static.svg` must contain no animation.
@@ -75,6 +82,19 @@ MIN_PERIOD_S = 12.0
 MAX_ANIMATIONS = 1
 DEFAULT_MIN_BYTES = 400
 
+# Substrings refused in any CSS text or attribute value, checked after comment
+# stripping, HTML-unescaping and whitespace removal, case-insensitively.
+CSS_FORBIDDEN_SUBSTRINGS = (
+    "://",
+    "image-set(",
+    "image(",
+    "src(",
+    "cross-fade(",
+    "@font-face",
+)
+# Any processing instruction other than the XML declaration at the very start.
+PROCESSING_INSTRUCTION_RE = re.compile(r"<\?(?!xml[\s?])", re.I)
+
 FORBIDDEN_ELEMENTS = {
     "script",
     "foreignobject",
@@ -119,7 +139,9 @@ class LintResult:
     metrics: dict = field(default_factory=dict)
 
     def add(self, rule: str, message: str) -> None:
-        self.violations.append(f"{rule}: {message}")
+        entry = f"{rule}: {message}"
+        if entry not in self.violations:
+            self.violations.append(entry)
 
     @property
     def ok(self) -> bool:
@@ -184,6 +206,16 @@ def parse_decls(body: str) -> list[tuple[str, str]]:
 
 def squash(s: str) -> str:
     return re.sub(r"\s+", "", s).lower()
+
+
+def normalize_css(value: str) -> str:
+    """HTML-unescape (until stable), then strip CSS comments."""
+    for _ in range(4):
+        decoded = html.unescape(value)
+        if decoded == value:
+            break
+        value = decoded
+    return strip_css_comments(value)
 
 
 # --------------------------------------------------------------------------
@@ -394,7 +426,20 @@ def parse_transform(value: str) -> tuple[float, float]:
 # main lint
 
 
+def _check_css_hazards(res: LintResult, where: str, text: str) -> None:
+    """Refuse backslashes and the substrings that can load something external."""
+    clean = normalize_css(text)
+    if "\\" in clean:
+        res.add("css-escape", f"{where} contains a backslash")
+    flat = squash(clean)
+    for needle in CSS_FORBIDDEN_SUBSTRINGS:
+        if needle in flat:
+            res.add("css-forbidden", f"{where} contains {needle!r}")
+
+
 def _check_attr_value(res: LintResult, where: str, attr: str, value: str) -> None:
+    _check_css_hazards(res, f"{where} @{attr}", value)
+    value = normalize_css(value)
     low = value.lower()
     if "javascript:" in squash(low) or "vbscript:" in squash(low):
         res.add("script-url", f"{where} @{attr} contains a script URL")
@@ -404,6 +449,8 @@ def _check_attr_value(res: LintResult, where: str, attr: str, value: str) -> Non
 
 
 def _check_css_text(res: LintResult, where: str, css: str) -> None:
+    _check_css_hazards(res, where, css)
+    css = normalize_css(css)
     low = squash(css)
     if "@import" in low:
         res.add("css-import", f"{where} uses @import")
@@ -423,16 +470,22 @@ def lint_text(
     min_bytes: int = DEFAULT_MIN_BYTES,
     expect: dict[str, int] | None = None,
     size_bytes: int | None = None,
+    max_bytes: int | None = None,
 ) -> LintResult:
     res = LintResult(name)
     size = size_bytes if size_bytes is not None else len(text.encode("utf-8"))
     res.metrics["bytes"] = size
     if size < min_bytes:
         res.add("too-small", f"{size} bytes is below the {min_bytes}-byte minimum")
+    if max_bytes is not None and size > max_bytes:
+        res.add("too-large", f"{size} bytes is above the {max_bytes}-byte maximum")
 
     decoded = html.unescape(text)
     if re.search(r"<!\s*(doctype|entity)", decoded, re.I):
         res.add("doctype", "DOCTYPE/ENTITY declarations are not allowed")
+        return res
+    if PROCESSING_INSTRUCTION_RE.search(text) or PROCESSING_INSTRUCTION_RE.search(decoded):
+        res.add("processing-instruction", "only a leading <?xml ...?> declaration is allowed")
         return res
     low_decoded = squash(decoded)
     if "<script" in low_decoded:
@@ -748,6 +801,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--require-opaque-background", action="store_true")
     ap.add_argument("--profile", choices=("banner", "chart"), default="banner")
     ap.add_argument("--min-bytes", type=int, default=DEFAULT_MIN_BYTES)
+    ap.add_argument("--max-bytes", type=int, default=None)
     ap.add_argument("--expect", action="append", default=[], metavar="TAG[=N]")
     args = ap.parse_args(argv)
     try:
@@ -762,6 +816,7 @@ def main(argv: list[str] | None = None) -> int:
             profile=args.profile,
             require_opaque_background=args.require_opaque_background,
             min_bytes=args.min_bytes,
+            max_bytes=args.max_bytes,
             expect=expect,
         )
         if r.ok:

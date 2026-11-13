@@ -7,6 +7,10 @@ name: ci
 on:
   pull_request:
   push:
+    # Manual pushes to the orphan output branch hold only SVGs and would start a
+    # red run. This is a branch filter, not a path filter: every other push runs.
+    branches-ignore:
+      - output
 
 permissions: {}
 
@@ -166,7 +170,7 @@ jobs:
       - name: Lint and size-check the SVGs
         run: |
           set -euo pipefail
-          python scripts/lint_svg.py --profile chart --require-opaque-background --min-bytes 5000 --expect rect=100 dist/*.svg
+          python scripts/lint_svg.py --profile chart --require-opaque-background --min-bytes 5000 --max-bytes 1500000 --expect rect=100 dist/*.svg
           for f in snake.svg snake-dark.svg snake-static-light.svg snake-static-dark.svg; do
             size=$(stat -c %s "dist/${f}")
             echo "${f}: ${size} bytes"

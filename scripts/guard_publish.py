@@ -9,6 +9,7 @@ run produced (--new) and exits non-zero unless every rule holds:
   3. the two files differ only on lines between the markers;
   4. every line between the markers matches the exact row grammar (no raw HTML,
      no images) and is not shorter than the base block (a block may not empty);
+     the merged block may not lose rows unless --allow-shrink is given;
   5. every URL is https://github.com/...;
   6. every row's owner/repo is in the allowlist for that block;
   7. with --root or --git-diff, no symlink exists anywhere in the tree;
@@ -241,7 +242,7 @@ def git_changed_files(root: str) -> list[str] | None:
 
 
 def check(base_path: str, new_path: str, allowlist_path: str, *, root: str | None = None,
-          git_diff: bool = False) -> list[str]:
+          git_diff: bool = False, allow_shrink: bool = False) -> list[str]:
     problems: list[str] = []
     base = read_text(base_path, problems, "base")
     new = read_text(new_path, problems, "new")
@@ -267,7 +268,7 @@ def check(base_path: str, new_path: str, allowlist_path: str, *, root: str | Non
                 problems.append(f"{name}: block became empty")
             if name == BLOCK_MERGED:
                 base_rows = sum(1 for ln in base_lines if merged_row(ln) is not None)
-                if rows < base_rows:
+                if rows < base_rows and not allow_shrink:
                     problems.append(f"{name}: block has fewer rows than the base ({rows} < {base_rows})")
     if git_diff:
         changed = git_changed_files(root if root is not None else ".")
@@ -286,8 +287,12 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--root", help="directory to scan for symlinks")
     p.add_argument("--git-diff", action="store_true",
                    help="also require `git diff --name-only` to list only README.md")
+    p.add_argument("--allow-shrink", action="store_true",
+                   help="maintainer only: accept a merged block with fewer rows than the base, to "
+                        "remove a row on purpose; scheduled workflows never pass this")
     args = p.parse_args(argv)
-    problems = check(args.base, args.new, args.allowlist, root=args.root, git_diff=args.git_diff)
+    problems = check(args.base, args.new, args.allowlist, root=args.root, git_diff=args.git_diff,
+                     allow_shrink=args.allow_shrink)
     for line in problems:
         print(f"guard: {line}", file=sys.stderr)
     if problems:

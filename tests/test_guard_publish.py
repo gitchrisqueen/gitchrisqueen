@@ -22,7 +22,7 @@ ROW_A = ("- [langchain-ai/langchain #15251](https://github.com/langchain-ai/lang
 ROW_B = ("- [future-agi/future-agi #1327](https://github.com/future-agi/future-agi/pull/1327): "
          "`fix(evals): add scroll (#1071)`")
 ROW_C = "- [PostHog/posthog-openclaw #15](https://github.com/PostHog/posthog-openclaw/pull/15): PR #15"
-FLAG_1 = "| [panthera](https://github.com/gitchrisqueen/panthera) | Daily scheduled pipeline run | passing |"
+FLAG_1 = "| [panthera](https://github.com/gitchrisqueen/panthera) | Daily pipeline run | passing |"
 FLAG_2 = "| [hearing-copilot](https://github.com/gitchrisqueen/hearing-copilot) | Automated tests and lint | failing |"
 
 
@@ -368,3 +368,26 @@ def test_git_diff_flag_without_root_scans_current_directory(monkeypatch, paths, 
     assert gp.check(base, new, str(ALLOWLIST), git_diff=True) == []
     monkeypatch.setattr(gp, "git_changed_files", lambda root: ["README.md", ".github/workflows/x.yml"])
     assert has(gp.check(base, new, str(ALLOWLIST), git_diff=True), "other than README.md")
+
+
+def test_allow_shrink_accepts_a_deliberate_row_removal(paths):
+    base = readme(merged=(ROW_A, ROW_B))
+    new = readme(merged=(ROW_A,))
+    assert has(run(paths, base, new), "fewer rows")
+    assert run(paths, base, new, allow_shrink=True) == []
+
+
+def test_allow_shrink_still_rejects_an_empty_block_and_bad_rows(paths):
+    base = readme(merged=(ROW_A, ROW_B))
+    assert has(run(paths, base, readme(merged=()), allow_shrink=True), "became empty")
+    bad = "- [evil-org/evil-repo #1](https://github.com/evil-org/evil-repo/pull/1): PR #1"
+    assert has(run(paths, base, readme(merged=(ROW_A, bad)), allow_shrink=True), "not in the allowlist")
+    assert has(run(paths, base, readme(merged=(ROW_A,), after="Changed."), allow_shrink=True), "outside")
+
+
+def test_allow_shrink_cli_flag(paths, capsys):
+    base, new = paths(readme(merged=(ROW_A, ROW_B)), readme(merged=(ROW_A,)))
+    args = ["--base", base, "--new", new, "--allowlist", str(ALLOWLIST)]
+    assert gp.main(args) == 1
+    capsys.readouterr()
+    assert gp.main(args + ["--allow-shrink"]) == 0

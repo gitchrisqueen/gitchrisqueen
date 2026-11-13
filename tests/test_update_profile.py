@@ -1011,3 +1011,135 @@ def test_row_grammar_is_identical_in_generator_and_guard():
 def test_splice_helpers_never_use_regex_substitution_with_data():
     out = up.splice(README_TMPL, "MERGED-UPSTREAM", [r"- \1 \g<0> $& \\"])
     assert r"- \1 \g<0> $& \\" in out
+
+
+# ================================================================ redirect guard
+class _Scripted(urllib.request.BaseHandler):
+    """An offline https handler: answers from a script, records every request."""
+
+    handler_order = 100
+
+    def __init__(self, script):
+        self.script = script          # url -> (status, headers, body)
+        self.seen = []
+
+    def https_open(self, req):
+        import urllib.response
+
+        self.seen.append((req.full_url, req.get_header("Authorization")))
+        status, headers, body = self.script[req.full_url]
+        hdrs = Message()
+        for k, v in headers.items():
+            hdrs[k] = v
+        resp = urllib.response.addinfourl(io.BytesIO(body), hdrs, req.full_url, status)
+        resp.msg = "scripted"
+        return resp
+
+
+def _scripted_opener(script):
+    scripted = _Scripted(script)
+    return urllib.request.build_opener(up.ApiRedirectHandler, scripted), scripted
+
+
+def _auth_request(url):
+    return urllib.request.Request(url, headers={"Authorization": f"Bearer {TOKEN}"})
+
+
+def test_redirect_to_another_host_is_refused_and_token_not_forwarded():
+    opener, scripted = _scripted_opener({
+        "https://api.github.com/repos/a/b": (302, {"Location": "https://evil.example/steal"}, b""),
+        "https://evil.example/steal": (200, {}, b"{}"),
+    })
+    with pytest.raises(up.ApiError) as exc:
+        opener.open(_auth_request("https://api.github.com/repos/a/b"), timeout=5)
+    assert exc.value.kind == "bad-redirect"
+    assert [u for u, _ in scripted.seen] == ["https://api.github.com/repos/a/b"]
+
+
+@pytest.mark.parametrize("target", [
+    "http://api.github.com/repos/a/b",               # downgrade to plain http
+    "https://api.github.com.evil.example/repos/a/b",  # prefix trick
+    "https://api.github.comx/repos/a/b",
+    "https://uploads.github.com/repos/a/b",           # another GitHub host
+    "https://api.github.com@evil.example/repos/a/b",  # userinfo trick
+    "https://evil.example/https://api.github.com/",
+])
+def test_redirect_lookalike_targets_are_refused(target):
+    handler = up.ApiRedirectHandler()
+    req = _auth_request("https://api.github.com/repos/a/b")
+    with pytest.raises(up.ApiError) as exc:
+        handler.redirect_request(req, None, 302, "Found", Message(), target)
+    assert exc.value.kind == "bad-redirect"
+
+
+def test_redirect_within_the_api_root_is_followed():
+    opener, scripted = _scripted_opener({
+        "https://api.github.com/repos/a/b": (301, {"Location": "https://api.github.com/repositories/1"}, b""),
+        "https://api.github.com/repositories/1": (200, {}, b'{"ok": true}'),
+    })
+    with opener.open(_auth_request("https://api.github.com/repos/a/b"), timeout=5) as resp:
+        assert json.loads(resp.read()) == {"ok": True}
+    assert [u for u, _ in scripted.seen] == [
+        "https://api.github.com/repos/a/b", "https://api.github.com/repositories/1"]
+
+
+def test_client_installs_the_redirect_guard(monkeypatch):
+    installed = []
+    monkeypatch.setattr(urllib.request, "install_opener", installed.append)
+    up.GitHubClient(TOKEN)
+    assert len(installed) == 1
+    assert any(isinstance(h, up.ApiRedirectHandler) for h in installed[0].handlers)
+
+
+def test_get_json_reports_bad_redirect_without_retrying(tmp_path, monkeypatch, capsys):
+    fake = default_fake()
+    fake.override(r"/search/issues", up.ApiError("bad-redirect"))
+    code, _ = run_cli(tmp_path, monkeypatch, fake)
+    assert code == 1
+    assert fake.count(r"/search/issues") == 1
+    assert "bad-redirect" in capsys.readouterr().out
+
+
+def test_committed_notes_cannot_autolink_to_an_issue():
+    """A bare '#123' in a profile README links to an issue in the profile repo."""
+    notes = json.loads((DATA / "pr-notes.json").read_text())
+    assert notes
+    for key, note in notes.items():
+        assert "#" not in note, key
+        assert up.note_fragment(note) == note, key
+    assert "issue 14631" in notes["langchain-ai/langchain#15251"]
+    assert "issue 1071" in notes["future-agi/future-agi#1327"]
+    assert notes["Martian-Engineering/lossless-claw#418"].startswith(
+        "Manual compaction now reports success when the context is already under the token target")
+
+
+# ================================================================ deliberate shrink
+def test_allow_shrink_lets_the_merged_block_lose_a_row(tmp_path, monkeypatch, capsys):
+    good = make_good(tmp_path, monkeypatch)
+    fewer = [it for it in SEARCH["items"] if it["number"] != 1327]
+    code, _ = run_cli(tmp_path, monkeypatch, default_fake(items=fewer), "--allow-shrink", readme_text=None)
+    out = capsys.readouterr().out
+    assert code == 0 and "shrink allowed" in out and "shrunken result" not in out
+    lines = block_lines(good, "MERGED-UPSTREAM")
+    assert len(lines) == 5 and not any("future-agi" in ln for ln in lines)
+
+
+def test_allow_shrink_never_allows_an_empty_block(tmp_path, monkeypatch, capsys):
+    good = make_good(tmp_path, monkeypatch)
+    before = good.read_bytes()
+    code, _ = run_cli(tmp_path, monkeypatch, default_fake(items=[]), "--allow-shrink", readme_text=None)
+    assert code == 1 and "empty result" in capsys.readouterr().out
+    assert [ln for ln in good.read_bytes().decode().splitlines() if "MERGED" not in ln] \
+        == [ln for ln in before.decode().splitlines() if "MERGED" not in ln]
+
+
+def test_allow_shrink_is_off_by_default():
+    ns = up.build_parser().parse_args(["--readme", "x"])
+    assert ns.allow_shrink is False
+    assert up.build_parser().parse_args(["--readme", "x", "--allow-shrink"]).allow_shrink is True
+
+
+def test_panthera_check_says_the_run_ran_not_that_the_data_is_healthy():
+    flags = json.loads((DATA / "flagships.json").read_text())["flagships"]
+    panthera = next(e for e in flags if e["repo"] == "gitchrisqueen/panthera")
+    assert panthera["check"] == "Daily pipeline run"

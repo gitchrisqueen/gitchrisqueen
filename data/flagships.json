@@ -23,7 +23,7 @@
       "name": "panthera",
       "repo": "gitchrisqueen/panthera",
       "workflow": "mvp-morning.yml",
-      "check": "Daily scheduled pipeline run"
+      "check": "Daily pipeline run"
     }
   ]
 }

@@ -19,6 +19,11 @@ Fault injection (--inject-fault, re-validated inside):
   bad-marker     corrupts the marker structure the flagships block splices
                  into, so that block fails at the splice step.
 In both cases the other block is still written and the run exits 1.
+
+Shrinking (--allow-shrink): by default the merged block may never end up with
+fewer rows than the README already holds, which fails the block closed. The
+flag turns that one check off so a reviewed commit can deliberately remove a
+row (see docs/MAINTENANCE.md). The scheduled workflows never pass it.
 """
 from __future__ import annotations
 
@@ -221,10 +226,31 @@ def _header_number(headers: object, name: str) -> float | None:
     return value if value >= 0 else None
 
 
+class ApiRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Follow a redirect only when its target is under the API root.
+
+    urllib copies request headers (Authorization included) onto the redirected
+    request, so a redirect to another host would forward the token. Any target
+    that does not start with API_ROOT + "/" is refused before it is requested.
+    """
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if not isinstance(newurl, str) or not newurl.startswith(API_ROOT + "/"):
+            raise ApiError("bad-redirect")
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+def make_opener() -> urllib.request.OpenerDirector:
+    return urllib.request.build_opener(ApiRedirectHandler)
+
+
 class GitHubClient:
     def __init__(self, token: str, *, timeout: int = REQUEST_TIMEOUT,
                  max_attempts: int = MAX_ATTEMPTS, max_wait: int = MAX_WAIT_SECONDS):
         self._token = token
+        # urlopen() uses the installed opener, so every request goes through
+        # the redirect guard above.
+        urllib.request.install_opener(make_opener())
         self.timeout = timeout
         self.max_attempts = max_attempts
         self.max_wait = max_wait
@@ -479,7 +505,8 @@ def existing_block_lines(text: str, name: str) -> list[str]:
     return inner.split("\n") if inner else []
 
 
-def gen_merged(client: GitHubClient, data_dir: str, inject: str, current_text: str) -> list[str]:
+def gen_merged(client: GitHubClient, data_dir: str, inject: str, current_text: str,
+               allow_shrink: bool = False) -> list[str]:
     allow = load_allowlist_for_merged(data_dir, inject)
     notes, rejected = load_notes(data_dir)
     items = search_merged(client, allow)
@@ -533,8 +560,10 @@ def gen_merged(client: GitHubClient, data_dir: str, inject: str, current_text: s
     if not lines:
         raise BlockError("empty result: no allowlisted merged pull requests found")
     previous = [r for r in (validate_merged_row(x) for x in existing_block_lines(current_text, BLOCK_MERGED)) if r]
-    if len(lines) < len(previous):
+    if len(lines) < len(previous) and not allow_shrink:
         raise BlockError(f"shrunken result: {len(lines)} rows against {len(previous)} in the existing block")
+    if len(lines) < len(previous):
+        print(f"  shrink allowed by --allow-shrink: {len(lines)} rows against {len(previous)}")
     print(f"  merged: {len(items)} search results, {len(lines)} rows "
           f"({not_allowlisted} not allowlisted, {excluded} excluded, {skipped} skipped, "
           f"{rejected} notes rejected)")
@@ -599,7 +628,8 @@ def flagship_status(client: GitHubClient, entry: dict) -> str:
     return "unavailable"
 
 
-def gen_flagships(client: GitHubClient, data_dir: str, inject: str, current_text: str) -> list[str]:
+def gen_flagships(client: GitHubClient, data_dir: str, inject: str, current_text: str,
+                  allow_shrink: bool = False) -> list[str]:
     allow = load_allowlist(data_dir)
     entries = load_flagships(data_dir, allow)
     lines = [FLAG_HEADER, FLAG_SEPARATOR]
@@ -703,6 +733,9 @@ def build_parser() -> argparse.ArgumentParser:
                    help="never write the --readme path; still writes a different --out")
     p.add_argument("--inject-fault", default="none", choices=FAULTS,
                    help="deterministic failure for testing (see module docstring)")
+    p.add_argument("--allow-shrink", action="store_true",
+                   help="maintainer only: let the merged block end with fewer rows than the README "
+                        "holds, to remove a row on purpose; scheduled workflows never pass this")
     p.add_argument("--allow-non-ghs", action="store_true",
                    help="local development only: accept a token that does not start with ghs_")
     return p
@@ -741,7 +774,8 @@ def run(args: argparse.Namespace) -> int:
     for name, gen in generators:
         print(f"{name}:")
         try:
-            lines = gen(client, args.data_dir, args.inject_fault, text)
+            lines = gen(client, args.data_dir, args.inject_fault, text,
+                        allow_shrink=getattr(args, "allow_shrink", False))
             target = text
             if args.inject_fault == "bad-marker" and name == BLOCK_FLAGSHIPS:
                 target = text + "\n" + marker_start(name) + "\n"
