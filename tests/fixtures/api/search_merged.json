@@ -1,0 +1,118 @@
+{
+  "total_count": 8,
+  "incomplete_results": false,
+  "items": [
+    {
+      "number": 15251,
+      "title": "langchain: Fix for issue #14631 - .devcontainer doesnt build",
+      "state": "closed",
+      "html_url": "https://github.com/langchain-ai/langchain/pull/15251",
+      "repository_url": "https://api.github.com/repos/langchain-ai/langchain",
+      "user": {
+        "login": "gitchrisqueen"
+      },
+      "pull_request": {
+        "merged_at": "2023-12-28T16:25:04Z",
+        "html_url": "https://github.com/langchain-ai/langchain/pull/15251"
+      }
+    },
+    {
+      "number": 17483,
+      "title": "Added Christopher Queen Consulting to list of companies using the generator",
+      "state": "closed",
+      "html_url": "https://github.com/OpenAPITools/openapi-generator/pull/17483",
+      "repository_url": "https://api.github.com/repos/OpenAPITools/openapi-generator",
+      "user": {
+        "login": "gitchrisqueen"
+      },
+      "pull_request": {
+        "merged_at": "2023-12-30T03:27:10Z",
+        "html_url": "https://github.com/OpenAPITools/openapi-generator/pull/17483"
+      }
+    },
+    {
+      "number": 644,
+      "title": "feat: default user_google_email to USER_GOOGLE_EMAIL env var in single-user mode",
+      "state": "closed",
+      "html_url": "https://github.com/taylorwilsdon/google_workspace_mcp/pull/644",
+      "repository_url": "https://api.github.com/repos/taylorwilsdon/google_workspace_mcp",
+      "user": {
+        "login": "gitchrisqueen"
+      },
+      "pull_request": {
+        "merged_at": "2026-04-03T00:32:42Z",
+        "html_url": "https://github.com/taylorwilsdon/google_workspace_mcp/pull/644"
+      }
+    },
+    {
+      "number": 418,
+      "title": "Fix manual compaction under-target result",
+      "state": "closed",
+      "html_url": "https://github.com/Martian-Engineering/lossless-claw/pull/418",
+      "repository_url": "https://api.github.com/repos/Martian-Engineering/lossless-claw",
+      "user": {
+        "login": "gitchrisqueen"
+      },
+      "pull_request": {
+        "merged_at": "2026-04-16T19:00:33Z",
+        "html_url": "https://github.com/Martian-Engineering/lossless-claw/pull/418"
+      }
+    },
+    {
+      "number": 15,
+      "title": "fix: fall back to POSTHOG_API_KEY env var; add schemaCacheKey; improve missing key warning",
+      "state": "closed",
+      "html_url": "https://github.com/PostHog/posthog-openclaw/pull/15",
+      "repository_url": "https://api.github.com/repos/PostHog/posthog-openclaw",
+      "user": {
+        "login": "gitchrisqueen"
+      },
+      "pull_request": {
+        "merged_at": "2026-07-09T10:23:58Z",
+        "html_url": "https://github.com/PostHog/posthog-openclaw/pull/15"
+      }
+    },
+    {
+      "number": 35,
+      "title": "feat: fall back to POSTHOG_HOST env var for the PostHog instance URL",
+      "state": "closed",
+      "html_url": "https://github.com/PostHog/posthog-openclaw/pull/35",
+      "repository_url": "https://api.github.com/repos/PostHog/posthog-openclaw",
+      "user": {
+        "login": "gitchrisqueen"
+      },
+      "pull_request": {
+        "merged_at": "2026-07-14T15:32:14Z",
+        "html_url": "https://github.com/PostHog/posthog-openclaw/pull/35"
+      }
+    },
+    {
+      "number": 1327,
+      "title": "fix(evals): add scroll to eval log explanation panel (#1071)",
+      "state": "closed",
+      "html_url": "https://github.com/future-agi/future-agi/pull/1327",
+      "repository_url": "https://api.github.com/repos/future-agi/future-agi",
+      "user": {
+        "login": "gitchrisqueen"
+      },
+      "pull_request": {
+        "merged_at": "2026-08-20T05:36:46Z",
+        "html_url": "https://github.com/future-agi/future-agi/pull/1327"
+      }
+    },
+    {
+      "number": 9,
+      "title": "Fixture PR in a repository that is not on the allowlist",
+      "state": "closed",
+      "html_url": "https://github.com/example-org/example-repo/pull/9",
+      "repository_url": "https://api.github.com/repos/example-org/example-repo",
+      "user": {
+        "login": "gitchrisqueen"
+      },
+      "pull_request": {
+        "merged_at": "2026-09-01T00:00:00Z",
+        "html_url": "https://github.com/example-org/example-repo/pull/9"
+      }
+    }
+  ]
+}

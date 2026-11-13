@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "pairs": [
+    {"id": "header-name", "kind": "text", "foreground": "#e9d437", "background": "#0d1117", "where": "assets/header-*.svg: name"},
+    {"id": "header-role", "kind": "text", "foreground": "#d9d3bd", "background": "#0d1117", "where": "assets/header-*.svg: role line"},
+    {"id": "header-accent", "kind": "graphic", "foreground": "#e9d437", "background": "#0d1117", "where": "assets/header-*.svg: short gold rule above the name"},
+    {"id": "header-wave", "kind": "graphic", "foreground": "#a89816", "background": "#0d1117", "where": "assets/header-*.svg: wave lines (drawn at 18-75% stroke opacity)", "exempt": true, "reason": "decorative texture; carries no information"},
+    {"id": "footer-text", "kind": "text", "foreground": "#e9d437", "background": "#0d1117", "where": "assets/footer-*.svg: location line"},
+    {"id": "footer-rule", "kind": "graphic", "foreground": "#e9d437", "background": "#0d1117", "where": "assets/footer-*.svg: centre of the tapered rule and the diamond"},
+    {"id": "footer-wave", "kind": "graphic", "foreground": "#a89816", "background": "#0d1117", "where": "assets/footer-*.svg: wave lines (drawn at 18-60% stroke opacity)", "exempt": true, "reason": "decorative texture; carries no information"},
+
+    {"id": "badge-label", "kind": "text", "foreground": "#ffffff", "background": "#24292f", "where": "README badges: left label (shields labelColor)"},
+    {"id": "badge-passing", "kind": "text", "foreground": "#ffffff", "background": "#1a7f37", "where": "README badges: value when the check passes"},
+    {"id": "badge-failing", "kind": "text", "foreground": "#ffffff", "background": "#b42318", "where": "README badges: value when the check fails"},
+    {"id": "badge-no-status", "kind": "text", "foreground": "#ffffff", "background": "#57606a", "where": "README badges: value when there is no status"},
+
+    {"id": "snake-light-level-0", "kind": "graphic", "foreground": "#ebedf0", "background": "#ffffff", "where": "snake (light): empty day cell", "exempt": true, "reason": "level-0 cell marks a day with no contributions; it carries no information beyond the grid position"},
+    {"id": "snake-light-level-1", "kind": "graphic", "foreground": "#9c8c12", "background": "#ffffff", "where": "snake (light): level 1 cell"},
+    {"id": "snake-light-level-2", "kind": "graphic", "foreground": "#8f7f10", "background": "#ffffff", "where": "snake (light): level 2 cell"},
+    {"id": "snake-light-level-3", "kind": "graphic", "foreground": "#75680c", "background": "#ffffff", "where": "snake (light): level 3 cell"},
+    {"id": "snake-light-level-4", "kind": "graphic", "foreground": "#4a4106", "background": "#ffffff", "where": "snake (light): level 4 cell"},
+    {"id": "snake-light-snake", "kind": "graphic", "foreground": "#0d1117", "background": "#ffffff", "where": "snake (light): the snake"},
+
+    {"id": "snake-dark-level-0", "kind": "graphic", "foreground": "#161b22", "background": "#0d1117", "where": "snake (dark): empty day cell", "exempt": true, "reason": "level-0 cell marks a day with no contributions; it carries no information beyond the grid position"},
+    {"id": "snake-dark-level-1", "kind": "graphic", "foreground": "#7d6f17", "background": "#0d1117", "where": "snake (dark): level 1 cell"},
+    {"id": "snake-dark-level-2", "kind": "graphic", "foreground": "#a89816", "background": "#0d1117", "where": "snake (dark): level 2 cell"},
+    {"id": "snake-dark-level-3", "kind": "graphic", "foreground": "#c4b228", "background": "#0d1117", "where": "snake (dark): level 3 cell"},
+    {"id": "snake-dark-level-4", "kind": "graphic", "foreground": "#e9d437", "background": "#0d1117", "where": "snake (dark): level 4 cell"},
+    {"id": "snake-dark-snake", "kind": "graphic", "foreground": "#efe9d2", "background": "#0d1117", "where": "snake (dark): the snake"}
+  ]
+}

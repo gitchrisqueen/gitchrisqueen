@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 180" width="600" height="180" role="img" aria-label="Christopher Queen, Applied AI / Forward-Deployed Engineer">
+  <title>Christopher Queen, Applied AI / Forward-Deployed Engineer</title>
+  <style>
+    .drift{animation:drift 36s linear infinite}
+    @keyframes drift{from{transform:translateX(0px)}to{transform:translateX(-240px)}}
+    @media (prefers-reduced-motion: reduce){*{animation:none!important}}
+  </style>
+  <defs>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0d1117" stop-opacity="1"/>
+      <stop offset="0.14" stop-color="#0d1117" stop-opacity="0"/>
+      <stop offset="0.86" stop-color="#0d1117" stop-opacity="0"/>
+      <stop offset="1" stop-color="#0d1117" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="rule" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#a89816" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#e9d437" stop-opacity="1"/>
+      <stop offset="1" stop-color="#a89816" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="600" height="180" fill="#0d1117"/>
+  <g class="drift" fill="none" stroke="#a89816" stroke-linecap="round">
+    <path d="M-0 150 q60 -12 120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0" stroke-opacity="0.75" stroke-width="1.1"/>
+    <path d="M-88.8 154 q60 -12 120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0" stroke-opacity="0.58" stroke-width="0.9"/>
+    <path d="M-88.8 158 q30 -10 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0" stroke-opacity="0.46" stroke-width="0.8"/>
+    <path d="M-26.4 162 q60 -12 120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0" stroke-opacity="0.38" stroke-width="0.8"/>
+    <path d="M-57.6 166 q30 -8 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0" stroke-opacity="0.3" stroke-width="0.7"/>
+    <path d="M-68 170 q20 -6 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0" stroke-opacity="0.24" stroke-width="0.7"/>
+    <path d="M-52.8 173 q60 -8 120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0" stroke-opacity="0.18" stroke-width="0.7"/>
+  </g>
+  <rect x="0" y="0" width="600" height="180" fill="url(#edge)"/>
+  <rect x="40" y="30" width="32" height="2" fill="#e9d437"/>
+  <text x="38" y="86" fill="#e9d437" font-family="Georgia, 'Times New Roman', 'DejaVu Serif', serif" font-size="52" letter-spacing="0.5">Christopher Queen</text>
+  <text x="40" y="122" fill="#d9d3bd" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'Liberation Sans', sans-serif" font-size="26" letter-spacing="0.3">Applied AI / Forward-Deployed Engineer</text>
+</svg>

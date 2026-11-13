@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "github_user": "gitchrisqueen",
+  "exclude_org": "christopherqueenconsulting",
+  "merged_upstream": [
+    "langchain-ai/langchain",
+    "PostHog/posthog-openclaw",
+    "taylorwilsdon/google_workspace_mcp",
+    "Martian-Engineering/lossless-claw",
+    "future-agi/future-agi"
+  ],
+  "flagships": [
+    "christopherqueenconsulting/linkedin_engagement_manager",
+    "christopherqueenconsulting/cpcc_task_automation",
+    "gitchrisqueen/hearing-copilot",
+    "gitchrisqueen/panthera"
+  ],
+  "excluded_prs": [
+    "OpenAPITools/openapi-generator#17483"
+  ]
+}
