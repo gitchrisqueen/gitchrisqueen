@@ -74,7 +74,7 @@ Notes on the credential:
 
 - It is the owner's own credential on the machine that pushes the branch, the tag and `output`. There is no fork, so no first-time-contributor approval step applies. If a fork were ever used, the owner approves the first run.
 - `git push --dry-run origin HEAD:refs/heads/scope-check` from a branch that changes a workflow file shows that the remote is reachable, but it does not test the `workflow` scope. The real proof is the first push of the branch that adds the workflow files: without the scope, GitHub refuses it with a message that names the workflow files.
-- The weekly check under Monitoring uses a read-only credential, never this one.
+- The weekly check under Monitoring uses a separate read-only token (set through `GH_TOKEN` for that block only), never this one.
 
 Warning: a ruleset requiring status checks or PRs on main breaks the publish job. The publish job pushes straight to `main`. A ruleset that only blocks force-pushes and branch deletion is fine and recommended. Separately, in the repository's Actions settings it is sensible to restrict actions to the selected list, require full-SHA pinning, and require approval for outside collaborators. Update the selected list whenever a Dependabot bump changes a pin (see Dependabot below).
 
@@ -224,15 +224,22 @@ Nothing in this repository watches the workflows. There is no scheduled monitor 
 
 GitHub disables scheduled workflows in a public repository after 60 days without repository activity. The state then shows as `disabled_inactivity`. Whether a push by the workflow's own token counts as activity is not verified, so the weekly check looks for it. A problem can go unnoticed for up to 7 days by design.
 
-The weekly check is read-only. Run it with a read-only credential, never the push credential:
+The weekly check is read-only and runs on the owner's own machine. Use a separate read-only credential, never the push credential: a fine-grained personal access token limited to this one repository with Actions: read, Contents: read, Issues: read and Metadata: read, and no write permission. Keep it in an environment variable on that machine (for example in the shell profile or the system keychain), never in this repository. The block sets it once and then proves it cannot write:
 
 ```
+export GH_TOKEN="${PROFILE_CHECK_TOKEN}"   # the read-only token, kept outside this repository
+gh api repos/gitchrisqueen/gitchrisqueen --jq .permissions.push   # must print false
 gh run list --repo gitchrisqueen/gitchrisqueen --workflow profile.yml --status success --limit 1 --json createdAt --jq '.[0].createdAt'
 gh run list --repo gitchrisqueen/gitchrisqueen --workflow snake.yml --status success --limit 1 --json createdAt --jq '.[0].createdAt'
 gh api repos/gitchrisqueen/gitchrisqueen/actions/workflows --jq '.workflows[] | [.name, .state] | @tsv'
 gh api repos/gitchrisqueen/gitchrisqueen/commits/output --jq .commit.committer.date
+gh issue list --repo gitchrisqueen/gitchrisqueen --state open --label "profile-automation:profile"
+gh issue list --repo gitchrisqueen/gitchrisqueen --state open --label "profile-automation:snake"
 date -u +%Y-%m-%dT%H:%M:%SZ
+unset GH_TOKEN
 ```
+
+If the first command prints `true`, stop: that token can write, so replace it before continuing. An open failure issue means a run failed and nobody has seen a clean run since, even if the Watch settings hid the notification.
 
 Compare each time with the date printed on the last line. Act when:
 
@@ -240,7 +247,7 @@ Compare each time with the date printed on the last line. Act when:
 - any workflow state is not `active`;
 - the newest commit on `output` is older than 3 days and the last snake success is also old or missing. The publish job commits only when a snake file changed, so a quiet stretch with no new contributions can leave `output` untouched while everything is healthy.
 
-To re-enable after a disable:
+To re-enable after a disable (this needs the owner's write credential, not the read-only token):
 
 ```
 gh workflow enable profile.yml --repo gitchrisqueen/gitchrisqueen
@@ -358,3 +365,7 @@ python scripts/guard_publish.py --base "${TMPDIR:-/tmp}/README.base.md" --new RE
 4. Commit `data/allowlist.json` and `README.md` together and open a pull request. `ci` runs the generator without the flag, against the README in the pull request, which already has the row removed, so it passes. After the merge the next scheduled run starts from the shorter block and also passes.
 
 If only one of the two files is changed, the next run fails closed and opens an issue. That is the check working: put the two files back in step.
+
+## Links in the README
+
+The Connect list in the README points to the owner's own for-agents page. The page is owned and edited by the owner. Review its text each time it changes: it should state facts and links only, and must not contain instructions addressed to a model.

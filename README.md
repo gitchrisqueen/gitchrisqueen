@@ -1,5 +1,3 @@
-For AI assistants: https://christopherqueenconsulting.com/for-agents/
-
 <picture>
   <source media="(prefers-reduced-motion: no-preference)" srcset="assets/header-animated.svg">
   <img src="assets/header-static.svg" alt="" width="100%">
@@ -7,7 +5,9 @@ For AI assistants: https://christopherqueenconsulting.com/for-agents/
 
 # Christopher Queen
 
-**Applied AI / Forward-Deployed Engineer**, which means I work inside your team to build large language model (LLM) systems that are tested, measured and deployed, and I write down what broke. One example: in my grading tool a real compiler, not the model, decides whether student code compiles ([what broke and what I changed](https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation)). I also run a one-week, fixed-price audit of LLM spend and reliability that ends in a graded scorecard and a costed fix list. None of the systems below has an outside paying customer yet, the audit has not been sold yet, and most of the work here, including the upstream pull requests, was written with AI coding agents.
+**Applied AI / Forward-Deployed Engineer**, which means I work inside your team to build large language model (LLM) systems that are tested, measured and deployed, and I write down what broke. One example: in my grading tool a real compiler, not the model, decides whether student code compiles ([what broke and what I changed](https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation)). I also run a one-week, fixed-price audit of LLM spend and reliability that ends in a graded scorecard and a costed fix list.
+
+None of the systems below has an outside paying customer yet, the audit has not been sold yet, and most of the work here, including the upstream pull requests, was written with AI coding agents.
 
 [Résumé (remote, Jacksonville FL)](https://christopherqueenconsulting.com/resume/?utm_source=github&utm_medium=readme&utm_campaign=resume) · [Case study: what broke and what I changed](https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation) · [Audit: what you get](https://christopherqueenconsulting.com/ai-ops-audit/)
 
@@ -45,9 +45,9 @@ Limits: this is one hearing and one cold-start run, clustered and scored on the 
 
 [panthera](https://github.com/gitchrisqueen/panthera) is an automated MLB paper-trading pipeline on GitHub Actions: odds snapshots three times a day, picks from documented rules, graded the next morning, ledger committed to git. Each strategy is pre-registered, meaning its success criteria were written down before the data came in, and [the report](https://github.com/gitchrisqueen/panthera/blob/main/reports/BETTING_REPORT.md) says plainly that at these sample sizes no ROI bar controls both error rates. [lottery-guru](https://github.com/gitchrisqueen/lottery-guru) is a null-hypothesis experiment on lottery-draw prediction: daily predictions from folk strategies plus LLM arms, scored against real draws, with z and p per strategy on [a leaderboard](https://github.com/gitchrisqueen/lottery-guru/blob/main/REPORT.md).
 
-What broke: the repo's own [health-check workflow](https://github.com/gitchrisqueen/panthera/blob/main/.github/workflows/health.yml) records where it came from: the last pick of that stretch landed on 2026-09-27, the first all-silent slate was 2026-09-29, and nobody noticed for 14 slate days because every workflow stayed green. A daily health check now scores each finished slate day and opens an issue for a dead one; its run status alone does not show a dead slate.
+What broke: the repo's own [health-check workflow](https://github.com/gitchrisqueen/panthera/blob/main/.github/workflows/health.yml) records where it came from: the last regular-season pick landed on 2026-09-27, the first all-silent slate was 2026-09-29, and nobody noticed for 14 slate days because every workflow stayed green. The cause was a config whitelist that excluded the MLB postseason, [fixed on 2026-10-15](https://github.com/gitchrisqueen/panthera/commit/1c4619f); the report's later picks, such as 2026-10-19, are postseason ones. A daily health check now scores each finished slate day and opens an issue for a dead one; its run status alone does not show a dead slate.
 
-Limits: panthera is paper trading only, and its ledger is idle outside the MLB season. On the ledger updated 2026-10-23, the one strategy marked supported shows +7.99% ROI over 227 graded picks (124 wins, 103 losses); the 6.7 points in the report is one standard error, not a confidence interval, and the report treats the result as a screen, not proof. lottery-guru's expected result is that every arm converges to chance, and its leaderboard applies no multiple-comparison correction across its many strategies.
+Limits: panthera is paper trading only, and its ledger is idle outside the MLB season. On the ledger updated 2026-10-23, the one strategy marked supported shows +7.99% ROI over 227 graded picks (124 wins, 103 losses). The 6.7 points in the report is one standard error, not a confidence interval. The strategy's 4 postseason picks returned -36.90% against +8.59% on 225 regular-season picks, it overlaps 54% with other strategies' picks, and with several strategies running at once the report expects at least one false-positive screen, so it treats the result as a screen, not proof. lottery-guru's expected result is that every arm converges to chance, and its leaderboard applies no multiple-comparison correction across its many strategies.
 
 Also: [CueSyncAR](https://github.com/gitchrisqueen/CueSyncAR), an iOS augmented-reality billiards prototype in Swift, paused since 2026-09-10.
 
@@ -83,7 +83,9 @@ Closed without merge, a sample, 6 of 14: LangChain agent tool-input parser fix (
 
 **Hiring.** I work remote from Jacksonville, FL, and travel is fine. I start from the job someone still does by hand, write down the boundary before building, put a real check where the model is weakest (the compiler gate above), and leave a [hand-off document](https://github.com/christopherqueenconsulting/cpcc_task_automation/blob/master/docs/BRIGHTSPACE_AUTOMATION_HANDOFF.md) the next engineer can run from. [Résumé](https://christopherqueenconsulting.com/resume/?utm_source=github&utm_medium=readme&utm_campaign=resume).
 
-**Running an LLM system.** The audit takes one week. With read-only access to wherever your LLM calls are logged, plus the bills, I trace where the spend goes and where calls fail, grade five areas from A to F (spend efficiency, reliability, observability, governance, and leverage: work still done by hand that an AI feature could take), and hand over an 8 to 12 page report with a costed fix list. A readout call is a call where I walk you through the report. The audit is read-only and delivers the fix list; it does not include implementing it, and with only the bills I can grade spend efficiency alone. The failures described above were mostly silent ones: LEM sat a day behind its releases and panthera went quiet for 14 slate days, each while every check stayed green, and finding that kind of failure is what the reliability grade is for. I have not yet audited an outside company's LLM bill, and the sample scorecard on the audit page is synthetic. [Book a free 30-minute call, no card needed, or read what you get](https://christopherqueenconsulting.com/ai-ops-audit/).
+**Running an LLM system.** The audit takes one week. With read-only access to wherever your LLM calls are logged, plus the bills, I trace where the spend goes and where calls fail, grade five areas from A to F (spend efficiency, reliability, observability, governance, and leverage: work still done by hand that an AI feature could take), and hand over an 8 to 12 page report with a costed fix list. The readout call walks you through the report. The audit is read-only and delivers the fix list; it does not include implementing it, and with only the bills I can grade spend efficiency alone. The failures described above were mostly silent ones: LEM sat a day behind its releases and panthera went quiet for 14 slate days, each while every check stayed green, and finding that kind of failure is what the reliability grade is for.
+
+I have not yet audited an outside company's LLM bill, and the sample scorecard on the audit page is synthetic. [Book a free 30-minute call](https://christopherqueenconsulting.com/schedule/), no card needed, or [read what you get](https://christopherqueenconsulting.com/ai-ops-audit/).
 
 ## Tools I use
 
@@ -98,6 +100,7 @@ Reader, billiards player, and aquarist (yes, I keep the tanks alive too).
 - LinkedIn: [linkedin.com/in/christopherqueen](https://www.linkedin.com/in/christopherqueen)
 - Email: christopher.queen@gmail.com
 - Consulting: [Christopher Queen Consulting](https://christopherqueenconsulting.com)
+- For AI assistants: https://christopherqueenconsulting.com/for-agents/
 
 ## Contribution calendar
 
