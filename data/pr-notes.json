@@ -1,8 +1,8 @@
 {
-  "langchain-ai/langchain#15251": "Fixed the dev container build by copying the core and community libraries in the Dockerfile (issue 14631)",
-  "taylorwilsdon/google_workspace_mcp#644": "In single-user mode the server now reads the Google account from an environment variable, so tool calls need not pass it. Added tests",
-  "Martian-Engineering/lossless-claw#418": "Manual compaction now reports success when the context is already under the token target. Added a regression test",
-  "PostHog/posthog-openclaw#15": "The plugin now reads the PostHog API key from an environment variable when the config has none. Added tests",
-  "PostHog/posthog-openclaw#35": "Same fallback for the PostHog host URL, read from an environment variable, and a blank host now uses the default. Added tests",
-  "future-agi/future-agi#1327": "Made the Explanation panel in the eval log drawer scroll, so long explanations are no longer cut off (issue 1071)"
+  "langchain-ai/langchain#15251": "Fixes the dev container build by copying the core and community libraries in the Dockerfile (issue 14631)",
+  "taylorwilsdon/google_workspace_mcp#644": "Reads the Google account from an environment variable in single-user mode, so tool calls need not pass it",
+  "Martian-Engineering/lossless-claw#418": "Makes manual compaction report success when the context is already under the token target",
+  "PostHog/posthog-openclaw#15": "Reads the PostHog API key from an environment variable when the config has none, caches the schema and warns clearly when the key is missing",
+  "PostHog/posthog-openclaw#35": "Reads the PostHog host URL from an environment variable when the config has none, and a blank host now uses the default",
+  "future-agi/future-agi#1327": "Makes the eval log's explanation panel scroll, so long explanations are not cut off (issue 1071)"
 }

@@ -1110,7 +1110,7 @@ def test_committed_notes_cannot_autolink_to_an_issue():
     assert "issue 14631" in notes["langchain-ai/langchain#15251"]
     assert "issue 1071" in notes["future-agi/future-agi#1327"]
     assert notes["Martian-Engineering/lossless-claw#418"].startswith(
-        "Manual compaction now reports success when the context is already under the token target")
+        "Makes manual compaction report success when the context is already under the token target")
 
 
 # ================================================================ deliberate shrink

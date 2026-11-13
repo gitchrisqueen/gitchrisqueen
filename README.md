@@ -5,7 +5,7 @@
 
 # Christopher Queen
 
-**Applied AI / Forward-Deployed Engineer**, which means I work inside your team to build large language model (LLM) systems that are tested, measured and deployed, and I write down what broke. One example: in my grading tool a real compiler, not the model, decides whether student code compiles ([what broke and what I changed](https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation)). I also run a one-week, fixed-price audit of LLM spend and reliability that ends in a graded scorecard and a costed fix list.
+**Applied AI / Forward-Deployed Engineer.** I work inside your team to build large language model (LLM) systems that are tested, measured and deployed, and I write down what broke. In my grading tool, a real compiler, not the model, decides whether student code compiles. I also run a one-week, fixed-price audit of LLM spend and reliability that ends in a graded scorecard and a costed fix list.
 
 None of the systems below has an outside paying customer yet, the audit has not been sold yet, and most of the work here, including the upstream pull requests, was written with AI coding agents.
 
@@ -27,7 +27,7 @@ Limits: deployed and CI-gated (continuous integration: tests run on every change
 
 ### CPCC Task Automation (instructor admin tool)
 
-Every week, for each course I teach, I took attendance, recorded withdrawals and graded programming work by hand, and one missed submission is a wrong record. [This tool](https://github.com/christopherqueenconsulting/cpcc_task_automation) (Python, Streamlit, Selenium, LangChain, OpenRouter) drives the student information system and the learning platform through a real browser, grades against a rubric with a human review step, and writes grades back as drafts where the platform allows one, with a dry run as the default.
+Every week, for each course I teach, I took attendance, recorded withdrawals and graded programming work by hand, and one missed submission is a wrong record. [CPCC Task Automation](https://github.com/christopherqueenconsulting/cpcc_task_automation) (Python, Streamlit, Selenium, LangChain, OpenRouter) drives the student information system and the learning platform through a real browser, grades against a rubric with a human review step, and writes grades back as drafts where the platform allows one, with a dry run as the default.
 
 What broke: the model flagged valid C++ as "does not compile", a major rubric error, and took the whole grade to the floor. The fix was not a better prompt: a [real compiler now decides "does not compile"](https://github.com/christopherqueenconsulting/cpcc_task_automation/blob/master/docs/compiler-gate.md), and student code is compiled, never run (merged 2026-09-02, [#267](https://github.com/christopherqueenconsulting/cpcc_task_automation/pull/267)).
 
@@ -35,7 +35,7 @@ Limits: invite-only, built for instructor admin work; no public demo; I am its o
 
 ### hearing-copilot: speaker identification
 
-A live transcript is only useful if it says who is talking. [hearing-copilot](https://github.com/gitchrisqueen/hearing-copilot) is a local app that transcribes a hearing and labels the speakers. Before speaker identification went into the app, I ran an offline bake-off on real Supreme Court oral-argument audio, with Oyez transcripts as ground truth.
+A live transcript is only useful if it says who is talking. [hearing-copilot](https://github.com/gitchrisqueen/hearing-copilot) is a local JavaScript app that transcribes a hearing and labels the speakers. Before speaker identification went into the app, I ran an offline bake-off on real Supreme Court oral-argument audio, with Oyez transcripts as ground truth.
 
 The number ([RESULTS.md](https://github.com/gitchrisqueen/hearing-copilot/blob/main/eval/diarization/RESULTS.md), dated 2026-07-24): in the cold-start run (no voice samples enrolled beforehand) on *Bowe v. United States* (argued 2025-10-14, 91 minutes, 12 speakers), it auto-accepted 89.8% of the chunks (short audio segments) and was right on 99.2% of the chunks it auto-accepted.
 
@@ -53,7 +53,7 @@ Also: [CueSyncAR](https://github.com/gitchrisqueen/CueSyncAR), an iOS augmented-
 
 ## Status of the flagship repos
 
-This table covers the four projects above and is the readable version of the badges at the top. Passing means the last run of that check on the default branch succeeded, failing means it did not, and unavailable means the run could not be read. A failing row stays visible. For panthera, passing means the daily pipeline ran, not that its data is healthy; its separate health check opens an issue when a slate goes dead.
+This table is the readable version of the badges above, plus hearing-copilot: the last run of each check on the default branch, shown as passing, failing, or unavailable when it cannot be read. A failing row stays visible. For panthera, passing means the daily pipeline ran, not that its data is healthy; a separate health check opens an issue for a dead slate.
 
 <!-- FLAGSHIPS:START -->
 | Repo | Check | Status |
@@ -69,12 +69,12 @@ This table covers the four projects above and is the readable version of the bad
 Mostly small fixes, merged by each project's maintainers. The list is generated from public GitHub data by a scheduled check in this repo.
 
 <!-- MERGED-UPSTREAM:START -->
-- [future-agi/future-agi #1327](https://github.com/future-agi/future-agi/pull/1327): Made the Explanation panel in the eval log drawer scroll, so long explanations are no longer cut off (issue 1071)
-- [PostHog/posthog-openclaw #35](https://github.com/PostHog/posthog-openclaw/pull/35): Same fallback for the PostHog host URL, read from an environment variable, and a blank host now uses the default. Added tests
-- [PostHog/posthog-openclaw #15](https://github.com/PostHog/posthog-openclaw/pull/15): The plugin now reads the PostHog API key from an environment variable when the config has none. Added tests
-- [Martian-Engineering/lossless-claw #418](https://github.com/Martian-Engineering/lossless-claw/pull/418): Manual compaction now reports success when the context is already under the token target. Added a regression test
-- [taylorwilsdon/google_workspace_mcp #644](https://github.com/taylorwilsdon/google_workspace_mcp/pull/644): In single-user mode the server now reads the Google account from an environment variable, so tool calls need not pass it. Added tests
-- [langchain-ai/langchain #15251](https://github.com/langchain-ai/langchain/pull/15251): Fixed the dev container build by copying the core and community libraries in the Dockerfile (issue 14631)
+- [future-agi/future-agi #1327](https://github.com/future-agi/future-agi/pull/1327): Makes the eval log's explanation panel scroll, so long explanations are not cut off (issue 1071)
+- [PostHog/posthog-openclaw #35](https://github.com/PostHog/posthog-openclaw/pull/35): Reads the PostHog host URL from an environment variable when the config has none, and a blank host now uses the default
+- [PostHog/posthog-openclaw #15](https://github.com/PostHog/posthog-openclaw/pull/15): Reads the PostHog API key from an environment variable when the config has none, caches the schema and warns clearly when the key is missing
+- [Martian-Engineering/lossless-claw #418](https://github.com/Martian-Engineering/lossless-claw/pull/418): Makes manual compaction report success when the context is already under the token target
+- [taylorwilsdon/google_workspace_mcp #644](https://github.com/taylorwilsdon/google_workspace_mcp/pull/644): Reads the Google account from an environment variable in single-user mode, so tool calls need not pass it
+- [langchain-ai/langchain #15251](https://github.com/langchain-ai/langchain/pull/15251): Fixes the dev container build by copying the core and community libraries in the Dockerfile (issue 14631)
 <!-- MERGED-UPSTREAM:END -->
 
 Closed without merge, a sample, 6 of 14: LangChain agent tool-input parser fix ([#14668](https://github.com/langchain-ai/langchain/pull/14668), [#15422](https://github.com/langchain-ai/langchain/pull/15422)); mem0 session-memory scoping, provider environment variables and a hook migration ([#4574](https://github.com/mem0ai/mem0/pull/4574), [#4987](https://github.com/mem0ai/mem0/pull/4987), [#5077](https://github.com/mem0ai/mem0/pull/5077)); Lossless-Claw SQLite busy timeout ([#303](https://github.com/Martian-Engineering/lossless-claw/pull/303)). [Full list on GitHub](https://github.com/search?q=is%3Apr+is%3Aclosed+is%3Aunmerged+author%3Agitchrisqueen+-user%3Agitchrisqueen+-org%3Achristopherqueenconsulting&type=pullrequests).
@@ -83,13 +83,15 @@ Closed without merge, a sample, 6 of 14: LangChain agent tool-input parser fix (
 
 **Hiring.** I work remote from Jacksonville, FL, and travel is fine. I start from the job someone still does by hand, write down the boundary before building, put a real check where the model is weakest (the compiler gate above), and leave a [hand-off document](https://github.com/christopherqueenconsulting/cpcc_task_automation/blob/master/docs/BRIGHTSPACE_AUTOMATION_HANDOFF.md) the next engineer can run from. [Résumé](https://christopherqueenconsulting.com/resume/?utm_source=github&utm_medium=readme&utm_campaign=resume).
 
-**Running an LLM system.** The audit takes one week. With read-only access to wherever your LLM calls are logged, plus the bills, I trace where the spend goes and where calls fail, grade five areas from A to F (spend efficiency, reliability, observability, governance, and leverage: work still done by hand that an AI feature could take), and hand over an 8 to 12 page report with a costed fix list. The readout call walks you through the report. The audit is read-only and delivers the fix list; it does not include implementing it, and with only the bills I can grade spend efficiency alone. The failures described above were mostly silent ones: LEM sat a day behind its releases and panthera went quiet for 14 slate days, each while every check stayed green, and finding that kind of failure is what the reliability grade is for.
+**Running an LLM system.** The audit takes one week. With read-only access to wherever your LLM calls are logged, plus the bills, I trace where the spend goes and where calls fail, grade five areas from A to F (spend efficiency, reliability, observability, governance, and "leverage", the audit page's name for work still done by hand that an AI feature could take), and hand over an 8 to 12 page report with a costed fix list. The readout call walks you through the report.
+
+The audit is read-only and delivers the fix list; it does not include implementing it, and with only the bills I can grade spend efficiency alone. The failures described above were silent ones, and finding that kind of failure is what the reliability grade is for.
 
 I have not yet audited an outside company's LLM bill, and the sample scorecard on the audit page is synthetic. [Book a free 30-minute call](https://christopherqueenconsulting.com/schedule/), no card needed, or [read what you get](https://christopherqueenconsulting.com/ai-ops-audit/).
 
 ## Tools I use
 
-[Python](https://github.com/christopherqueenconsulting/cpcc_task_automation), [FastAPI](https://github.com/christopherqueenconsulting/linkedin_engagement_manager), [Celery and Redis](https://github.com/christopherqueenconsulting/linkedin_engagement_manager), [React](https://github.com/christopherqueenconsulting/linkedin_engagement_manager), [LiteLLM](https://github.com/christopherqueenconsulting/linkedin_engagement_manager), [Docker Compose](https://github.com/christopherqueenconsulting/linkedin_engagement_manager), [Streamlit](https://github.com/christopherqueenconsulting/cpcc_task_automation), [Selenium](https://github.com/christopherqueenconsulting/cpcc_task_automation), [LangChain](https://github.com/christopherqueenconsulting/cpcc_task_automation), [OpenRouter](https://github.com/christopherqueenconsulting/cpcc_task_automation), [JavaScript on Node](https://github.com/gitchrisqueen/hearing-copilot), [GitHub Actions](https://github.com/gitchrisqueen/panthera), [Swift](https://github.com/gitchrisqueen/CueSyncAR).
+Python, FastAPI, Celery and Redis, MySQL, React, LiteLLM, Docker Compose, Streamlit, Selenium, LangChain, OpenRouter, JavaScript on Node, GitHub Actions and Swift. Each appears in one of the projects above.
 
 ## Off the keyboard
 
@@ -119,4 +121,4 @@ Calendar includes private work.
   <img src="assets/footer-static.svg" alt="" width="100%">
 </picture>
 
-<sub>The sections between HTML comment markers are regenerated from public GitHub data by a scheduled check in this repo; the rest is written by hand.</sub>
+<small>The sections between HTML comment markers are regenerated from public GitHub data by a scheduled check in this repo; the rest is written by hand.</small>
