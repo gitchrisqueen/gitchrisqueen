@@ -228,7 +228,7 @@ The weekly check is read-only and runs on the owner's own machine. Use a separat
 
 ```
 export GH_TOKEN="${PROFILE_CHECK_TOKEN}"   # the read-only token, kept outside this repository
-gh api repos/gitchrisqueen/gitchrisqueen --jq .permissions.push   # must print false
+gh api repos/gitchrisqueen/gitchrisqueen --jq .permissions.push   # must print false; empty output also means stop
 gh run list --repo gitchrisqueen/gitchrisqueen --workflow profile.yml --status success --limit 1 --json createdAt --jq '.[0].createdAt'
 gh run list --repo gitchrisqueen/gitchrisqueen --workflow snake.yml --status success --limit 1 --json createdAt --jq '.[0].createdAt'
 gh api repos/gitchrisqueen/gitchrisqueen/actions/workflows --jq '.workflows[] | [.name, .state] | @tsv'
@@ -239,7 +239,7 @@ date -u +%Y-%m-%dT%H:%M:%SZ
 unset GH_TOKEN
 ```
 
-If the first command prints `true`, stop: that token can write, so replace it before continuing. An open failure issue means a run failed and nobody has seen a clean run since, even if the Watch settings hid the notification.
+If the first command prints `true` or nothing, stop: that token can write or is not in use, so check that `PROFILE_CHECK_TOKEN` is set (an unset variable makes `gh` fall back to the stored push credential) and replace the token before continuing. A fine-grained token expires, so note its expiry date in your reminder; an authentication error in this block usually means it lapsed. An open failure issue means a run failed and nobody has seen a clean run since, even if the Watch settings hid the notification.
 
 Compare each time with the date printed on the last line. Act when:
 
