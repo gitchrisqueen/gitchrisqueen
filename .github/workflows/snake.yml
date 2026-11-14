@@ -208,7 +208,7 @@ jobs:
       - name: Open or update the failure issue
         run: |
           set -euo pipefail
-          enabled="$(gh repo view --json hasIssuesEnabled --jq .hasIssuesEnabled)"
+          enabled="$(gh repo view "${GH_REPO}" --json hasIssuesEnabled --jq .hasIssuesEnabled)"
           if [ "${enabled}" != "true" ]; then
             echo "Issues are disabled for this repository; nothing to report."
             exit 0
@@ -254,7 +254,7 @@ jobs:
       - name: Close this workflow's open failure issue
         run: |
           set -euo pipefail
-          enabled="$(gh repo view --json hasIssuesEnabled --jq .hasIssuesEnabled)"
+          enabled="$(gh repo view "${GH_REPO}" --json hasIssuesEnabled --jq .hasIssuesEnabled)"
           if [ "${enabled}" != "true" ]; then
             echo "Issues are disabled for this repository; nothing to close."
             exit 0

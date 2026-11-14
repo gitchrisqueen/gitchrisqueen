@@ -712,3 +712,11 @@ def test_panthera_check_text_is_pinned_in_the_data_file():
     flags = json.loads((ROOT / "data" / "flagships.json").read_text(encoding="utf-8"))["flagships"]
     check = next(e["check"] for e in flags if e["repo"].endswith("/panthera"))
     assert check == "Daily pipeline run"
+
+
+@pytest.mark.parametrize("name", ["profile", "snake"])
+def test_gh_repo_view_names_the_repository_because_the_issue_jobs_have_no_checkout(name):
+    code = "\n".join(l for l in text(name).splitlines() if not l.lstrip().startswith("#"))
+    calls = re.findall(r"gh repo view[^\n]*", code)
+    assert calls, name
+    assert all('"${GH_REPO}"' in c for c in calls), calls

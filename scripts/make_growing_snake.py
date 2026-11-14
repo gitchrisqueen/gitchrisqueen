@@ -42,8 +42,9 @@ PITCH = 15          # distance between square centres, px
 CELL = 12           # square size, px
 WIDTH = 840
 START_LEN = 4       # snake length before it eats anything
-GAP = 100000        # dash gap in px, longer than the whole path, so exactly one snake is ever drawn
-HEAD_DASH = 1       # px, the head is a round-capped dot
+SEG_STEP = 0.5      # squares between body segments, so neighbours overlap into one continuous body
+SEG_PX = 10         # body segment diameter, px
+HEAD_R = 6.5        # head radius, px
 GROWTH = 0.15       # squares of length gained per square eaten
 PAD = START_LEN     # off-board squares the snake walks in from
 HOLD = 1.0          # seconds the full snake stays after the last square
@@ -305,29 +306,35 @@ def build_svg(cells: list[dict], total: int, theme: str, animated: bool, freeze:
     if animated:
         css.append(f".a{{animation-duration:{fmt(cycle)}s;animation-iteration-count:infinite;"
                    f"animation-timing-function:linear}}")
-        body_frames, head_frames = [], []
-        for k, cells_long in enumerate(walk.lengths):
-            at = fmt(pct(k / speed))
-            dash = max(cells_long - 1, 0.01) * PITCH       # the body spans (length - 1) steps behind the head
-            body_frames.append(f"{at}%{{stroke-dasharray:{fmt(dash)} {GAP};stroke-dashoffset:{fmt(dash - k * PITCH)}}}")
-            head_frames.append(f"{at}%{{stroke-dashoffset:{fmt(HEAD_DASH - k * PITCH)}}}")
-        last_dash = max(walk.lengths[-1] - 1, 0.01) * PITCH
-        css.append("@keyframes sb{" + "".join(body_frames) + f"100%{{stroke-dasharray:{fmt(last_dash)} {GAP};"
-                   f"stroke-dashoffset:{fmt(last_dash - steps * PITCH)}}}}}")
-        css.append("@keyframes sh{" + "".join(head_frames) + f"100%{{stroke-dashoffset:{fmt(HEAD_DASH - steps * PITCH)}}}}}")
-        fade_a, fade_b = pct(run + HOLD), pct(run + HOLD + FADE)
-        css.append(f"@keyframes sg{{0%,{fmt(fade_a)}%{{opacity:1}}{fmt(fade_b)}%,99.9%{{opacity:0}}100%{{opacity:1}}}}")
-        css.append(".sb{animation-name:sb}.sh{animation-name:sh}.sg{animation-name:sg}")
+        # One shared track of keyframes (the head's positions); every body segment replays it a little later.
+        # No stroke dashes and no pathLength, so every browser draws exactly one snake.
+        frames = []
+        for k, pos in enumerate(path):
+            x, y = centre(pos)
+            frames.append(f"{fmt(pct(k / speed))}%{{transform:translate({fmt(x)}px,{fmt(y)}px)}}")
+        lx, ly = centre(path[-1])
+        css.append("@keyframes mv{" + "".join(frames) + f"100%{{transform:translate({fmt(lx)}px,{fmt(ly)}px)}}}}")
+        css.append(".mv{animation-name:mv;animation-fill-mode:backwards}")
+        longest = max(walk.lengths)
+        n_seg = int(round((longest - 1) / SEG_STEP)) + 1
+        fade_a, fade_b = pct(run + 0.2), pct(run + 1.2)
+        segments = []
+        for j in range(n_seg):
+            lag = j * SEG_STEP                                   # how many squares behind the head, in squares
+            appear = next(k for k, n in enumerate(walk.lengths) if (n - 1) / SEG_STEP >= j)
+            css.append(f".s{j}{{animation-delay:{fmt(lag / speed - (freeze or 0.0))}s}}"
+                       f"@keyframes v{j}{{0%,{fmt(pct(appear / speed))}%{{opacity:0}}"
+                       f"{fmt(pct(appear / speed) + 0.01)}%,{fmt(fade_a)}%{{opacity:1}}{fmt(fade_b)}%,100%{{opacity:0}}}}"
+                       f".v{j}{{animation-name:v{j}}}")
+            shape = (f'<circle class="a v{j}" r="{HEAD_R}" fill="{col["head"]}"/>' if j == 0 else
+                     f'<rect class="a v{j}" x="{-SEG_PX / 2}" y="{-SEG_PX / 2}" width="{SEG_PX}" height="{SEG_PX}" '
+                     f'rx="{SEG_PX / 2}" fill="{col["snake"]}"/>')
+            segments.append(f'<g class="a mv s{j}">{shape}</g>')
         css.append(REDUCED)
         if freeze is not None:
-            css.append(f"*{{animation-play-state:paused!important;animation-delay:-{fmt(freeze)}s!important}}")
-        d = "M" + " L".join(f"{fmt(centre(p)[0])} {fmt(centre(p)[1])}" for p in path)
-        stroke = 'fill="none" stroke-linecap="round" stroke-linejoin="round"'
-        body.append(
-            f'<g class="a sg"><path class="a sb" d="{d}" {stroke} stroke="{col["snake"]}" stroke-width="7" '
-            f'stroke-dasharray="0.01 {GAP}" stroke-dashoffset="0.01"/>'
-            f'<path class="a sh" d="{d}" {stroke} stroke="{col["head"]}" stroke-width="10" '
-            f'stroke-dasharray="{HEAD_DASH} {GAP}" stroke-dashoffset="{HEAD_DASH}"/></g>')
+            css.append(f".a:not(.mv){{animation-play-state:paused!important;animation-delay:-{fmt(freeze)}s!important}}"
+                       f".mv{{animation-play-state:paused!important}}")
+        body.extend(reversed(segments))                          # tail first, head on top
 
     head = [
         '<?xml version="1.0" encoding="UTF-8"?>',
