@@ -16,19 +16,23 @@
   <img src="assets/terminal-static.svg" alt="A simulated terminal, not a real tool or session. It lists four commands, connects my skills over MCP and lists six tools (llm_audit, real_check, drift_watch, browser_flow, ci_pipeline, human_gate), calls llm_audit on synthetic sample data and prints sample grades, then prints: Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: open to Forward-Deployed Engineer roles. Builds LLM systems with real checks. Stack: Python, FastAPI, React, Docker. Models: LangChain, LiteLLM, OpenRouter. Rule: a real check beats a prompt. Off duty: books, billiards, aquariums." width="100%">
 </picture>
 
-<sub>A simulated terminal for fun: <code>cqc</code> is not a real tool, and nothing in it is a recording.</sub>
+<sub>A simulated terminal for fun: <code>cqc</code> is not a real tool, the six tool names are labels for skills (no MCP server is published), the sample grades are invented, and nothing in it is a recording. <a href="https://github.com/gitchrisqueen/gitchrisqueen/blob/main/docs/PROOF.md#the-six-skills-in-the-terminal-graphic">Where each skill comes from</a>.</sub>
 
+<a href="https://gitchrisqueen.github.io/gitchrisqueen/graph/">
 <picture>
-  <source media="(prefers-reduced-motion: no-preference)" srcset="assets/loop-animated.svg">
-  <img src="assets/loop-static.svg" alt="My automation loop: ingest, language model, tool call, evaluation, human approval, ship. A real check and a person sit between the model and the world." width="100%">
+  <source media="(prefers-reduced-motion: no-preference)" srcset="assets/graph-animated.svg">
+  <img src="assets/graph-static.svg" alt="A knowledge graph of what I work with. Christopher connects to four projects (LEM, the CPCC tool, hearing-copilot, panthera) and the LLM audit. Practices (real checks, drift watch, human review, honest caveats) and tools (Python, FastAPI, Redis, React, Selenium, LangChain, LiteLLM, Docker, GitHub Actions, Node.js) tie them together. Select it to open the interactive version, where you can drag the nodes." width="100%">
 </picture>
+</a>
+
+<sub>Select the graph to open the interactive version: drag the nodes and see how they tie together.</sub>
 
 ## What I've built
 
 <a href="https://github.com/christopherqueenconsulting/linkedin_engagement_manager"><img alt="LinkedIn Engagement Manager, a live web app: a 30-day content plan, quality-gated AI posts and daily-capped engagement. What broke: the live app sat behind new releases for a day, inside a green run; an hourly check now flags it. Built with FastAPI, Celery, Redis, MySQL, React and Docker." src="assets/card-lem.svg" width="390"></a>
 <a href="https://github.com/christopherqueenconsulting/cpcc_task_automation"><img alt="CPCC Task Automation, an instructor admin tool: attendance, withdrawals and rubric grading with a human review step. What broke: the model called valid C++ not compiling; a real compiler now makes that call. Built with Python, Streamlit, Selenium and LangChain." src="assets/card-cpcc.svg" width="390"></a>
 <a href="https://github.com/gitchrisqueen/hearing-copilot"><img alt="hearing-copilot, speaker identification for live transcripts, scored offline on real oral-argument audio. Limits: the headline score comes from one hearing, with no confidence interval; caveats are in RESULTS.md. Built with JavaScript and Node.js." src="assets/card-hearing.svg" width="390"></a>
-<a href="https://github.com/gitchrisqueen/panthera"><img alt="panthera, an MLB paper-trading experiment graded against pre-registered rules; paper trading only, and the ROI is a screen, not proof. What broke: a config whitelist skipped the postseason and 14 slate days passed unnoticed; a health check now flags it. Built with Python and GitHub Actions." src="assets/card-panthera.svg" width="390"></a>
+<a href="https://github.com/gitchrisqueen/panthera"><img alt="panthera, an MLB paper-trading experiment graded against rules declared in git; paper trading only, and the ROI is a screen, not proof. What broke: a config whitelist skipped the postseason and 14 slate days passed unnoticed; a health check now flags it. Built with Python and GitHub Actions." src="assets/card-panthera.svg" width="390"></a>
 
 Test status, live: <a href="https://github.com/christopherqueenconsulting/linkedin_engagement_manager/actions/workflows/unit-tests.yml"><img alt="LinkedIn Engagement Manager automated tests status" src="https://img.shields.io/github/actions/workflow/status/christopherqueenconsulting/linkedin_engagement_manager/unit-tests.yml?branch=main&label=LEM&labelColor=24292f&color=57606a&style=flat-square"></a>
 <a href="https://github.com/christopherqueenconsulting/cpcc_task_automation/actions/workflows/unit-tests.yml"><img alt="CPCC Task Automation automated tests status" src="https://img.shields.io/github/actions/workflow/status/christopherqueenconsulting/cpcc_task_automation/unit-tests.yml?branch=master&label=CPCC&labelColor=24292f&color=57606a&style=flat-square"></a>

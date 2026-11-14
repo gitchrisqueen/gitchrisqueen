@@ -70,7 +70,7 @@ jobs:
           set -euo pipefail
           python scripts/build_assets.py --check
           python scripts/lint_svg.py --profile chart --require-opaque-background --min-bytes 1000 --max-bytes 200000 \
-            assets/skills-*.svg assets/loop-*.svg assets/terminal-*.svg assets/card-*.svg
+            assets/skills-*.svg assets/graph-*.svg assets/terminal-*.svg assets/card-*.svg
 
       - name: Check colour contrast
         run: python scripts/check_contrast.py assets/colors.json

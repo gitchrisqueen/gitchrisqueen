@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "nodes": [
+    {"id": "me", "label": "Christopher", "kind": "me", "note": "Applied AI / Forward-Deployed Engineer. Builds LLM systems with real checks around the model."},
+    {"id": "lem", "label": "LEM", "kind": "project", "note": "LinkedIn Engagement Manager: a live web app with a 30-day content plan, quality-gated AI posts and daily-capped engagement."},
+    {"id": "cpcc", "label": "CPCC tool", "kind": "project", "note": "Instructor admin tool: attendance, withdrawals and rubric grading, with a real compiler deciding compile errors."},
+    {"id": "hearing", "label": "hearing-copilot", "kind": "project", "note": "Speaker identification for live transcripts, scored offline on real oral-argument audio, with its caveats written down."},
+    {"id": "panthera", "label": "panthera", "kind": "project", "note": "MLB paper-trading pipeline graded against rules declared in git. Paper trading only."},
+    {"id": "audit", "label": "LLM audit", "kind": "offer", "note": "One-week, read-only audit of LLM spend and reliability, ending in a graded scorecard and a costed fix list."},
+    {"id": "checks", "label": "real checks", "kind": "practice", "note": "A deterministic check where the model is weakest."},
+    {"id": "drift", "label": "drift watch", "kind": "practice", "note": "Checks that keep running after a thing ships."},
+    {"id": "review", "label": "human review", "kind": "practice", "note": "Drafts, dry runs and an approval step before anything goes out."},
+    {"id": "caveats", "label": "honest caveats", "kind": "practice", "note": "Limits stated next to the numbers."},
+    {"id": "python", "label": "Python", "kind": "tech"},
+    {"id": "fastapi", "label": "FastAPI", "kind": "tech"},
+    {"id": "redis", "label": "Redis", "kind": "tech"},
+    {"id": "react", "label": "React", "kind": "tech"},
+    {"id": "selenium", "label": "Selenium", "kind": "tech"},
+    {"id": "langchain", "label": "LangChain", "kind": "tech"},
+    {"id": "litellm", "label": "LiteLLM", "kind": "tech"},
+    {"id": "docker", "label": "Docker", "kind": "tech"},
+    {"id": "actions", "label": "GitHub Actions", "kind": "tech"},
+    {"id": "node", "label": "Node.js", "kind": "tech"}
+  ],
+  "edges": [
+    ["me", "lem"], ["me", "cpcc"], ["me", "hearing"], ["me", "panthera"], ["me", "audit"],
+    ["lem", "fastapi"], ["lem", "redis"], ["lem", "react"], ["lem", "docker"], ["lem", "selenium"], ["lem", "litellm"],
+    ["cpcc", "python"], ["cpcc", "selenium"], ["cpcc", "langchain"],
+    ["hearing", "node"],
+    ["panthera", "python"], ["panthera", "actions"],
+    ["cpcc", "checks"], ["audit", "checks"],
+    ["lem", "drift"], ["panthera", "drift"], ["audit", "drift"],
+    ["cpcc", "review"], ["lem", "review"],
+    ["hearing", "caveats"], ["panthera", "caveats"]
+  ]
+}

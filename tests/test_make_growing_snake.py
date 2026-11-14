@@ -197,28 +197,57 @@ def test_cli_without_token_or_fixture_is_a_usage_error(tmp_path):
 def test_committed_assets_match_the_builder():
     built = assets.build_all()
     for name, text in built.items():
-        assert (ROOT / "assets" / name).read_text(encoding="utf-8") == text, name
+        path = ROOT / name if "/" in name else ROOT / "assets" / name
+        assert path.read_text(encoding="utf-8") == text, name
 
 
 def test_assets_have_no_external_references_or_script():
     for name, text in assets.build_all().items():
+        if name.endswith(".html"):
+            continue
         low = text.lower()
         assert "http" not in low.replace("http://www.w3.org/2000/svg", ""), name
         assert "<script" not in low and "<animate" not in low and "<image" not in low, name
 
 
-def test_loop_static_twin_has_no_motion_and_shows_every_stage():
-    static = assets.build_loop(False)
+def test_graph_data_is_consistent():
+    graph = assets.load_graph()
+    ids = [n["id"] for n in graph["nodes"]]
+    assert len(ids) == len(set(ids)) and 12 <= len(ids) <= 24
+    assert all(n["kind"] in assets.KIND_STYLE for n in graph["nodes"])
+    for a, b in graph["edges"]:
+        assert a in ids and b in ids and a != b
+    linked = {x for e in graph["edges"] for x in e}
+    assert linked == set(ids), "every node connects to something"
+
+
+def test_graph_layout_is_deterministic_inside_the_frame_and_keeps_nodes_apart():
+    graph = assets.load_graph()
+    pos = assets.layout_graph(graph)
+    assert pos == assets.layout_graph(graph)
+    for x, y in pos.values():
+        assert 0 < x < assets.GRAPH_W and 0 < y < assets.GRAPH_H
+    pts = list(pos.values())
+    for i, p in enumerate(pts):
+        for q in pts[i + 1:]:
+            assert ((p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2) ** 0.5 > 22
+
+
+def test_graph_static_twin_has_no_motion_and_animated_obeys_reduced_motion():
+    static = assets.build_graph_svg(False)
     assert "animation" not in static and "@keyframes" not in static
-    for chip, _ in assets.LOOP_NODES:
-        assert chip in static
-
-
-def test_loop_animated_has_reduced_motion_rule_and_bounded_motion():
-    animated = assets.build_loop(True)
+    animated = assets.build_graph_svg(True)
     assert "@media (prefers-reduced-motion: reduce){*{animation:none!important}}" in animated
-    assert assets.LOOP_CYCLE >= 6
-    assert "visibility" not in animated and "display:none" not in animated
+    for node in assets.load_graph()["nodes"]:
+        assert node["label"] in static
+
+
+def test_graph_page_is_self_contained_and_has_a_text_version():
+    page = assets.build_graph_page()
+    assert "<script src" not in page and "http://" not in page.replace("http://www.w3.org", "")
+    assert "pointerdown" in page and "Text version" in page and "prefers-reduced-motion" in page
+    for node in assets.load_graph()["nodes"]:
+        assert node["label"] in page
 
 
 def test_terminal_static_twin_has_no_motion_and_every_row_fits():
@@ -275,7 +304,7 @@ def test_snake_body_is_thinner_than_a_square():
 
 def test_card_and_skills_images_stay_narrow_enough_for_a_phone():
     for name, text in assets.build_all().items():
-        if name.startswith("header-") or name.startswith("footer-"):
+        if name.startswith(("header-", "footer-")) or name.endswith(".html"):
             continue
         width = int(re.search(r'viewBox="0 0 (\d+) ', text).group(1))
         assert width <= 520, f"{name} is {width} wide"

@@ -7,7 +7,8 @@ Usage:
 
 Outputs (all opaque-background, no script, no external reference):
     assets/skills-build.svg, assets/skills-ai.svg   tool logos, two panels
-    assets/loop-animated.svg, assets/loop-static.svg  the automation-loop graphic
+    assets/graph-animated.svg, assets/graph-static.svg  the knowledge-graph graphic
+    docs/graph/index.html                              its interactive, draggable version
     assets/terminal-animated.svg, assets/terminal-static.svg  the terminal session about me
     assets/card-<id>.svg                              one card per project
 
@@ -24,6 +25,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import random
 import sys
 from pathlib import Path
 from xml.sax.saxutils import escape
@@ -146,92 +148,273 @@ def build_skills(panel_id: str, icons: dict) -> str:
     return "\n".join(out) + "\n"
 
 
-# ---------------------------------------------------------------- automation loop
+# ---------------------------------------------------------------- knowledge graph
 
-LOOP_CX, LOOP_CY, LOOP_R = 260, 176, 118
-LOOP_CYCLE = 12.0
-# (chip text, icon id). The packet visits them clockwise from the top.
-LOOP_NODES = [
-    ("[ingest]", "in"), ("[llm]", "ai"), ("[tool_call]", "tool"),
-    ("[eval]", "shield"), ("[human ok]", "eye"), ("[ship]", "up"),
-]
-ICON_PATHS = {
-    "in": '<path d="M-5 -10 H5 V-1 H10 L0 10 L-10 -1 H-5 Z"/>',
-    "ai": '<path d="M0 -11 L3 -3 L11 0 L3 3 L0 11 L-3 3 L-11 0 L-3 -3 Z"/>',
-    "tool": ('<circle r="5" fill="none" stroke-width="2.4"/><path stroke-width="2.4" d="M0 -11 V-7 M0 7 V11 '
-             'M-11 0 H-7 M7 0 H11 M-8 -8 L-5 -5 M5 5 L8 8 M-8 8 L-5 5 M5 -5 L8 -8"/>'),
-    "shield": ('<path fill="none" stroke-width="2.4" d="M0 -11 L9 -7 V0 C9 6 4 10 0 12 C-4 10 -9 6 -9 0 V-7 Z"/>'
-               '<path fill="none" stroke-width="2.4" d="M-4 1 L-1 4 L5 -3"/>'),
-    "eye": '<path fill="none" stroke-width="2.4" d="M-11 0 Q0 -10 11 0 Q0 10 -11 0 Z"/><circle r="3.4"/>',
-    "up": '<path d="M0 -11 L8 3 H3 V10 H-3 V3 H-8 Z"/>',
+KIND_STYLE = {
+    # kind: (radius, fill, label size, bold)
+    "me": (17, GOLD, 15, True),
+    "project": (12, "#c4b228", 13, True),
+    "offer": (12, "#efe9d2", 13, True),
+    "practice": (10, GREEN, 12.5, True),
+    "tech": (7, "#58a6ff", 11.5, False),
 }
+GRAPH_W, GRAPH_H = 520, 400
 
 
-def build_loop(animated: bool) -> str:
-    width, height = 520, 362
-    node_pos = []
-    for i in range(len(LOOP_NODES)):
-        ang = math.radians(-90 + i * 60)
-        node_pos.append((LOOP_CX + LOOP_R * math.cos(ang), LOOP_CY + LOOP_R * math.sin(ang)))
+def load_graph() -> dict:
+    return json.loads((ROOT / "data" / "graph.json").read_text(encoding="utf-8"))
+
+
+def layout_graph(graph: dict, width: int = GRAPH_W, height: int = GRAPH_H) -> dict[str, tuple[float, float]]:
+    """The tidiest of 40 seeded force layouts: fewest overlapping labels. Deterministic, so the SVG needs no script."""
+    nodes = {n["id"]: n for n in graph["nodes"]}
+
+    def boxes(pos: dict) -> list[tuple[float, float, float, float]]:
+        out = []
+        for nid, (x, y) in pos.items():
+            r, _, size, _ = KIND_STYLE[nodes[nid]["kind"]]
+            w = len(nodes[nid]["label"]) * size * 0.58
+            out.append((x - w / 2, y - r, x + w / 2, y + r + size + 4))
+        return out
+
+    def overlaps(pos: dict) -> float:
+        bs, total = boxes(pos), 0.0
+        for i, a in enumerate(bs):
+            if a[0] < 6 or a[2] > width - 6:
+                total += 50
+            for b in bs[i + 1:]:
+                dx = min(a[2], b[2]) - max(a[0], b[0])
+                dy = min(a[3], b[3]) - max(a[1], b[1])
+                if dx > 0 and dy > 0:
+                    total += dx * dy
+        return total
+
+    best = min((_layout_once(graph, width, height, seed) for seed in range(40)), key=overlaps)
+    return best
+
+
+def _layout_once(graph: dict, width: int, height: int, seed: int) -> dict[str, tuple[float, float]]:
+    rnd = random.Random(seed)
+    ids = [n["id"] for n in graph["nodes"]]
+    pos = {i: [width / 2 + rnd.uniform(-90, 90), height / 2 + rnd.uniform(-70, 70)] for i in ids}
+    pos["me"] = [width / 2, height / 2]
+    k = math.sqrt(width * height / len(ids)) * 0.78
+    pad = 46
+    for it in range(500):
+        temp = 24 * (1 - it / 500) + 0.6
+        disp = {i: [0.0, 0.0] for i in ids}
+        for x, i in enumerate(ids):
+            for j in ids[x + 1:]:
+                dx, dy = pos[i][0] - pos[j][0], pos[i][1] - pos[j][1]
+                d = math.hypot(dx, dy) or 0.01
+                f = k * k / d
+                disp[i][0] += dx / d * f
+                disp[i][1] += dy / d * f
+                disp[j][0] -= dx / d * f
+                disp[j][1] -= dy / d * f
+        for a_, b_ in graph["edges"]:
+            dx, dy = pos[a_][0] - pos[b_][0], pos[a_][1] - pos[b_][1]
+            d = math.hypot(dx, dy) or 0.01
+            f = d * d / k
+            for node, sign in ((a_, -1), (b_, 1)):
+                disp[node][0] += sign * dx / d * f
+                disp[node][1] += sign * dy / d * f
+        for i in ids:
+            disp[i][0] += (width / 2 - pos[i][0]) * 0.9
+            disp[i][1] += (height / 2 - pos[i][1]) * 0.9
+            d = math.hypot(*disp[i]) or 0.01
+            step = min(d, temp)
+            pos[i][0] = min(width - pad, max(pad, pos[i][0] + disp[i][0] / d * step))
+            pos[i][1] = min(height - pad, max(pad, pos[i][1] + disp[i][1] / d * step))
+    return {i: (round(v[0], 1), round(v[1], 1)) for i, v in pos.items()}
+
+
+def build_graph_svg(animated: bool) -> str:
+    graph = load_graph()
+    pos = layout_graph(graph)
+    nodes = {n["id"]: n for n in graph["nodes"]}
+    width, height = GRAPH_W, GRAPH_H
     css = ""
     if animated:
-        step = LOOP_CYCLE / len(LOOP_NODES)
         rules = [
-            f".orb{{transform-origin:{LOOP_CX}px {LOOP_CY}px;animation:spin {LOOP_CYCLE:g}s linear infinite}}",
-            "@keyframes spin{to{transform:rotate(360deg)}}",
-            f".core{{transform-origin:{LOOP_CX}px {LOOP_CY}px;animation:beat 3s ease-in-out infinite}}",
-            "@keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}",
-            f"@keyframes lit{{0%{{stroke:{GOLD};fill:#2b2a10}}16%,100%{{stroke:{LINE};fill:{TILE}}}}}",
-            "@keyframes chip{0%{opacity:1}16%,100%{opacity:.55}}",
+            "@keyframes f0{0%{transform:translate(0,0)}100%{transform:translate(4px,-3px)}}",
+            "@keyframes f1{0%{transform:translate(0,0)}100%{transform:translate(-4px,3px)}}",
+            "@keyframes f2{0%{transform:translate(0,0)}100%{transform:translate(3px,4px)}}",
+            "@keyframes f3{0%{transform:translate(0,0)}100%{transform:translate(-3px,-4px)}}",
+            "@keyframes flow{to{stroke-dashoffset:-28}}",
+            ".fl{animation:flow 5s linear infinite}",
         ]
-        for i in range(len(LOOP_NODES)):
-            rules.append(f".n{i}{{animation:lit {LOOP_CYCLE:g}s linear infinite;animation-delay:{i * step:g}s}}"
-                         f".c{i}{{animation:chip {LOOP_CYCLE:g}s linear infinite;animation-delay:{i * step:g}s}}")
+        for n, nid in enumerate(nodes):
+            rules.append(f".n{n}{{animation:f{n % 4} {7 + (n * 5) % 6}s ease-in-out infinite alternate;"
+                         f"animation-delay:-{(n * 3) % 7}s}}")
         css = "".join(rules) + REDUCED
-    out = svg_open(width, height, "The automation loop",
-                   "A loop with six stages: ingest, language model, tool call, evaluation, human approval, ship. "
-                   "A real check and a person sit between the model and the world.", css)
-    out.append(f'<defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">'
-               f'<path d="M20 0 H0 V20" fill="none" stroke="#161b22" stroke-width="1"/></pattern>'
-               f'<radialGradient id="glow"><stop offset="0" stop-color="{GOLD}" stop-opacity=".45"/>'
-               f'<stop offset="1" stop-color="{GOLD}" stop-opacity="0"/></radialGradient></defs>')
-    out.append(f'<rect width="{width}" height="{height}" fill="url(#grid)"/>')
-    for x, y, sx, sy in ((10, 10, 1, 1), (510, 10, -1, 1), (10, 352, 1, -1), (510, 352, -1, -1)):
-        out.append(f'<path d="M{x} {y + 18 * sy} V{y} H{x + 18 * sx}" fill="none" stroke="{GOLD}" stroke-width="2"/>')
-    out.append(f'<circle cx="{LOOP_CX}" cy="{LOOP_CY}" r="{LOOP_R}" fill="none" stroke="{LINE}" stroke-width="2" '
-               f'stroke-dasharray="2 7"/>')
-    out.append(f'<circle cx="{LOOP_CX}" cy="{LOOP_CY}" r="86" fill="url(#glow)"/>')
-    core_cls = ' class="core"' if animated else ""
-    out.append(f'<g{core_cls}><circle cx="{LOOP_CX}" cy="{LOOP_CY}" r="50" fill="{BG}" stroke="{GOLD}" '
-               f'stroke-width="2"/>'
-               f'<text x="{LOOP_CX}" y="{LOOP_CY + 4}" text-anchor="middle" font-size="30" font-weight="800" '
-               f'fill="{GOLD}" class="m">AI</text>'
-               f'<text x="{LOOP_CX}" y="{LOOP_CY + 26}" text-anchor="middle" font-size="11" fill="{MUTED}" '
-               f'class="m">+ real checks</text></g>')
-    require_text_contrast(GOLD, BG, "loop core")
-    require_text_contrast(MUTED, BG, "loop core caption")
-    require_text_contrast(TEXT, BG, "loop chips")
-    for i, ((chip, icon), (x, y)) in enumerate(zip(LOOP_NODES, node_pos)):
-        ncls = f' class="n{i}"' if animated else ""
-        ccls = f' class="m c{i}"' if animated else ' class="m"'
-        out.append(f'<circle{ncls} cx="{x:.1f}" cy="{y:.1f}" r="26" fill="{TILE}" stroke="{LINE}" stroke-width="2"/>')
-        out.append(f'<g transform="translate({x:.1f} {y:.1f}) scale(1.05)" fill="{GOLD}" stroke="{GOLD}" '
-                   f'stroke-linejoin="round">{ICON_PATHS[icon]}</g>')
-        if i == 0:
-            tx, ty, anchor = x, y - 36, "middle"
-        elif i == 3:
-            tx, ty, anchor = x, y + 52, "middle"
-        elif i in (1, 2):
-            tx, ty, anchor = x + 36, y + 5, "start"
-        else:
-            tx, ty, anchor = x - 36, y + 5, "end"
-        out.append(f'<text{ccls} x="{tx:.1f}" y="{ty:.1f}" text-anchor="{anchor}" font-size="14" font-weight="700" '
-                   f'fill="{TEXT}">{escape(chip)}</text>')
-    if animated:
-        out.append(f'<g class="orb"><circle cx="{LOOP_CX}" cy="{LOOP_CY - LOOP_R}" r="14" fill="{GOLD}" '
-                   f'fill-opacity=".25"/><circle cx="{LOOP_CX}" cy="{LOOP_CY - LOOP_R}" r="6" fill="{GOLD}"/></g>')
+    names = ", ".join(n["label"] for n in graph["nodes"])
+    out = svg_open(width, height, "What I work with, as a knowledge graph",
+                   "A graph of how my projects, practices and tools connect. Nodes: " + names + ". "
+                   "Open the interactive version to drag the nodes.", css)
+    for x, y, sx, sy in ((10, 10, 1, 1), (510, 10, -1, 1), (10, 390, 1, -1), (510, 390, -1, -1)):
+        out.append(f'<path d="M{x} {y + 16 * sy} V{y} H{x + 16 * sx}" fill="none" stroke="{GOLD}" stroke-width="2"/>')
+    flow_kinds = {"practice", "offer"}
+    for a_, b_ in graph["edges"]:
+        (x1, y1), (x2, y2) = pos[a_], pos[b_]
+        out.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="#3b434d" stroke-width="1.4"/>')
+        if animated and (nodes[a_]["kind"] in flow_kinds or nodes[b_]["kind"] in flow_kinds):
+            out.append(f'<line class="fl" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{GOLD}" stroke-width="1.8" '
+                       f'stroke-linecap="round" stroke-dasharray="1 13"/>')
+    for n, node in enumerate(graph["nodes"]):
+        r, fill, size, bold = KIND_STYLE[node["kind"]]
+        x, y = pos[node["id"]]
+        cls = f' class="n{n}"' if animated else ""
+        require_text_contrast(TEXT, BG, "graph label")
+        out.append(f'<g{cls}><circle cx="{x}" cy="{y}" r="{r}" fill="{fill}" stroke="{BG}" stroke-width="2"/>'
+                   f'<text x="{x}" y="{y + r + size + 2}" text-anchor="middle" font-size="{size}" '
+                   f'font-weight="{700 if bold else 400}" fill="{TEXT}" paint-order="stroke" stroke="{BG}" '
+                   f'stroke-width="3">{escape(node["label"])}</text></g>')
     out.append("</svg>")
     return "\n".join(out) + "\n"
+
+
+GRAPH_PAGE = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Christopher Queen works with</title>
+<meta name="description" content="An interactive knowledge graph of the projects, practices and tools Christopher Queen works with. Drag the nodes.">
+<style>
+:root{--bg:#0d1117;--tile:#161b22;--line:#30363d;--gold:#e9d437;--text:#e6edf3;--muted:#9ba7b4}
+*{box-sizing:border-box}html,body{height:100%;margin:0;background:var(--bg);color:var(--text);
+font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;overflow:hidden}
+canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+canvas.over{cursor:pointer}canvas.drag{cursor:grabbing}
+header{position:fixed;left:16px;top:12px;right:16px;display:flex;justify-content:space-between;gap:12px;pointer-events:none}
+header h1{margin:0;font-size:15px;font-weight:700;color:var(--gold)}header p{margin:2px 0 0;font-size:12px;color:var(--muted)}
+header a{pointer-events:auto;color:var(--gold);font-size:13px;text-decoration:none;border:1px solid var(--line);
+border-radius:8px;padding:6px 10px;background:var(--tile);white-space:nowrap;align-self:flex-start}
+#card{position:fixed;left:12px;right:12px;bottom:12px;max-width:520px;background:var(--tile);border:1px solid var(--line);
+border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.4}
+#card b{color:var(--gold)}#card small{display:block;color:var(--muted);margin-top:6px}
+#legend{position:fixed;right:12px;bottom:12px;font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+#legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+details{position:fixed;left:12px;top:56px;max-width:min(520px,calc(100% - 24px));font-size:13px}
+details summary{color:var(--muted);cursor:pointer}
+details ul{margin:6px 0 0;padding:10px 14px 10px 28px;background:var(--tile);border:1px solid var(--line);border-radius:10px;
+max-height:50vh;overflow:auto}
+@media (max-width:640px){#legend{display:none}}
+</style>
+</head>
+<body>
+<canvas id="g" role="img" aria-label="Knowledge graph of the projects, practices and tools I work with. A text list of the same connections is under the Text version control."></canvas>
+<header><div><h1>What I work with</h1><p>Drag a node. Tap or hover to see how it ties in.</p></div>
+<a href="https://github.com/gitchrisqueen">Back to the profile</a></header>
+<details><summary>Text version</summary><ul id="list"></ul></details>
+<div id="card"><b>Christopher</b><br>Applied AI / Forward-Deployed Engineer. Builds LLM systems with real checks around the model.<small>Pull a node to see the web move.</small></div>
+<div id="legend"></div>
+<script>
+const DATA = __DATA__;
+const COLORS = {me:'#e9d437',project:'#c4b228',offer:'#efe9d2',practice:'#3fb950',tech:'#58a6ff'};
+const RADIUS = {me:17,project:12,offer:12,practice:10,tech:7};
+const LABEL = {me:'700 15px',project:'700 13px',offer:'700 13px',practice:'700 12.5px',tech:'400 11.5px'};
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cv = document.getElementById('g'), ctx = cv.getContext('2d');
+const card = document.getElementById('card');
+let W = 0, H = 0, dpr = 1;
+const idx = {}; DATA.nodes.forEach((n, i) => idx[n.id] = i);
+const nodes = DATA.nodes.map((n, i) => ({...n, r: RADIUS[n.kind], x: 0, y: 0, vx: 0, vy: 0, deg: 0, nb: new Set()}));
+const links = DATA.edges.map(([a, b]) => ({a: idx[a], b: idx[b]}));
+links.forEach(l => {nodes[l.a].deg++; nodes[l.b].deg++; nodes[l.a].nb.add(l.b); nodes[l.b].nb.add(l.a);});
+function connected(n) { return [...n.nb].map(i => nodes[i].label); }
+function describe(n) {
+  const names = connected(n).join(', ');
+  const note = n.note || ('Used in: ' + names + '.');
+  return '<b>' + n.label + '</b><br>' + note + (n.note ? '<small>Connected to: ' + names + '.</small>' : '');
+}
+const list = document.getElementById('list');
+nodes.forEach(n => {const li = document.createElement('li'); li.textContent = n.label + ' (' + n.kind + '): ' + (n.note ? n.note + ' ' : '') + 'Connected to ' + connected(n).join(', ') + '.'; list.appendChild(li);});
+const legend = document.getElementById('legend');
+[['me','me'],['project','projects'],['offer','offer'],['practice','practices'],['tech','tools']].forEach(([k, t]) => {
+  const d = document.createElement('div'); d.innerHTML = '<i style="background:' + COLORS[k] + '"></i>' + t; legend.appendChild(d);});
+function resize() {
+  dpr = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight;
+  cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (!nodes[0].x) nodes.forEach((n, i) => {const a = i / nodes.length * 6.283; n.x = W / 2 + Math.cos(a) * Math.min(W, H) * 0.3; n.y = H / 2 + Math.sin(a) * Math.min(W, H) * 0.3;});
+}
+addEventListener('resize', () => {resize(); draw();}); resize();
+let alpha = 1, hover = -1, sel = -1, dragging = -1, moved = 0, running = false;
+function step() {
+  const L = Math.max(80, Math.min(W, H) * 0.2), cx = W / 2, cy = H / 2 + 20;
+  for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
+    const a = nodes[i], b = nodes[j]; let dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy + 0.01; const d = Math.sqrt(d2);
+    const f = (L * L * 1.7) / d2 * alpha; dx /= d; dy /= d;
+    a.vx += dx * f; a.vy += dy * f; b.vx -= dx * f; b.vy -= dy * f;
+  }
+  for (const l of links) {
+    const a = nodes[l.a], b = nodes[l.b]; const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 0.01;
+    const f = (d - L) * 0.045 * alpha; a.vx += dx / d * f; a.vy += dy / d * f; b.vx -= dx / d * f; b.vy -= dy / d * f;
+  }
+  nodes.forEach((n, i) => {
+    n.vx += (cx - n.x) * 0.004 * alpha; n.vy += (cy - n.y) * 0.004 * alpha;
+    if (i === dragging) {n.vx = n.vy = 0; return;}
+    n.vx *= 0.82; n.vy *= 0.82; n.x += n.vx; n.y += n.vy;
+    n.x = Math.max(n.r + 8, Math.min(W - n.r - 8, n.x)); n.y = Math.max(n.r + 64, Math.min(H - n.r - card.offsetHeight - 30, n.y));
+  });
+}
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  const focus = hover >= 0 ? hover : (dragging >= 0 ? dragging : sel);
+  const near = focus >= 0 ? nodes[focus].nb : new Set();
+  for (const l of links) {
+    const on = focus >= 0 && (l.a === focus || l.b === focus);
+    ctx.strokeStyle = on ? '#e9d437' : (focus >= 0 ? '#232a33' : '#3b434d'); ctx.lineWidth = on ? 2 : 1.2;
+    ctx.beginPath(); ctx.moveTo(nodes[l.a].x, nodes[l.a].y); ctx.lineTo(nodes[l.b].x, nodes[l.b].y); ctx.stroke();
+  }
+  nodes.forEach((n, i) => {
+    const lit = focus < 0 || i === focus || near.has(i);
+    ctx.globalAlpha = lit ? 1 : 0.28;
+    ctx.fillStyle = COLORS[n.kind]; ctx.strokeStyle = '#0d1117'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(n.x, n.y, n.r + (i === focus ? 3 : 0), 0, 6.283); ctx.fill(); ctx.stroke();
+    ctx.font = LABEL[n.kind] + ' -apple-system, Segoe UI, Helvetica, Arial, sans-serif'; ctx.textAlign = 'center';
+    ctx.lineWidth = 3; ctx.strokeStyle = '#0d1117'; ctx.fillStyle = '#e6edf3';
+    ctx.strokeText(n.label, n.x, n.y + n.r + 15); ctx.fillText(n.label, n.x, n.y + n.r + 15);
+  });
+  ctx.globalAlpha = 1;
+}
+function loop() {
+  running = true; step(); draw();
+  alpha = Math.max(alpha * 0.985, dragging >= 0 ? 0.35 : (reduce ? 0 : 0.03));
+  if (alpha > 0.002 || dragging >= 0) requestAnimationFrame(loop); else running = false;
+}
+function kick(a) {alpha = Math.max(alpha, a); if (!running) loop();}
+if (reduce) {for (let i = 0; i < 400; i++) step(); draw();} else loop();
+function pick(x, y) {let best = -1, bd = 1e9; nodes.forEach((n, i) => {const d = Math.hypot(n.x - x, n.y - y); if (d < n.r + 12 && d < bd) {bd = d; best = i;}}); return best;}
+function pt(e) {const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top];}
+cv.addEventListener('pointerdown', e => {
+  const [x, y] = pt(e), i = pick(x, y); if (i < 0) return;
+  dragging = i; moved = 0; cv.setPointerCapture(e.pointerId); cv.classList.add('drag'); kick(0.6);
+});
+cv.addEventListener('pointermove', e => {
+  const [x, y] = pt(e);
+  if (dragging >= 0) {nodes[dragging].x = x; nodes[dragging].y = y; moved++; kick(0.5); return;}
+  const i = pick(x, y); if (i !== hover) {hover = i; cv.classList.toggle('over', i >= 0); card.innerHTML = describe(nodes[i >= 0 ? i : (sel >= 0 ? sel : 0)]); draw();}
+});
+function release(e) {
+  if (dragging < 0) return;
+  if (moved < 4) {sel = (sel === dragging) ? -1 : dragging; card.innerHTML = describe(nodes[sel >= 0 ? sel : 0]);}
+  dragging = -1; cv.classList.remove('drag'); draw();
+}
+cv.addEventListener('pointerup', release); cv.addEventListener('pointercancel', release);
+cv.addEventListener('pointerleave', () => {if (dragging < 0 && hover >= 0) {hover = -1; cv.classList.remove('over'); card.innerHTML = describe(nodes[sel >= 0 ? sel : 0]); draw();}});
+card.innerHTML = describe(nodes[0]);
+</script>
+</body>
+</html>
+"""
+
+
+def build_graph_page() -> str:
+    graph = load_graph()
+    data = json.dumps(graph, separators=(",", ":")).replace("</", "<\\/")
+    return GRAPH_PAGE.replace("__DATA__", data)
 
 
 # ---------------------------------------------------------------- terminal content
@@ -462,7 +645,7 @@ CARDS = [
     },
     {
         "id": "panthera", "tag": "Paper trading experiment", "title": "panthera",
-        "lines": ["MLB picks graded against pre-registered rules.",
+        "lines": ["MLB picks graded against rules declared in git.",
                   "Paper trading only; the ROI is a screen, not proof."],
         "label": "What broke",
         "broke": ["A config whitelist skipped the postseason and",
@@ -513,12 +696,13 @@ def build_card(card: dict, icons: dict) -> str:
 def build_all() -> dict[str, str]:
     icons = load_icons()
     files = {f"{panel}.svg": build_skills(panel, icons) for panel, _, _ in SKILL_PANELS}
-    files["loop-animated.svg"] = build_loop(True)
-    files["loop-static.svg"] = build_loop(False)
+    files["graph-animated.svg"] = build_graph_svg(True)
+    files["graph-static.svg"] = build_graph_svg(False)
     files["terminal-animated.svg"] = build_terminal(True)
     files["terminal-static.svg"] = build_terminal(False)
     for card in CARDS:
         files[f"card-{card['id']}.svg"] = build_card(card, icons)
+    files["docs/graph/index.html"] = build_graph_page()  # a key with a slash is relative to the repo root
     return files
 
 
@@ -531,7 +715,7 @@ def main(argv: list[str] | None = None) -> int:
     files = build_all()
     bad = []
     for name, text in files.items():
-        path = out_dir / name
+        path = (ROOT / name) if "/" in name else (out_dir / name)
         if args.check:
             if not path.is_file() or path.read_text(encoding="utf-8") != text:
                 bad.append(name)

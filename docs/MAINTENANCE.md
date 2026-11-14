@@ -90,7 +90,7 @@ The script fails below 4.5:1 for text pairs and below 3:1 for graphics pairs. Th
 
 The calendar colours live only in `assets/colors.json`; `scripts/make_growing_snake.py` reads them from there. If you change a colour, edit that file, then run `python scripts/check_contrast.py assets/colors.json`.
 
-The card, tool-logo and loop and terminal graphics (`assets/card-*.svg`, `assets/skills-*.svg`, `assets/loop-*.svg`, `assets/terminal-*.svg`) are built by `python scripts/build_assets.py` from the text inside that script and `data/icons.json` (logo paths from simple-icons, CC0). Edit the script, rebuild, commit the SVGs; CI fails with `out of date` if a committed SVG differs from the build. To add a logo, copy its path from the simple-icons package into `data/icons.json`.
+The card, tool-logo and graph and terminal graphics (`assets/card-*.svg`, `assets/skills-*.svg`, `assets/graph-*.svg`, `docs/graph/index.html`, `assets/terminal-*.svg`) are built by `python scripts/build_assets.py` from the text inside that script and `data/icons.json` (logo paths from simple-icons, CC0). Edit the script, rebuild, commit the SVGs; CI fails with `out of date` if a committed SVG differs from the build. To add a logo, copy its path from the simple-icons package into `data/icons.json`.
 
 ## First-run checklist
 
@@ -371,3 +371,7 @@ If only one of the two files is changed, the next run fails closed and opens an 
 ## Links in the README
 
 The Connect list in the README points to the owner's own for-agents page. The page is owned and edited by the owner. Review its text each time it changes: it should state facts and links only, and must not contain instructions addressed to a model.
+
+## The interactive graph page
+
+`docs/graph/index.html` is built by `scripts/build_assets.py` from `data/graph.json` (one script, no libraries, no network). It is meant to be served by GitHub Pages: Settings, Pages, source `main`, folder `/docs`. The README graph image links to `https://gitchrisqueen.github.io/gitchrisqueen/graph/`, so that link returns 404 until Pages is switched on. To change the graph, edit `data/graph.json`, run `python scripts/build_assets.py`, and commit the regenerated SVGs and page.
