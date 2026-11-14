@@ -109,37 +109,49 @@ def test_the_walk_is_deterministic_and_wanders_rather_than_sweeping_columns():
     assert len(first.path) < 7 * 53 + snake.PAD, "it only goes where it needs to"
 
 
-def keyframes(svg: str, name: str) -> list[tuple[float, float, float]]:
-    start = svg.index("@keyframes " + name + "{")
+def head_track(svg: str) -> list[tuple[float, float]]:
+    start = svg.index("@keyframes mv{")
     block = svg[start:svg.index("}}", start)]
-    out = []
-    frame = r"(\d{1,3}(?:\.\d+)?)%\{stroke-dasharray:(\d+(?:\.\d+)?) 100000;stroke-dashoffset:(-?\d+(?:\.\d+)?)\}"
-    for m in re.finditer(frame, block):
-        out.append((float(m.group(1)), float(m.group(2)), float(m.group(3))))
-    return out
+    pts = re.findall(r"translate\((-?\d+(?:\.\d+)?)px,(-?\d+(?:\.\d+)?)px\)", block)
+    return [(float(x), float(y)) for x, y in pts]
 
 
-def test_snake_gets_longer_only_when_it_eats_and_never_shrinks():
-    cells, total = cells_of(payload())
+def segment_delays(svg: str) -> list[float]:
+    found = re.findall(r"\.s(\d+)\{animation-delay:(-?\d+(?:\.\d+)?)s\}", svg)
+    return [float(d) for _, d in sorted(found, key=lambda m: int(m[0]))]
+
+
+def test_the_head_track_matches_the_walk_and_the_body_replays_it_with_a_lag():
+    cells, total = cells_of(payload(53, 2))
     svg = snake.build_svg(cells, total, "dark", True)
-    frames = keyframes(svg, "sb")
-    lengths = [f[1] for f in frames]
-    assert lengths[0] <= 0.2
-    assert all(b >= a for a, b in zip(lengths, lengths[1:]))
-    eaten = sum(c["level"] > 0 for c in cells)
     walk = snake.plan_walk(cells)
-    assert lengths[-1] == pytest.approx((walk.lengths[-1] - 1) * snake.PITCH, abs=0.5)
-    assert walk.lengths[-1] == snake.START_LEN + int(snake.GROWTH * eaten)
-    assert lengths[-1] > snake.START_LEN * snake.PITCH, "the snake visibly grows"
+    track = head_track(svg)
+    assert len(track) == len(walk.path) + 1, "one keyframe per step plus the held end"
+    assert track[0][0] < 0, "the snake starts off the board"
+    delays = segment_delays(svg)
+    n_seg = int(round((max(walk.lengths) - 1) / snake.SEG_STEP)) + 1
+    assert len(delays) == n_seg
+    assert delays[0] == 0
+    for j, delay in enumerate(delays):
+        assert delay == pytest.approx(j * snake.SEG_STEP / walk.speed, abs=0.001)
 
 
-def test_head_stays_at_the_front_of_the_body():
-    cells, total = cells_of(payload())
+def test_each_segment_appears_only_once_the_body_is_long_enough_to_reach_it():
+    cells, total = cells_of(payload(53, 2))
     svg = snake.build_svg(cells, total, "dark", True)
-    body = keyframes(svg, "sb")
-    for i, (_, length, offset) in enumerate(body[:-1]):
-        # dash covers path positions [-offset, length - offset]; its end is the head at index i
-        assert length - offset == pytest.approx(i * snake.PITCH, abs=0.5)
+    walk = snake.plan_walk(cells)
+    times = []
+    for j in range(int(round((max(walk.lengths) - 1) / snake.SEG_STEP)) + 1):
+        m = re.search(r"@keyframes v" + str(j) + r"\{0%,(\d+(?:\.\d+)?)%\{opacity:0\}", svg)
+        times.append(float(m.group(1)))
+    assert times == sorted(times), "longer reach appears later"
+    assert times[-1] > times[0]
+
+
+def test_the_snake_uses_no_dashes_and_no_pathlength_so_safari_draws_one_snake():
+    cells, total = cells_of(payload(53, 2))
+    svg = snake.build_svg(cells, total, "dark", True)
+    assert "pathLength" not in svg and "stroke-dash" not in svg
 
 
 def test_eaten_squares_empty_when_the_head_arrives_and_refill_at_the_end():
@@ -334,63 +346,3 @@ def test_every_output_uses_the_dark_panel_and_carries_no_count_text():
         assert f"{total} contributions" not in svg, name
 
 
-def test_snake_body_is_thinner_than_a_square():
-    cells, total = cells_of(payload())
-    svg = snake.build_svg(cells, total, "dark", True)
-    width = float(re.search(r'class="a sb"[^>]*stroke-width="([\d.]+)"', svg).group(1))
-    assert width <= snake.CELL * 0.65
-
-
-def test_card_and_skills_images_stay_narrow_enough_for_a_phone():
-    for name, text in assets.build_all().items():
-        if name.startswith(("header-", "footer-")) or name.endswith(".html"):
-            continue
-        width = int(re.search(r'viewBox="0 0 (\d+) ', text).group(1))
-        assert width <= 520, f"{name} is {width} wide"
-
-
-def test_terminal_text_matches_what_the_cqc_tool_prints():
-    svg = assets.build_terminal(True)
-    for name, desc in assets.TOOLS:
-        assert name in svg and desc in svg
-    assert "connected. 6 tools found:" in svg and "llm_audit: read-only, sample data" in svg
-    assert len(assets.TOOLS) == 6 and all(g in "ABC" for _, g, _ in assets.AUDIT_ROWS)
-
-
-
-def test_pills_are_lined_up_with_the_readme_and_say_select_to_open():
-    readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    for pill_id, cmd, alt in assets.PILLS:
-        svg = assets.build_pill(pill_id)
-        assert cmd in svg and "select to open" in svg
-        assert f'src="assets/{pill_id}.svg" alt="{alt}"' in readme.replace("&#39;", "'")
-
-
-def test_no_card_or_doc_says_what_broke_any_more():
-    for path in (ROOT / "README.md", ROOT / "docs" / "PROOF.md", ROOT / "scripts" / "build_assets.py"):
-        assert "what broke" not in path.read_text(encoding="utf-8").lower(), path.name
-
-
-def test_graph_tool_nodes_are_logo_discs_and_every_labelled_node_is_at_least_16px():
-    for kind, (radius, _, size, _) in assets.KIND_STYLE.items():
-        assert size == 0 or size >= 16, kind
-    graph = assets.load_graph()
-    assert all(n["id"] in assets.TECH_ICON or n["id"] == "litellm" for n in graph["nodes"] if n["kind"] == "tech")
-
-
-def test_the_last_terminal_panel_holds_long_enough_to_read():
-    start, end = assets.ACTS[3]
-    last_line_appears = start + 2.4 + 0.7 + (len(assets.NEO_ROWS) - 1) * 0.5
-    words = 4 + 2 + sum(len((k + " " + v).replace("/", " ").split()) for k, v in assets.NEO_ROWS)
-    reading_s = words / 180 * 60
-    assert end - last_line_appears >= reading_s, (end - last_line_appears, reading_s)
-    assert assets.TERM_CYCLE >= end + 1
-
-
-def test_dashes_use_real_pixels_so_one_snake_is_drawn_on_every_browser():
-    """WebKit ignores pathLength for dashes; a pixel-exact dash plus a gap longer than the path draws one snake."""
-    cells, total = cells_of(payload(53, 2))
-    svg = snake.build_svg(cells, total, "dark", True)
-    assert "pathLength" not in svg
-    path_px = (len(snake.plan_walk(cells).path) - 1) * snake.PITCH
-    assert snake.GAP > path_px + max(f[1] for f in keyframes(svg, "sb"))

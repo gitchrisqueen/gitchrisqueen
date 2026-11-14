@@ -473,9 +473,9 @@ NEO_SWATCH = ["#7d6f17", "#a89816", "#c4b228", GOLD, "#efe9d2", "#3fb950", "#ff7
 
 
 # The last panel is the one to read: about 40 words, so 13 s at 180 words a minute; held 15 s after its last line appears.
-FINAL_HOLD = 15.0
-ABOUT_REVEAL = 2.4 + 0.7 + len([0] * 8) * 0.5  # command, logo, then eight rows, then the swatches
-TERM_CYCLE = 29.4 + ABOUT_REVEAL + FINAL_HOLD + 1.5
+READ_WPM = 180           # a comfortable pace for scanning short, structured lines
+FINAL_HOLD = 15.0        # the last panel is the one to read, so it never holds less than this
+ACT_GAP = 0.4            # blank time between acts
 CHAR_W = 9.6
 HELP_LINES = [
     ("cqc: applied AI, forward-deployed engineer", TEXT),
@@ -506,7 +506,40 @@ AUDIT_ROWS = [
 ]
 GRADE_FILL = {"A": GREEN, "B": GOLD, "C": RED}
 # (start, end) seconds of each act inside one cycle
-ACTS = [(0.0, 8.0), (8.4, 18.8), (19.2, 29.0), (29.4, 29.4 + ABOUT_REVEAL + FINAL_HOLD)]
+ACT_REVEAL = [4.2, 7.35, 6.6, 7.1]   # seconds from an act's start until its last line has appeared
+
+
+def _words(text: str) -> int:
+    return len(text.replace("/", " ").split())
+
+
+def act_words() -> list[int]:
+    """Words on screen once each act has fully appeared: the load a reader has to get through."""
+    return [
+        4 + sum(_words(line[0]) for line in HELP_LINES if line),
+        5 + 6 + 4 + sum(_words(n) + _words(d) for n, d in TOOLS),
+        6 + 5 + sum(_words(a) + 1 for a, _, _ in AUDIT_ROWS) + 7,
+        4 + 2 + sum(_words(k + " " + v) for k, v in NEO_ROWS),
+    ]
+
+
+def act_holds() -> list[float]:
+    """Seconds each act stays fully visible: reading time plus a 2 s margin; the last act holds at least FINAL_HOLD."""
+    holds = [math.ceil(w / READ_WPM * 60) + 2.0 for w in act_words()]
+    holds[-1] = max(holds[-1], FINAL_HOLD)
+    return holds
+
+
+def _schedule() -> list[tuple[float, float]]:
+    acts, start = [], 0.0
+    for reveal, hold in zip(ACT_REVEAL, act_holds()):
+        acts.append((start, start + reveal + hold))
+        start = acts[-1][1] + ACT_GAP
+    return acts
+
+
+ACTS = _schedule()
+TERM_CYCLE = ACTS[-1][1] + 1.5
 
 
 def _pct(seconds: float) -> str:
