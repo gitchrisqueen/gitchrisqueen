@@ -25,8 +25,8 @@ ROW_C = "- [PostHog/posthog-openclaw #15](https://github.com/PostHog/posthog-ope
 
 
 def _badge(repo, wf):
-    return (f"[![passing](https://img.shields.io/github/actions/workflow/status/{repo}/{wf}?label=status&labelColor=24292f"
-            f"&style=flat-square)](https://github.com/{repo}/actions/workflows/{wf})")
+    return (f"[![passing](https://img.shields.io/github/actions/workflow/status/{repo}/{wf}"
+            f"?label=status&labelColor=24292f&style=flat-square)](https://github.com/{repo}/actions/workflows/{wf})")
 
 
 FLAG_1 = ("| [panthera](https://github.com/gitchrisqueen/panthera) | Daily pipeline run | "
