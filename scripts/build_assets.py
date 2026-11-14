@@ -6,7 +6,7 @@ Usage:
     python scripts/build_assets.py --check    # exit 1 if a committed file differs
 
 Outputs (all opaque-background, no script, no external reference):
-    assets/skills-build.svg, assets/skills-ai.svg   tool logos, two panels
+    assets/skills-*.svg                              tool logos: a title and eight linked tiles per panel, two panels
     assets/graph-animated.svg, assets/graph-static.svg  the knowledge-graph graphic
     docs/graph/index.html                              its interactive, draggable version
                                                        (no network call unless data/analytics.json sets a key)
@@ -119,41 +119,86 @@ def icon_group(icons: dict, slug: str, x: float, y: float, size: float, bg: str)
 
 # ---------------------------------------------------------------- skills
 
-# (panel id, title, [(slug or "mono:XX", label)])
+# (panel id, title, [(slug or "mono:XX", label, link)]). The link is the tool's own homepage, or its GitHub repo
+# where that is the home. Each tile is its own small image so it can carry its own link in the README
+# (GitHub does not follow links inside an SVG that is shown as an image).
 SKILL_PANELS = [
     ("skills-build", "Languages and services", [
-        ("python", "Python"), ("javascript", "JavaScript"), ("swift", "Swift"), ("nodedotjs", "Node.js"),
-        ("fastapi", "FastAPI"), ("celery", "Celery"), ("redis", "Redis"), ("mysql", "MySQL"),
+        ("python", "Python", "https://www.python.org/"),
+        ("javascript", "JavaScript", "https://developer.mozilla.org/en-US/docs/Web/JavaScript"),
+        ("swift", "Swift", "https://www.swift.org/"),
+        ("nodedotjs", "Node.js", "https://nodejs.org/"),
+        ("fastapi", "FastAPI", "https://fastapi.tiangolo.com/"),
+        ("celery", "Celery", "https://docs.celeryq.dev/"),
+        ("redis", "Redis", "https://redis.io/"),
+        ("mysql", "MySQL", "https://github.com/mysql/mysql-server"),
     ]),
     ("skills-ai", "AI, interface, test and ship", [
-        ("langchain", "LangChain"), ("mono:Li", "LiteLLM"), ("mono:OR", "OpenRouter"), ("react", "React"),
-        ("streamlit", "Streamlit"), ("selenium", "Selenium"), ("docker", "Docker"), ("githubactions", "Actions"),
+        ("langchain", "LangChain", "https://github.com/langchain-ai/langchain"),
+        ("mono:Li", "LiteLLM", "https://github.com/BerriAI/litellm"),
+        ("mono:OR", "OpenRouter", "https://openrouter.ai/"),
+        ("react", "React", "https://react.dev/"),
+        ("streamlit", "Streamlit", "https://streamlit.io/"),
+        ("selenium", "Selenium", "https://www.selenium.dev/"),
+        ("docker", "Docker", "https://www.docker.com/"),
+        ("githubactions", "Actions", "https://github.com/features/actions"),
     ]),
 ]
 SKILL_FULL_NAMES = {"Actions": "GitHub Actions"}
 
+# The panel geometry is the one the two single-image panels had (392 wide, 84 by 72 tiles, 8 apart), so the
+# tiles sit exactly where they did. Each tile image is cropped from that grid: a tile plus half the gap on each
+# side, the first and last column also carry the panel margin, the second row carries the panel's bottom margin.
+SK_W, SK_TILE_W, SK_TILE_H, SK_GAP, SK_LEFT, SK_TITLE_H, SK_ROW0_Y = 392, 84, 72, 8, 16, 44, 44
 
-def build_skills(panel_id: str, icons: dict) -> str:
+
+def _skill_crop(n: int) -> tuple[int, int, int, int]:
+    """(x0, y0, width, height) of tile n's image inside the 392 by 216 panel grid."""
+    col, row = n % 4, n // 4
+    tx = SK_LEFT + col * (SK_TILE_W + SK_GAP)
+    ty = SK_ROW0_Y + row * (SK_TILE_H + SK_GAP)
+    x0 = 0 if col == 0 else tx - SK_GAP // 2
+    x1 = SK_W if col == 3 else tx + SK_TILE_W + SK_GAP // 2
+    y0 = SK_TITLE_H if row == 0 else ty - SK_GAP // 2
+    y1 = ty + SK_TILE_H + SK_GAP // 2 if row == 0 else 216
+    return x0, y0, x1 - x0, y1 - y0
+
+
+def skill_file_stem(panel_id: str, n: int) -> str:
+    items = next(i for p, _, i in SKILL_PANELS if p == panel_id)
+    return f"{panel_id}-{items[n][1].lower().replace('.', '')}"
+
+
+def build_skills_title(panel_id: str) -> str:
     title, items = next((t, i) for p, t, i in SKILL_PANELS if p == panel_id)
-    width, tile_w, tile_h, gap, left = 392, 84, 72, 8, 16
-    height = 48 + 2 * (tile_h + gap) + 8
-    names = [SKILL_FULL_NAMES.get(label, label) for _, label in items]
-    out = svg_open(width, height, title, "Tools used in the projects on this page: " + ", ".join(names) + ".")
+    names = [SKILL_FULL_NAMES.get(label, label) for _, label, _ in items]
+    out = svg_open(SK_W, SK_TITLE_H, title, "Tools used in the projects on this page: " + ", ".join(names) + ".")
     require_text_contrast(GOLD, BG, "skills panel title")
+    out.append(f'<text x="{SK_LEFT}" y="28" font-size="14" font-weight="700" fill="{GOLD}">{escape(title)}</text>')
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
+def build_skill_tile(panel_id: str, n: int, icons: dict) -> str:
+    _, items = next((t, i) for p, t, i in SKILL_PANELS if p == panel_id)
+    slug, label, _ = items[n]
+    x0, y0, w, h = _skill_crop(n)
+    x = SK_LEFT + (n % 4) * (SK_TILE_W + SK_GAP)
+    y = SK_ROW0_Y + (n // 4) * (SK_TILE_H + SK_GAP)
+    name = SKILL_FULL_NAMES.get(label, label)
+    out = svg_open(w, h, name, f"{name}, one of the tools used in the projects on this page.")
     require_text_contrast(TEXT, TILE, "skills tile label")
-    out.append(f'<text x="{left}" y="28" font-size="14" font-weight="700" fill="{GOLD}">{escape(title)}</text>')
-    for n, (slug, label) in enumerate(items):
-        x = left + (n % 4) * (tile_w + gap)
-        y = 44 + (n // 4) * (tile_h + gap)
-        out.append(f'<rect x="{x}" y="{y}" width="{tile_w}" height="{tile_h}" rx="10" fill="{TILE}" stroke="{LINE}"/>')
-        if slug.startswith("mono:"):
-            out.append(f'<rect x="{x + 28}" y="{y + 9}" width="28" height="28" rx="7" fill="{GOLD}"/>')
-            out.append(f'<text x="{x + 42}" y="{y + 29}" text-anchor="middle" font-size="13" font-weight="800" '
-                       f'fill="{BG}">{escape(slug[5:])}</text>')
-        else:
-            out.append(icon_group(icons, slug, x + 28, y + 9, 28, TILE))
-        out.append(f'<text x="{x + tile_w / 2:g}" y="{y + 58}" text-anchor="middle" font-size="13" '
-                   f'fill="{TEXT}">{escape(label)}</text>')
+    out.append(f'<g transform="translate({-x0} {-y0})">')
+    out.append(f'<rect x="{x}" y="{y}" width="{SK_TILE_W}" height="{SK_TILE_H}" rx="10" fill="{TILE}" stroke="{LINE}"/>')
+    if slug.startswith("mono:"):
+        out.append(f'<rect x="{x + 28}" y="{y + 9}" width="28" height="28" rx="7" fill="{GOLD}"/>')
+        out.append(f'<text x="{x + 42}" y="{y + 29}" text-anchor="middle" font-size="13" font-weight="800" '
+                   f'fill="{BG}">{escape(slug[5:])}</text>')
+    else:
+        out.append(icon_group(icons, slug, x + 28, y + 9, 28, TILE))
+    out.append(f'<text x="{x + SK_TILE_W / 2:g}" y="{y + 58}" text-anchor="middle" font-size="13" '
+               f'fill="{TEXT}">{escape(label)}</text>')
+    out.append("</g>")
     out.append("</svg>")
     return "\n".join(out) + "\n"
 
@@ -1003,7 +1048,11 @@ def build_pill(pill_id: str) -> str:
 
 def build_all() -> dict[str, str]:
     icons = load_icons()
-    files = {f"{panel}.svg": build_skills(panel, icons) for panel, _, _ in SKILL_PANELS}
+    files = {}
+    for panel, _, items in SKILL_PANELS:
+        files[f"{panel}-title.svg"] = build_skills_title(panel)
+        for n in range(len(items)):
+            files[f"{skill_file_stem(panel, n)}.svg"] = build_skill_tile(panel, n, icons)
     files["graph-animated.svg"] = build_graph_svg(True)
     files["graph-static.svg"] = build_graph_svg(False)
     files["terminal-animated.svg"] = build_terminal(True)
