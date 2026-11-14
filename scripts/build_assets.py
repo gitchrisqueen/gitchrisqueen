@@ -146,22 +146,11 @@ SKILL_PANELS = [
 ]
 SKILL_FULL_NAMES = {"Actions": "GitHub Actions"}
 
-# The panel geometry is the one the two single-image panels had (392 wide, 84 by 72 tiles, 8 apart), so the
-# tiles sit exactly where they did. Each tile image is cropped from that grid: a tile plus half the gap on each
-# side, the first and last column also carry the panel margin, the second row carries the panel's bottom margin.
-SK_W, SK_TILE_W, SK_TILE_H, SK_GAP, SK_LEFT, SK_TITLE_H, SK_ROW0_Y = 392, 84, 72, 8, 16, 44, 44
-
-
-def _skill_crop(n: int) -> tuple[int, int, int, int]:
-    """(x0, y0, width, height) of tile n's image inside the 392 by 216 panel grid."""
-    col, row = n % 4, n // 4
-    tx = SK_LEFT + col * (SK_TILE_W + SK_GAP)
-    ty = SK_ROW0_Y + row * (SK_TILE_H + SK_GAP)
-    x0 = 0 if col == 0 else tx - SK_GAP // 2
-    x1 = SK_W if col == 3 else tx + SK_TILE_W + SK_GAP // 2
-    y0 = SK_TITLE_H if row == 0 else ty - SK_GAP // 2
-    y1 = ty + SK_TILE_H + SK_GAP // 2 if row == 0 else 216
-    return x0, y0, x1 - x0, y1 - y0
+# Every tile is the same small square image (80 by 74), so a row of four fits a phone screen (about 328 px) and a
+# row of eight fits a desktop one, and each panel wraps on its own: the panels are stacked, a title line and then
+# the tiles. The card inside the image is 74 by 68 with a 3 px margin, so cards sit 6 px apart.
+SK_TITLE_W, SK_TITLE_H = 320, 34
+SK_TILE_W, SK_TILE_H, SK_MARGIN, SK_CARD_W, SK_CARD_H = 80, 74, 3, 74, 68
 
 
 def skill_file_stem(panel_id: str, n: int) -> str:
@@ -172,9 +161,9 @@ def skill_file_stem(panel_id: str, n: int) -> str:
 def build_skills_title(panel_id: str) -> str:
     title, items = next((t, i) for p, t, i in SKILL_PANELS if p == panel_id)
     names = [SKILL_FULL_NAMES.get(label, label) for _, label, _ in items]
-    out = svg_open(SK_W, SK_TITLE_H, title, "Tools used in the projects on this page: " + ", ".join(names) + ".")
+    out = svg_open(SK_TITLE_W, SK_TITLE_H, title, "Tools used in the projects on this page: " + ", ".join(names) + ".")
     require_text_contrast(GOLD, BG, "skills panel title")
-    out.append(f'<text x="{SK_LEFT}" y="28" font-size="14" font-weight="700" fill="{GOLD}">{escape(title)}</text>')
+    out.append(f'<text x="{SK_MARGIN + 2}" y="22" font-size="14" font-weight="700" fill="{GOLD}">{escape(title)}</text>')
     out.append("</svg>")
     return "\n".join(out) + "\n"
 
@@ -182,23 +171,20 @@ def build_skills_title(panel_id: str) -> str:
 def build_skill_tile(panel_id: str, n: int, icons: dict) -> str:
     _, items = next((t, i) for p, t, i in SKILL_PANELS if p == panel_id)
     slug, label, _ = items[n]
-    x0, y0, w, h = _skill_crop(n)
-    x = SK_LEFT + (n % 4) * (SK_TILE_W + SK_GAP)
-    y = SK_ROW0_Y + (n // 4) * (SK_TILE_H + SK_GAP)
+    x = y = SK_MARGIN
     name = SKILL_FULL_NAMES.get(label, label)
-    out = svg_open(w, h, name, f"{name}, one of the tools used in the projects on this page.")
+    out = svg_open(SK_TILE_W, SK_TILE_H, name, f"{name}, one of the tools used in the projects on this page.")
     require_text_contrast(TEXT, TILE, "skills tile label")
-    out.append(f'<g transform="translate({-x0} {-y0})">')
-    out.append(f'<rect x="{x}" y="{y}" width="{SK_TILE_W}" height="{SK_TILE_H}" rx="10" fill="{TILE}" stroke="{LINE}"/>')
+    out.append(f'<rect x="{x}" y="{y}" width="{SK_CARD_W}" height="{SK_CARD_H}" rx="10" fill="{TILE}" stroke="{LINE}"/>')
+    ix = x + (SK_CARD_W - 28) // 2
     if slug.startswith("mono:"):
-        out.append(f'<rect x="{x + 28}" y="{y + 9}" width="28" height="28" rx="7" fill="{GOLD}"/>')
-        out.append(f'<text x="{x + 42}" y="{y + 29}" text-anchor="middle" font-size="13" font-weight="800" '
+        out.append(f'<rect x="{ix}" y="{y + 9}" width="28" height="28" rx="7" fill="{GOLD}"/>')
+        out.append(f'<text x="{ix + 14}" y="{y + 29}" text-anchor="middle" font-size="13" font-weight="800" '
                    f'fill="{BG}">{escape(slug[5:])}</text>')
     else:
-        out.append(icon_group(icons, slug, x + 28, y + 9, 28, TILE))
-    out.append(f'<text x="{x + SK_TILE_W / 2:g}" y="{y + 58}" text-anchor="middle" font-size="13" '
+        out.append(icon_group(icons, slug, ix, y + 9, 28, TILE))
+    out.append(f'<text x="{x + SK_CARD_W / 2:g}" y="{y + 57}" text-anchor="middle" font-size="12" '
                f'fill="{TEXT}">{escape(label)}</text>')
-    out.append("</g>")
     out.append("</svg>")
     return "\n".join(out) + "\n"
 
