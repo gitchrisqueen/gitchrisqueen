@@ -82,11 +82,31 @@ def test_parse_rejects_malformed_payloads(mutate):
 
 # ------------------------------------------------------------- path and growth
 
-def test_path_visits_every_square_once_and_each_step_is_one_square():
-    path = snake.build_path(20)
-    assert len(path) == snake.PAD + 140 and len(set(path)) == len(path)
-    for (c1, r1), (c2, r2) in zip(path, path[1:]):
-        assert abs(c1 - c2) + abs(r1 - r2) == 1
+def test_walk_moves_one_square_at_a_time_over_real_days_and_eats_them_all():
+    cells, _ = cells_of(payload(53, 2))
+    walk = snake.plan_walk(cells)
+    valid = {(c["col"], c["row"]) for c in cells}
+    food = {(c["col"], c["row"]) for c in cells if c["level"] > 0}
+    for a, b in zip(walk.path[snake.PAD - 1:], walk.path[snake.PAD:]):
+        assert abs(a[0] - b[0]) + abs(a[1] - b[1]) == 1
+        assert b in valid
+    assert set(walk.eat_index) == food, "every active day is eaten"
+
+
+def test_the_snake_never_runs_into_its_own_body():
+    for weeks, every in ((20, 3), (53, 2), (53, 1)):
+        cells, _ = cells_of(payload(weeks, every))
+        walk = snake.plan_walk(cells)
+        for k, length in enumerate(walk.lengths):
+            window = walk.path[max(0, k - length + 1):k + 1]
+            assert len(set(window)) == len(window), (weeks, every, k)
+
+
+def test_the_walk_is_deterministic_and_wanders_rather_than_sweeping_columns():
+    cells, _ = cells_of(payload(53, 3))
+    first, second = snake.plan_walk(cells), snake.plan_walk(cells)
+    assert first.path == second.path and first.lengths == second.lengths
+    assert len(first.path) < 7 * 53 + snake.PAD, "it only goes where it needs to"
 
 
 def keyframes(svg: str, name: str) -> list[tuple[float, float, float]]:
@@ -104,11 +124,13 @@ def test_snake_gets_longer_only_when_it_eats_and_never_shrinks():
     svg = snake.build_svg(cells, total, "dark", True)
     frames = keyframes(svg, "sb")
     lengths = [f[1] for f in frames]
-    assert lengths[0] == snake.START_LEN * snake.PITCH
+    assert lengths[0] <= 0.2
     assert all(b >= a for a, b in zip(lengths, lengths[1:]))
     eaten = sum(c["level"] > 0 for c in cells)
-    assert lengths[-1] == pytest.approx((snake.START_LEN + snake.GROWTH * eaten) * snake.PITCH, abs=0.5)
-    assert lengths[-1] > lengths[0] + 5 * snake.PITCH, "the snake visibly grows"
+    walk = snake.plan_walk(cells)
+    assert lengths[-1] == pytest.approx((walk.lengths[-1] - 1) * snake.PITCH, abs=0.5)
+    assert walk.lengths[-1] == snake.START_LEN + int(snake.GROWTH * eaten)
+    assert lengths[-1] > snake.START_LEN * snake.PITCH, "the snake visibly grows"
 
 
 def test_head_stays_at_the_front_of_the_body():
@@ -369,5 +391,5 @@ def test_dashes_use_real_pixels_so_one_snake_is_drawn_on_every_browser():
     cells, total = cells_of(payload(53, 2))
     svg = snake.build_svg(cells, total, "dark", True)
     assert "pathLength" not in svg
-    path_px = (len(snake.build_path(53)) - 1) * snake.PITCH
+    path_px = (len(snake.plan_walk(cells).path) - 1) * snake.PITCH
     assert snake.GAP > path_px + max(f[1] for f in keyframes(svg, "sb"))

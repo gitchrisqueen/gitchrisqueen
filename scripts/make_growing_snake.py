@@ -22,6 +22,7 @@ a bad response never replaces the published files.
 from __future__ import annotations
 
 import argparse
+from collections import deque
 import json
 import os
 import sys
@@ -40,12 +41,11 @@ LEVELS = {"NONE": 0, "FIRST_QUARTILE": 1, "SECOND_QUARTILE": 2, "THIRD_QUARTILE"
 PITCH = 15          # distance between square centres, px
 CELL = 12           # square size, px
 WIDTH = 840
-SPEED = 16.0        # squares per second
 START_LEN = 4       # snake length before it eats anything
 GAP = 100000        # dash gap in px, longer than the whole path, so exactly one snake is ever drawn
 HEAD_DASH = 1       # px, the head is a round-capped dot
-GROWTH = 0.3        # squares of length gained per square eaten
-PAD = 3             # off-board squares the snake walks in from
+GROWTH = 0.15       # squares of length gained per square eaten
+PAD = START_LEN     # off-board squares the snake walks in from
 HOLD = 1.0          # seconds the full snake stays after the last square
 FADE = 1.0
 EMPTY_HOLD = 1.5
@@ -127,15 +127,134 @@ def theme_colours(theme: str) -> dict:
             "head": pairs[f"snake-{theme}-head"]["foreground"]}
 
 
-# ------------------------------------------------------------------ geometry
+# ------------------------------------------------------------------ the walk
 
-def build_path(cols: int) -> list[tuple[int, int]]:
-    """Grid squares in visiting order: PAD off-board squares, then every column."""
-    pts = [(-PAD + i, 0) for i in range(PAD)]
-    for c in range(cols):
-        rows = range(7) if c % 2 == 0 else range(6, -1, -1)
-        pts.extend((c, r) for r in rows)
-    return pts
+DIRS = ((1, 0), (0, 1), (0, -1), (-1, 0))   # right, down, up, left: a fixed order keeps the walk deterministic
+MAX_STEPS = 3000
+CANDIDATES = 8       # nearest uneaten days tried before giving up on a safe route
+MAX_PANIC = 60       # steps in a row spent only looking for room before the walk ends
+RUN_TARGET = 32.0    # seconds the whole walk should take
+MIN_SPEED, MAX_SPEED = 10.0, 30.0
+
+
+class Walk:
+    """Where the head goes, how long the body is at each step, and when each day is eaten."""
+
+    def __init__(self, path: list[tuple[int, int]], lengths: list[int], eat_index: dict[tuple[int, int], int]):
+        self.path, self.lengths, self.eat_index = path, lengths, eat_index
+        steps = max(len(path) - 1, 1)
+        self.speed = min(MAX_SPEED, max(MIN_SPEED, steps / RUN_TARGET))  # squares per second
+
+
+def _body_length(eaten: int) -> int:
+    return START_LEN + int(GROWTH * eaten)
+
+
+def _advance(body: list, cell: tuple[int, int], food: set, eaten: int) -> tuple[list, int, bool]:
+    """Move the head onto `cell`. Returns (new body, eaten count, legal). The body is tail first, head last."""
+    new = body + [cell]
+    if cell in food:
+        eaten += 1
+    new = new[-_body_length(eaten):] if len(new) > _body_length(eaten) else new
+    return new, eaten, new.count(cell) == 1
+
+
+def _room(body: list, valid: set) -> int:
+    """How many free squares the head can still reach."""
+    blocked = set(body[:-1]) | {body[-1]}
+    seen, queue = {body[-1]}, deque([body[-1]])
+    while queue:
+        cx, cy = queue.popleft()
+        for dx, dy in DIRS:
+            n = (cx + dx, cy + dy)
+            if n in valid and n not in blocked and n not in seen:
+                seen.add(n)
+                queue.append(n)
+    return len(seen) - 1
+
+
+def _routes(body: list, food: set, valid: set, eaten: int) -> list[list[tuple[int, int]]]:
+    """Shortest routes to the nearest uneaten days, treating each body square as free once the tail has left it."""
+    head = body[-1]
+    at_cap = len(body) >= _body_length(eaten)
+    free_at = {cell: (j + 1 if at_cap else 10 ** 9) for j, cell in enumerate(body)}
+    dist, prev, found = {head: 0}, {}, []
+    queue = deque([head])
+    while queue:
+        cur = queue.popleft()
+        for dx, dy in DIRS:
+            n = (cur[0] + dx, cur[1] + dy)
+            if n not in valid or n in dist or free_at.get(n, 0) > dist[cur] + 1:
+                continue
+            dist[n], prev[n] = dist[cur] + 1, cur
+            queue.append(n)
+            if n in food:
+                found.append(n)
+    found.sort(key=lambda c: (dist[c], c[0], c[1]))
+    routes = []
+    for target in found[:CANDIDATES]:
+        route, node = [], target
+        while node != head:
+            route.append(node)
+            node = prev[node]
+        routes.append(route[::-1])
+    return routes
+
+
+def plan_walk(cells: list[dict]) -> Walk:
+    """A snake that heads for the nearest uneaten day, may double back, and never runs into its own body."""
+    valid = {(c["col"], c["row"]) for c in cells}
+    food = {(c["col"], c["row"]) for c in cells if c["level"] > 0}
+    path = [(-PAD + i, 0) for i in range(PAD)]
+    body = list(path)
+    lengths = list(range(1, PAD + 1))
+    eaten, eat_index, panic = 0, {}, 0
+
+    def step(cell: tuple[int, int]) -> bool:
+        nonlocal body, eaten
+        new, count, legal = _advance(body, cell, food, eaten)
+        if not legal:
+            return False
+        if cell in food:
+            food.discard(cell)
+            eat_index[cell] = len(path)
+        body, eaten = new, count
+        path.append(cell)
+        lengths.append(len(body))
+        return True
+
+    while food and len(path) < MAX_STEPS:
+        chosen = None
+        for route in _routes(body, food, valid, eaten):
+            trial, count, ok = list(body), eaten, True
+            left = set(food)
+            for cell in route:
+                trial, count, legal = _advance(trial, cell, left, count)
+                left.discard(cell)
+                ok = ok and legal
+            if ok and (not left or _room(trial, valid) >= len(trial)):
+                chosen = route
+                break
+        if chosen:
+            panic = 0
+            for cell in chosen:
+                if not step(cell):
+                    break
+            continue
+        # no safe route to a day: take the step that leaves the most room
+        head = body[-1]
+        options = []
+        for dx, dy in DIRS:
+            n = (head[0] + dx, head[1] + dy)
+            if n in valid:
+                new, _, legal = _advance(body, n, food, eaten)
+                if legal:
+                    options.append((_room(new, valid), n))
+        panic += 1
+        if not options or panic > MAX_PANIC:
+            break
+        step(max(options, key=lambda o: o[0])[1])
+    return Walk(path, lengths, eat_index)
 
 
 def fmt(value: float) -> str:
@@ -150,24 +269,22 @@ def build_svg(cells: list[dict], total: int, theme: str, animated: bool, freeze:
     left = (WIDTH - board_w) / 2
     top = 14
     height = top + 7 * PITCH - (PITCH - CELL) + 14
-    path = build_path(cols)
-    steps = len(path) - 1
-    by_pos = {(c["col"], c["row"]): c for c in cells}
-    index_of = {pos: i for i, pos in enumerate(path)}
+    walk = plan_walk(cells)
+    path, steps, speed = walk.path, len(walk.path) - 1, walk.speed
 
     def centre(pos: tuple[int, int]) -> tuple[float, float]:
         return left + pos[0] * PITCH + CELL / 2, top + pos[1] * PITCH + CELL / 2
 
-    run = steps / SPEED
+    run = steps / speed
     cycle = run + HOLD + FADE + EMPTY_HOLD + REFILL
     pct = lambda seconds: seconds / cycle * 100  # noqa: E731
     empty = col["levels"][0]
 
     css = [f"text{{font-family:{SANS}}}"]
     body = []
-    eaten_idx = sorted(index_of[(c["col"], c["row"])] for c in cells if c["level"] > 0)
     desc = ("Contribution calendar for the last year. "
-            + ("A snake eats each active day and grows longer as it goes." if animated else "Static view, no motion."))
+            + ("A snake wanders over the calendar, eats each active day and grows longer as it goes."
+               if animated else "Static view, no motion."))
 
     # board squares
     refill_at = pct(run + HOLD + FADE + EMPTY_HOLD)
@@ -177,9 +294,9 @@ def build_svg(cells: list[dict], total: int, theme: str, animated: bool, freeze:
         y -= CELL / 2
         fill = col["levels"][c["level"]]
         cls = ""
-        if animated and c["level"] > 0:
-            k = index_of[(c["col"], c["row"])]
-            at = pct(k / SPEED)
+        k = walk.eat_index.get((c["col"], c["row"]))
+        if animated and k is not None:
+            at = pct(k / speed)
             css.append(f"@keyframes e{k}{{0%,{fmt(at)}%{{fill:{fill}}}{fmt(at + 0.25)}%,{fmt(refill_at)}%"
                        f"{{fill:{empty}}}100%{{fill:{fill}}}}}.e{k}{{animation-name:e{k}}}")
             cls = f' class="a e{k}"'
@@ -188,20 +305,15 @@ def build_svg(cells: list[dict], total: int, theme: str, animated: bool, freeze:
     if animated:
         css.append(f".a{{animation-duration:{fmt(cycle)}s;animation-iteration-count:infinite;"
                    f"animation-timing-function:linear}}")
-        eaten_so_far = 0
-        eaten_set = set(eaten_idx)
         body_frames, head_frames = [], []
-        for k in range(len(path)):
-            if k in eaten_set:
-                eaten_so_far += 1
-            length = round(START_LEN + GROWTH * eaten_so_far, 3)
-            at = fmt(pct(k / SPEED))
-            body_frames.append(f"{at}%{{stroke-dasharray:{fmt(length * PITCH)} {GAP};"
-                               f"stroke-dashoffset:{fmt((length - k) * PITCH)}}}")
+        for k, cells_long in enumerate(walk.lengths):
+            at = fmt(pct(k / speed))
+            dash = max(cells_long - 1, 0.01) * PITCH       # the body spans (length - 1) steps behind the head
+            body_frames.append(f"{at}%{{stroke-dasharray:{fmt(dash)} {GAP};stroke-dashoffset:{fmt(dash - k * PITCH)}}}")
             head_frames.append(f"{at}%{{stroke-dashoffset:{fmt(HEAD_DASH - k * PITCH)}}}")
-        end = fmt(pct(run))
-        css.append("@keyframes sb{" + "".join(body_frames) + f"100%{{stroke-dasharray:{fmt(length * PITCH)} {GAP};"
-                   f"stroke-dashoffset:{fmt((length - steps) * PITCH)}}}}}")
+        last_dash = max(walk.lengths[-1] - 1, 0.01) * PITCH
+        css.append("@keyframes sb{" + "".join(body_frames) + f"100%{{stroke-dasharray:{fmt(last_dash)} {GAP};"
+                   f"stroke-dashoffset:{fmt(last_dash - steps * PITCH)}}}}}")
         css.append("@keyframes sh{" + "".join(head_frames) + f"100%{{stroke-dashoffset:{fmt(HEAD_DASH - steps * PITCH)}}}}}")
         fade_a, fade_b = pct(run + HOLD), pct(run + HOLD + FADE)
         css.append(f"@keyframes sg{{0%,{fmt(fade_a)}%{{opacity:1}}{fmt(fade_b)}%,99.9%{{opacity:0}}100%{{opacity:1}}}}")
@@ -210,10 +322,10 @@ def build_svg(cells: list[dict], total: int, theme: str, animated: bool, freeze:
         if freeze is not None:
             css.append(f"*{{animation-play-state:paused!important;animation-delay:-{fmt(freeze)}s!important}}")
         d = "M" + " L".join(f"{fmt(centre(p)[0])} {fmt(centre(p)[1])}" for p in path)
-        stroke = (f'fill="none" stroke-linecap="round" stroke-linejoin="round"')
+        stroke = 'fill="none" stroke-linecap="round" stroke-linejoin="round"'
         body.append(
             f'<g class="a sg"><path class="a sb" d="{d}" {stroke} stroke="{col["snake"]}" stroke-width="7" '
-            f'stroke-dasharray="{START_LEN * PITCH} {GAP}" stroke-dashoffset="{START_LEN * PITCH}"/>'
+            f'stroke-dasharray="0.01 {GAP}" stroke-dashoffset="0.01"/>'
             f'<path class="a sh" d="{d}" {stroke} stroke="{col["head"]}" stroke-width="10" '
             f'stroke-dasharray="{HEAD_DASH} {GAP}" stroke-dashoffset="{HEAD_DASH}"/></g>')
 
