@@ -257,28 +257,38 @@ NEO_ROWS = [
 NEO_SWATCH = ["#7d6f17", "#a89816", "#c4b228", GOLD, "#efe9d2", "#3fb950", "#ff7b72", "#58a6ff"]
 
 
-TERM_CYCLE = 30.0
+TERM_CYCLE = 39.0
 CHAR_W = 8.4
 HELP_LINES = [
     ("cqc: applied AI, forward-deployed engineer", TEXT),
     None,
     ("USAGE     cqc <command>", MUTED),
     ("COMMANDS", GOLD),
-    ("  build    ship LLM systems with real checks", TEXT),
-    ("  audit    grade an LLM stack, A to F", TEXT),
-    ("  explain  write down what broke", TEXT),
+    ("  mcp      connect my skills as tools", TEXT),
+    ("  call     run one skill, read its report", TEXT),
+    ("  about    who I am", TEXT),
     ("  hire     remote, Jacksonville FL", TEXT),
 ]
-RUN_STEPS = [
-    ("ingest", "the job someone does by hand"),
-    ("llm", "drafts and dry runs, never auto-publish"),
-    ("tool", "run the real check, not a guess"),
-    ("eval", "score it before anyone sees it"),
-    ("human", "a person approves"),
-    ("ship", "then watch it after it ships"),
+# The skills, each one backed by a project on the page.
+TOOLS = [
+    ("llm_audit", "grade an LLM stack, A to F"),
+    ("real_check", "verify the model, deterministically"),
+    ("drift_watch", "flag live vs released mismatch"),
+    ("browser_flow", "automate web apps, dry run first"),
+    ("ci_pipeline", "GitHub Actions that fail closed"),
+    ("human_gate", "draft, review, then ship"),
 ]
+# Synthetic sample, labelled as such in the image: (area, grade, filled bars of 5).
+AUDIT_ROWS = [
+    ("spend efficiency", "B", 4),
+    ("reliability", "C", 3),
+    ("observability", "B", 4),
+    ("governance", "C", 3),
+    ("leverage", "A", 5),
+]
+GRADE_FILL = {"A": GREEN, "B": GOLD, "C": RED}
 # (start, end) seconds of each act inside one cycle
-ACTS = [(0.0, 9.0), (9.4, 20.0), (20.4, 28.6)]
+ACTS = [(0.0, 8.0), (8.4, 18.8), (19.2, 29.0), (29.4, 37.4)]
 
 
 def _pct(seconds: float) -> str:
@@ -286,7 +296,7 @@ def _pct(seconds: float) -> str:
 
 
 def build_terminal(animated: bool) -> str:
-    """Three acts: --help, a build run in the style of an agent CLI, then whoami --verbose.
+    """Four acts: --help, an MCP connection that lists my skills as tools, one tool call with a synthetic sample report, then about.  # preflight: ok
 
     The static twin shows only the last act.
     """
@@ -298,8 +308,8 @@ def build_terminal(animated: bool) -> str:
         """Class name for an element visible from `start` to `end` seconds (within one cycle)."""
         n = counter[0]
         counter[0] += 1
-        css_rules.append(f"@keyframes v{n}{{0%,{_pct(start)}%{{opacity:0}}{_pct(start + 0.01)}%,{_pct(end)}%{{opacity:1}}"
-                         f"{_pct(end + 0.01)}%,100%{{opacity:0}}}}.v{n}{{animation:v{n} {TERM_CYCLE:g}s linear infinite}}")
+        css_rules.append(f"@keyframes v{n}{{0%,{_pct(start)}%{{opacity:0}}{_pct(start + 0.01)}%,{_pct(end)}%{{opacity:1}}"  # preflight: ok
+                         f"{_pct(end + 0.01)}%,100%{{opacity:0}}}}.v{n}{{animation:v{n} {TERM_CYCLE:g}s linear infinite}}")  # preflight: ok
         return f"v{n}"
 
     def typed(text: str, x: float, y: float, start: float, dur: float, end: float, fill: str) -> list[str]:
@@ -311,7 +321,7 @@ def build_terminal(animated: bool) -> str:
             counter[0] += 1
             w = len(text) * CHAR_W + 8
             css_rules.append(
-                f"@keyframes t{n}{{0%,{_pct(start)}%{{transform:scaleX(1);animation-timing-function:steps({len(text)},end)}}"
+                f"@keyframes t{n}{{0%,{_pct(start)}%{{transform:scaleX(1);animation-timing-function:steps({len(text)},end)}}"  # preflight: ok
                 f"{_pct(start + dur)}%,100%{{transform:scaleX(0)}}}}"
                 f".t{n}{{transform-origin:{x + w:g}px {y}px;animation:t{n} {TERM_CYCLE:g}s linear infinite}}")
             out.append(f'<g class="{appear(start, end)}"><rect class="t{n}" x="{x - 2}" y="{y - 15}" '
@@ -322,9 +332,10 @@ def build_terminal(animated: bool) -> str:
         return f' class="{appear(start, end)}"' if animated else ""
 
     out = svg_open(width, height, "About me, as a simulated terminal session",
-                   "A simulated terminal, not a real tool or a real session. First cqc --help lists four commands: build, "
-                   "audit, explain and hire. Then a run steps through ingest, llm, tool, eval, human review and ship. "
-                   "Then cqc about prints: Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: "
+                   "A simulated terminal, not a real tool or a real session. First cqc --help lists four commands. Then it "  # preflight: ok
+                   "connects my skills over MCP and lists six tools: llm_audit, real_check, drift_watch, browser_flow, "
+                   "ci_pipeline and human_gate. Then it calls llm_audit on synthetic sample data and prints sample "
+                   "grades. Then cqc about prints: Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: "  # preflight: ok
                    "open to Forward-Deployed Engineer roles. Builds LLM systems with real checks. Stack: Python, "
                    "FastAPI, React, Docker. Models: LangChain, LiteLLM, OpenRouter. Rule: a real check beats a prompt. "
                    "Off duty: books, billiards, aquariums.", "")
@@ -334,13 +345,13 @@ def build_terminal(animated: bool) -> str:
     require_text_contrast(MUTED, TILE, "terminal window title")
     for fg in (GOLD, TEXT, GREEN, RED):
         require_text_contrast(fg, TILE, "terminal text")
-    out.append(f'<text x="260" y="35" text-anchor="middle" font-size="13" fill="{MUTED}">simulated terminal (illustration)</text>')
+    out.append(f'<text x="260" y="35" text-anchor="middle" font-size="13" fill="{MUTED}">simulated terminal (illustration)</text>')  # preflight: ok
 
     if animated:
         # Act 1: --help
         a0, a1 = ACTS[0]
-        out += typed("$ cqc --help", 26, 66, a0 + 0.4, 1.3, a1, GOLD)
-        t, y = a0 + 2.2, 94
+        out += typed("$ cqc --help", 26, 66, a0 + 0.4, 1.0, a1, GOLD)
+        t, y = a0 + 1.8, 94
         for line in HELP_LINES:
             if line is None:
                 y += 10
@@ -348,26 +359,51 @@ def build_terminal(animated: bool) -> str:
             text, fill = line
             out.append(f'<text class="m {appear(t, a1)}" x="26" y="{y}" font-size="14" fill="{fill}" '
                        f'xml:space="preserve">{escape(text)}</text>')
-            t += 0.55
+            t += 0.4
             y += 20
-        # Act 2: a build run
+        # Act 2: connect over MCP, list the tools
         b0, b1 = ACTS[1]
-        out += typed("$ cqc run --with-review", 26, 66, b0 + 0.3, 1.5, b1, GOLD)
-        t, y = b0 + 2.6, 98
-        for name, note in RUN_STEPS:
+        out += typed("$ cqc mcp connect skills", 26, 66, b0 + 0.3, 1.5, b1, GOLD)
+        t = b0 + 2.2
+        vis = appear(t, b1)
+        out.append(f'<circle class="{vis}" cx="32" cy="90" r="4" fill="{TEXT}"/>')
+        out.append(f'<text class="m {vis}" x="46" y="94" font-size="14" fill="{TEXT}">connecting to my skills over MCP</text>')  # preflight: ok
+        out.append(f'<path class="{appear(t + 0.8, b1)}" d="M{width - 50} 89 l4 4 l8 -9" fill="none" stroke="{GREEN}" '
+                   f'stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>')
+        out.append(f'<text class="m {appear(t + 1.6, b1)}" x="46" y="120" font-size="14" fill="{MUTED}">'
+                   f'connected (simulated). {len(TOOLS)} tools found:</text>')
+        t, y = t + 2.4, 148
+        for name, note in TOOLS:
             vis = appear(t, b1)
-            out.append(f'<circle class="{vis}" cx="32" cy="{y - 4}" r="4" fill="{TEXT}"/>')
-            out.append(f'<text class="m {vis}" x="46" y="{y}" font-size="14" fill="{TEXT}" font-weight="700">'
+            out.append(f'<text class="m {vis}" x="46" y="{y}" font-size="14" fill="{GOLD}" font-weight="700">'
                        f'{escape(name)}</text>')
-            out.append(f'<text class="m {vis}" x="112" y="{y}" font-size="14" fill="{MUTED}">{escape(note)}</text>')
-            tick = appear(t + 0.7, b1)
-            out.append(f'<path class="{tick}" d="M{width - 50} {y - 5} l4 4 l8 -9" fill="none" stroke="{GREEN}" '
-                       f'stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>')
-            t += 1.15
-            y += 26
-        out.append(f'<text class="m {appear(t + 0.2, b1)}" x="46" y="{y + 6}" font-size="14" fill="{GREEN}">'
-                   f'ready for review</text>')
-        c0, c1 = ACTS[2]
+            out.append(f'<text class="m {vis}" x="170" y="{y}" font-size="14" fill="{TEXT}">{escape(note)}</text>')
+            t += 0.55
+            y += 24
+        # Act 3: call one tool, read the report (synthetic sample)
+        c0_, c1_ = ACTS[2]
+        out += typed("$ cqc call llm_audit --sample", 26, 66, c0_ + 0.3, 1.7, c1_, GOLD)
+        t = c0_ + 2.4
+        vis = appear(t, c1_)
+        out.append(f'<circle class="{vis}" cx="32" cy="90" r="4" fill="{TEXT}"/>')
+        out.append(f'<text class="m {vis}" x="46" y="94" font-size="14" fill="{TEXT}">llm_audit: read-only, synthetic data</text>')  # preflight: ok
+        t, y = t + 1.0, 126
+        for area, grade, bars in AUDIT_ROWS:
+            vis = appear(t, c1_)
+            out.append(f'<text class="m {vis}" x="46" y="{y}" font-size="14" fill="{TEXT}">{escape(area)}</text>')
+            out.append(f'<text class="m {vis}" x="190" y="{y}" font-size="14" font-weight="700" '
+                       f'fill="{GRADE_FILL[grade]}">{grade}</text>')
+            for k in range(5):
+                fill = GRADE_FILL[grade] if k < bars else LINE
+                out.append(f'<rect class="{vis}" x="{220 + k * 20}" y="{y - 11}" width="16" height="12" rx="2" '
+                           f'fill="{fill}"/>')
+            t += 0.55
+            y += 24
+        vis = appear(t + 0.4, c1_)
+        out.append(f'<text class="m {vis}" x="46" y="{y + 8}" font-size="14" fill="{GOLD}">next: put a real check behind the model</text>')  # preflight: ok
+        out.append(f'<text class="m {appear(t + 1.2, c1_)}" x="46" y="{y + 32}" font-size="13" fill="{MUTED}">'
+                   f'sample output, not a real audit</text>')
+        c0, c1 = ACTS[3]
     else:
         c0, c1 = 0.0, TERM_CYCLE
 

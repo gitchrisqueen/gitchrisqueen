@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 330" width="520" height="330" role="img">
 <title>About me, as a simulated terminal session</title>
-<desc>A simulated terminal, not a real tool or a real session. First cqc --help lists four commands: build, audit, explain and hire. Then a run steps through ingest, llm, tool, eval, human review and ship. Then cqc about prints: Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: open to Forward-Deployed Engineer roles. Builds LLM systems with real checks. Stack: Python, FastAPI, React, Docker. Models: LangChain, LiteLLM, OpenRouter. Rule: a real check beats a prompt. Off duty: books, billiards, aquariums.</desc>
+<desc>A simulated terminal, not a real tool or a real session. First cqc --help lists four commands. Then it connects my skills over MCP and lists six tools: llm_audit, real_check, drift_watch, browser_flow, ci_pipeline and human_gate. Then it calls llm_audit on synthetic sample data and prints sample grades. Then cqc about prints: Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: open to Forward-Deployed Engineer roles. Builds LLM systems with real checks. Stack: Python, FastAPI, React, Docker. Models: LangChain, LiteLLM, OpenRouter. Rule: a real check beats a prompt. Off duty: books, billiards, aquariums.</desc>
 <style>text{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}.m{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace}</style>
 <rect width="520" height="330" fill="#0d1117"/>
 <rect x="8" y="8" width="504" height="314" rx="12" fill="#161b22" stroke="#30363d"/>

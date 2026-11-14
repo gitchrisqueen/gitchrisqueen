@@ -279,3 +279,11 @@ def test_card_and_skills_images_stay_narrow_enough_for_a_phone():
             continue
         width = int(re.search(r'viewBox="0 0 (\d+) ', text).group(1))
         assert width <= 520, f"{name} is {width} wide"
+
+
+def test_terminal_sample_report_is_labelled_synthetic_and_tools_match_the_skills_list():
+    svg = assets.build_terminal(True)
+    assert "synthetic data" in svg and "sample output, not a real audit" in svg
+    for name, _ in assets.TOOLS:
+        assert name in svg
+    assert len(assets.TOOLS) == 6 and all(g in "ABC" for _, g, _ in assets.AUDIT_ROWS)
