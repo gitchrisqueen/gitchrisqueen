@@ -168,7 +168,7 @@ ICON_PATHS = {
 
 
 def build_loop(animated: bool) -> str:
-    width, height = 520, 344
+    width, height = 520, 362
     node_pos = []
     for i in range(len(LOOP_NODES)):
         ang = math.radians(-90 + i * 60)
@@ -196,7 +196,7 @@ def build_loop(animated: bool) -> str:
                f'<radialGradient id="glow"><stop offset="0" stop-color="{GOLD}" stop-opacity=".45"/>'
                f'<stop offset="1" stop-color="{GOLD}" stop-opacity="0"/></radialGradient></defs>')
     out.append(f'<rect width="{width}" height="{height}" fill="url(#grid)"/>')
-    for x, y, sx, sy in ((10, 10, 1, 1), (510, 10, -1, 1), (10, 334, 1, -1), (510, 334, -1, -1)):
+    for x, y, sx, sy in ((10, 10, 1, 1), (510, 10, -1, 1), (10, 352, 1, -1), (510, 352, -1, -1)):
         out.append(f'<path d="M{x} {y + 18 * sy} V{y} H{x + 18 * sx}" fill="none" stroke="{GOLD}" stroke-width="2"/>')
     out.append(f'<circle cx="{LOOP_CX}" cy="{LOOP_CY}" r="{LOOP_R}" fill="none" stroke="{LINE}" stroke-width="2" '
                f'stroke-dasharray="2 7"/>')
@@ -220,7 +220,7 @@ def build_loop(animated: bool) -> str:
         if i == 0:
             tx, ty, anchor = x, y - 36, "middle"
         elif i == 3:
-            tx, ty, anchor = x, y + 50, "middle"
+            tx, ty, anchor = x, y + 52, "middle"
         elif i in (1, 2):
             tx, ty, anchor = x + 36, y + 5, "start"
         else:

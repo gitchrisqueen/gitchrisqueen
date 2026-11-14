@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 344" width="520" height="344" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 362" width="520" height="362" role="img">
 <title>The automation loop</title>
 <desc>A loop with six stages: ingest, language model, tool call, evaluation, human approval, ship. A real check and a person sit between the model and the world.</desc>
 <style>text{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}.m{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace}</style>
-<rect width="520" height="344" fill="#0d1117"/>
+<rect width="520" height="362" fill="#0d1117"/>
 <defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0 H0 V20" fill="none" stroke="#161b22" stroke-width="1"/></pattern><radialGradient id="glow"><stop offset="0" stop-color="#e9d437" stop-opacity=".45"/><stop offset="1" stop-color="#e9d437" stop-opacity="0"/></radialGradient></defs>
-<rect width="520" height="344" fill="url(#grid)"/>
+<rect width="520" height="362" fill="url(#grid)"/>
 <path d="M10 28 V10 H28" fill="none" stroke="#e9d437" stroke-width="2"/>
 <path d="M510 28 V10 H492" fill="none" stroke="#e9d437" stroke-width="2"/>
-<path d="M10 316 V334 H28" fill="none" stroke="#e9d437" stroke-width="2"/>
-<path d="M510 316 V334 H492" fill="none" stroke="#e9d437" stroke-width="2"/>
+<path d="M10 334 V352 H28" fill="none" stroke="#e9d437" stroke-width="2"/>
+<path d="M510 334 V352 H492" fill="none" stroke="#e9d437" stroke-width="2"/>
 <circle cx="260" cy="176" r="118" fill="none" stroke="#30363d" stroke-width="2" stroke-dasharray="2 7"/>
 <circle cx="260" cy="176" r="86" fill="url(#glow)"/>
 <g><circle cx="260" cy="176" r="50" fill="#0d1117" stroke="#e9d437" stroke-width="2"/><text x="260" y="180" text-anchor="middle" font-size="30" font-weight="800" fill="#e9d437" class="m">AI</text><text x="260" y="202" text-anchor="middle" font-size="11" fill="#9ba7b4" class="m">+ real checks</text></g>
@@ -24,7 +24,7 @@
 <text class="m" x="398.2" y="240.0" text-anchor="start" font-size="14" font-weight="700" fill="#e6edf3">[tool_call]</text>
 <circle cx="260.0" cy="294.0" r="26" fill="#161b22" stroke="#30363d" stroke-width="2"/>
 <g transform="translate(260.0 294.0) scale(1.05)" fill="#e9d437" stroke="#e9d437" stroke-linejoin="round"><path fill="none" stroke-width="2.4" d="M0 -11 L9 -7 V0 C9 6 4 10 0 12 C-4 10 -9 6 -9 0 V-7 Z"/><path fill="none" stroke-width="2.4" d="M-4 1 L-1 4 L5 -3"/></g>
-<text class="m" x="260.0" y="344.0" text-anchor="middle" font-size="14" font-weight="700" fill="#e6edf3">[eval]</text>
+<text class="m" x="260.0" y="346.0" text-anchor="middle" font-size="14" font-weight="700" fill="#e6edf3">[eval]</text>
 <circle cx="157.8" cy="235.0" r="26" fill="#161b22" stroke="#30363d" stroke-width="2"/>
 <g transform="translate(157.8 235.0) scale(1.05)" fill="#e9d437" stroke="#e9d437" stroke-linejoin="round"><path fill="none" stroke-width="2.4" d="M-11 0 Q0 -10 11 0 Q0 10 -11 0 Z"/><circle r="3.4"/></g>
 <text class="m" x="121.8" y="240.0" text-anchor="end" font-size="14" font-weight="700" fill="#e6edf3">[human ok]</text>
