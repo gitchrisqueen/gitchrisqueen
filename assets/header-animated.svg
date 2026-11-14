@@ -97,6 +97,6 @@
 <circle class="n3" cx="578" cy="126.0" r="9" fill="#e9d437" stroke="#a89816" stroke-width="2"/>
 <rect x="34" y="52" width="40" height="3" fill="#e9d437"/>
 <text class="serif" x="34" y="116" font-size="44" fill="#e9d437">Christopher Queen</text>
-<rect class="shine" clip-path="url(#name)" x="0" y="60" width="90" height="70" fill="url(#beam)" transform="skewX(-18)"/>
+<g clip-path="url(#name)"><rect class="shine" x="0" y="60" width="90" height="70" fill="url(#beam)"/></g>
 <text x="34" y="152" font-size="18" fill="#e6edf3" letter-spacing="0.4">Applied AI / Forward-Deployed Engineer</text>
 </svg>

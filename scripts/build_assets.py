@@ -804,8 +804,8 @@ def build_header(animated: bool) -> str:
     out.append(f'<rect x="34" y="52" width="40" height="3" fill="{GOLD}"/>')
     out.append(f'<text class="serif" x="34" y="116" font-size="44" fill="{GOLD}">Christopher Queen</text>')
     if animated:
-        out.append('<rect class="shine" clip-path="url(#name)" x="0" y="60" width="90" height="70" fill="url(#beam)" '
-                   'transform="skewX(-18)"/>')
+        out.append('<g clip-path="url(#name)"><rect class="shine" x="0" y="60" width="90" height="70" '
+                   'fill="url(#beam)"/></g>')
     require_text_contrast(GOLD, BG, "header name")
     require_text_contrast(TEXT, BG, "header role")
     out.append(f'<text x="34" y="152" font-size="18" fill="{TEXT}" letter-spacing="0.4">Applied AI / Forward-Deployed Engineer</text>')
