@@ -146,16 +146,40 @@ SKILL_PANELS = [
 ]
 SKILL_FULL_NAMES = {"Actions": "GitHub Actions"}
 
-# Every tile is the same small square image (80 by 74), so a row of four fits a phone screen (about 328 px) and a
-# row of eight fits a desktop one, and each panel wraps on its own: the panels are stacked, a title line and then
-# the tiles. The card inside the image is 74 by 68 with a 3 px margin, so cards sit 6 px apart.
-SK_TITLE_W, SK_TITLE_H = 320, 34
-SK_TILE_W, SK_TILE_H, SK_MARGIN, SK_CARD_W, SK_CARD_H = 80, 74, 3, 74, 68
+# Tiles are drawn at several widths and the README picks one with <picture><source media="(... width ...)">, because
+# GitHub allows no CSS and an image's width is the only thing that decides how many fit on a line. The README's text
+# column is about 82 px narrower than the screen on a phone and 370 to 450 px narrower on a desktop (measured on the
+# live profile page, see tests/test_skill_tiles.py), so the width is chosen from the screen width:
+#   column wide enough for a panel in one row (640 px or more): the base tile, 80 px wide, eight to a line;
+#   narrower: a wider tile, so that exactly two fit on a line and a panel is four rows of two.
+# Each tier's width W satisfies 2*W <= narrowest column in its range and 3*W > widest column in its range, allowing 15 px
+# for a scroll bar. Ranges are screen widths in px, both ends included.
+SK_TITLE_W, SK_TITLE_H = 220, 34
+SK_TILE_W, SK_TILE_H, SK_MARGIN = 80, 74, 3
+SK_TIERS = [
+    (110, [(0, 399)]),
+    (145, [(400, 499)]),
+    (185, [(500, 599), (768, 899)]),
+    (230, [(600, 737), (900, 1089)]),
+]
 
 
-def skill_file_stem(panel_id: str, n: int) -> str:
+def skill_tile_width_at(screen_width: int) -> int:
+    """The tile width the README serves at this screen width (what the <source> queries select)."""
+    for w, ranges in SK_TIERS:
+        if any(lo <= screen_width <= hi for lo, hi in ranges):
+            return w
+    return SK_TILE_W
+
+
+def _media(ranges: list[tuple[int, int]]) -> str:
+    return ", ".join(f"(min-width: {lo}px) and (max-width: {hi}px)" if lo else f"(max-width: {hi}px)" for lo, hi in ranges)
+
+
+def skill_file_stem(panel_id: str, n: int, width: int = SK_TILE_W) -> str:
     items = next(i for p, _, i in SKILL_PANELS if p == panel_id)
-    return f"{panel_id}-{items[n][1].lower().replace('.', '')}"
+    stem = f"{panel_id}-{items[n][1].lower().replace('.', '')}"
+    return stem if width == SK_TILE_W else f"{stem}-{width}"
 
 
 def build_skills_title(panel_id: str) -> str:
@@ -168,25 +192,46 @@ def build_skills_title(panel_id: str) -> str:
     return "\n".join(out) + "\n"
 
 
-def build_skill_tile(panel_id: str, n: int, icons: dict) -> str:
+def build_skill_tile(panel_id: str, n: int, icons: dict, width: int = SK_TILE_W) -> str:
     _, items = next((t, i) for p, t, i in SKILL_PANELS if p == panel_id)
     slug, label, _ = items[n]
     x = y = SK_MARGIN
+    card_w, card_h = width - 2 * SK_MARGIN, SK_TILE_H - 2 * SK_MARGIN
     name = SKILL_FULL_NAMES.get(label, label)
-    out = svg_open(SK_TILE_W, SK_TILE_H, name, f"{name}, one of the tools used in the projects on this page.")
+    out = svg_open(width, SK_TILE_H, name, f"{name}, one of the tools used in the projects on this page.")
     require_text_contrast(TEXT, TILE, "skills tile label")
-    out.append(f'<rect x="{x}" y="{y}" width="{SK_CARD_W}" height="{SK_CARD_H}" rx="10" fill="{TILE}" stroke="{LINE}"/>')
-    ix = x + (SK_CARD_W - 28) // 2
+    out.append(f'<rect x="{x}" y="{y}" width="{card_w}" height="{card_h}" rx="10" fill="{TILE}" stroke="{LINE}"/>')
+    ix = x + (card_w - 28) // 2
     if slug.startswith("mono:"):
         out.append(f'<rect x="{ix}" y="{y + 9}" width="28" height="28" rx="7" fill="{GOLD}"/>')
         out.append(f'<text x="{ix + 14}" y="{y + 29}" text-anchor="middle" font-size="13" font-weight="800" '
                    f'fill="{BG}">{escape(slug[5:])}</text>')
     else:
         out.append(icon_group(icons, slug, ix, y + 9, 28, TILE))
-    out.append(f'<text x="{x + SK_CARD_W / 2:g}" y="{y + 57}" text-anchor="middle" font-size="12" '
+    out.append(f'<text x="{x + card_w / 2:g}" y="{y + 57}" text-anchor="middle" font-size="12" '
                f'fill="{TEXT}">{escape(label)}</text>')
     out.append("</svg>")
     return "\n".join(out) + "\n"
+
+
+def skills_readme_block() -> str:
+    """The README's Tools block, one line: a title and the tiles for each panel. tests/test_skill_tiles.py compares it
+    with the README; print it with `python scripts/build_assets.py --tools-block`."""
+    lines = []
+    for panel, title, items in SKILL_PANELS:
+        lines.append(f'<picture><img src="assets/{panel}-title.svg" alt="{escape(title)}" width="{SK_TITLE_W}" '
+                     f'align="top"></picture><br>')
+        tiles = ""
+        for n, (_, label, url) in enumerate(items):
+            name = SKILL_FULL_NAMES.get(label, label)
+            host = url.removeprefix("https://").removeprefix("www.").rstrip("/")
+            host = host if host.startswith("github.com") else host.split("/")[0]
+            sources = "".join(f'<source media="{_media(r)}" srcset="assets/{skill_file_stem(panel, n, w)}.svg">'
+                              for w, r in SK_TIERS)
+            tiles += (f'<a href="{url}"><picture>{sources}<img src="assets/{skill_file_stem(panel, n)}.svg" '
+                      f'alt="{name}" title="{name}: {host}" align="top"></picture></a>')
+        lines.append(tiles + "<br>")
+    return "".join(lines)
 
 
 # ---------------------------------------------------------------- knowledge graph
@@ -1038,7 +1083,8 @@ def build_all() -> dict[str, str]:
     for panel, _, items in SKILL_PANELS:
         files[f"{panel}-title.svg"] = build_skills_title(panel)
         for n in range(len(items)):
-            files[f"{skill_file_stem(panel, n)}.svg"] = build_skill_tile(panel, n, icons)
+            for w in [SK_TILE_W] + [t for t, _ in SK_TIERS]:
+                files[f"{skill_file_stem(panel, n, w)}.svg"] = build_skill_tile(panel, n, icons, w)
     files["graph-animated.svg"] = build_graph_svg(True)
     files["graph-static.svg"] = build_graph_svg(False)
     files["terminal-animated.svg"] = build_terminal(True)
@@ -1059,7 +1105,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--check", action="store_true", help="fail if a committed file differs")
     parser.add_argument("--out-dir", default=str(ROOT / "assets"))
+    parser.add_argument("--tools-block", action="store_true", help="print the README's Tools block and exit")
     args = parser.parse_args(argv)
+    if args.tools_block:
+        print(skills_readme_block())
+        return 0
     out_dir = Path(args.out_dir)
     files = build_all()
     bad = []
