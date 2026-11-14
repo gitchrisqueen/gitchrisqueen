@@ -265,7 +265,8 @@ def build_graph_svg(animated: bool) -> str:
             rules.append(f".n{n}{{animation:f{n % 4} {7 + (n * 5) % 6}s ease-in-out infinite alternate;"
                          f"animation-delay:-{(n * 3) % 7}s}}")
         css = "".join(rules) + REDUCED
-    names = ", ".join(n["label"] for n in graph["nodes"])
+    names = ", ".join(n["label"] + (" (an offer, no engagement delivered yet)" if n["kind"] == "offer" else "")
+                      for n in graph["nodes"])
     out = svg_open(width, height, "What I work with, as a knowledge graph",
                    "A graph of how my projects, practices and tools connect. Nodes: " + names + ". "
                    "Open the interactive version to drag the nodes.", css)
@@ -292,8 +293,8 @@ def build_graph_svg(animated: bool) -> str:
                 body += icon_group(icons, slug, x - 9, y - 9, 18, TILE)
             else:
                 body += (f'<rect x="{x - 9}" y="{y - 9}" width="18" height="18" rx="4" fill="{GOLD}"/>'
-                         f'<text x="{x}" y="{y + 5}" text-anchor="middle" font-size="11" font-weight="800" fill="{BG}">'
-                         f'{escape(node["label"][:2])}</text>')
+                         f'<path d="M{x + 1.5} {y - 7} L{x - 4.5} {y + 1} H{x - 0.5} L{x - 1.5} {y + 7} '
+                         f'L{x + 4.5} {y - 1.5} H{x + 0.5} Z" fill="{BG}"/>')
             out.append(f"<g{cls}>{body}</g>")
             continue
         out.append(f'<g{cls}><circle cx="{x}" cy="{y}" r="{r}" fill="{fill}" stroke="{BG}" stroke-width="2"/>'
@@ -558,7 +559,7 @@ def build_terminal(animated: bool) -> str:
     require_text_contrast(MUTED, TILE, "terminal window title")
     for fg in (GOLD, TEXT, GREEN, RED):
         require_text_contrast(fg, TILE, "terminal text")
-    out.append(f'<text x="260" y="35" text-anchor="middle" font-size="15" fill="{MUTED}">simulated terminal (illustration)</text>')  # preflight: ok
+    out.append(f'<text x="260" y="35" text-anchor="middle" font-size="16" fill="{MUTED}">simulated terminal (illustration)</text>')  # preflight: ok
 
     if animated:
         # Act 1: --help
@@ -739,7 +740,7 @@ def build_pill(pill_id: str) -> str:
     out.append(f'<rect x="1" y="1" width="{width - 2}" height="{height - 2}" rx="10" fill="{TILE}" stroke="{GOLD}" '
                f'stroke-width="1.5"/>')
     out.append(f'<text class="m" x="18" y="29" font-size="16" fill="{GOLD}">{escape(cmd)}</text>')
-    out.append(f'<text x="{width - 18}" y="29" text-anchor="end" font-size="15" fill="{MUTED}">select to open</text>')
+    out.append(f'<text x="{width - 18}" y="29" text-anchor="end" font-size="17" fill="{MUTED}">select to open</text>')
     out.append("</svg>")
     return "\n".join(out) + "\n"
 

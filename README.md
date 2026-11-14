@@ -3,7 +3,7 @@
   <img src="assets/header-static.svg" alt="Christopher Queen, Applied AI / Forward-Deployed Engineer" width="100%">
 </picture>
 
-**I build LLM systems with real checks and traceability, so problems get fixed before customers see them.**
+**I build LLM systems with real checks and monitoring, aimed at catching problems before customers see them.**
 
 <a href="https://christopherqueenconsulting.com/resume/?utm_source=github&utm_medium=readme&utm_campaign=resume"><img alt="Résumé" src="https://img.shields.io/badge/-R%C3%A9sum%C3%A9-e9d437?style=for-the-badge&labelColor=e9d437"></a>
 <a href="https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation"><img alt="Case study: what I caught and how I fixed it" src="https://img.shields.io/badge/-Case%20study-21262d?style=for-the-badge&labelColor=21262d"></a>
@@ -21,11 +21,11 @@
 <a href="https://gitchrisqueen.github.io/gitchrisqueen/graph/">
 <picture>
   <source media="(prefers-reduced-motion: no-preference)" srcset="assets/graph-animated.svg">
-  <img src="assets/graph-static.svg" alt="A knowledge graph of what I work with. Christopher connects to four projects (LEM, the CPCC tool, hearing-copilot, panthera) and the LLM audit. Practices (real checks, drift watch, human review, honest caveats) and tools (Python, FastAPI, Redis, React, Selenium, LangChain, LiteLLM, Docker, GitHub Actions, Node.js) tie them together. Select it to open the interactive version, where you can drag the nodes." width="776">
+  <img src="assets/graph-static.svg" alt="A knowledge graph of what I work with. Christopher connects to four projects (LEM, the CPCC tool, hearing-copilot, panthera) and to the LLM audit, which is an offer with no engagement delivered yet. Practices (real checks, drift watch, human review, honest caveats) and tools (Python, FastAPI, Redis, React, Selenium, LangChain, LiteLLM, Docker, GitHub Actions, Node.js) tie them together. Select it to open the interactive version, where you can drag the nodes." width="776">
 </picture>
 </a>
 
-<sub>Gold dots are projects, green dots are practices, logos are tools. Select the graph to open the interactive version and drag the nodes.</sub>
+<sub>Gold dots are projects, green dots are practices, the pale dot is an offer with no engagement delivered yet, logos are tools. Select the graph to open the interactive version and drag the nodes.</sub>
 
 ## What I've built
 
@@ -58,8 +58,7 @@ For panthera, passing means the daily pipeline ran, not that its data is healthy
 
 ## Tools
 
-<img src="assets/skills-build.svg" alt="Languages and services used in the projects above: Python, JavaScript, Swift, Node.js, FastAPI, Celery, Redis and MySQL." width="386">
-<img src="assets/skills-ai.svg" alt="AI, interface, test and ship tools used in the projects above: LangChain, LiteLLM, OpenRouter, React, Streamlit, Selenium, Docker and GitHub Actions." width="386">
+<img src="assets/skills-build.svg" alt="Languages and services used in the projects above: Python, JavaScript, Swift, Node.js, FastAPI, Celery, Redis and MySQL." width="386"><img src="assets/skills-ai.svg" alt="AI, interface, test and ship tools used in the projects above: LangChain, LiteLLM, OpenRouter, React, Streamlit, Selenium, Docker and GitHub Actions." width="386">
 
 ## Merged into other people's projects
 

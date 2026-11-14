@@ -96,6 +96,7 @@ The card, tool-logo and graph and terminal graphics (`assets/card-*.svg`, `asset
 
 ### Before the pull request is merged
 
+0. Switch on GitHub Pages (Settings, Pages, source `main`, folder `/docs`) once the pull request is merged, then fetch `https://gitchrisqueen.github.io/gitchrisqueen/graph/` and expect `200` and the title `What Christopher Queen works with`. Until then the graph image in the README links to a 404.
 1. Confirm the rollback tag: `git rev-parse profile-v1-pre` prints a SHA that starts with `0eb9533`, and `git ls-remote --tags origin profile-v1-pre` shows the same SHA.
 2. Wait for the `ci` check on the draft pull request to go green. In its run, open the `ci-dry-run` artifact and read `README.diff`: it is what the generator would change today. Open the four files in the `snake-artifacts` artifact in a browser once: the two `snake-static-*` files are the still-image twins and should show the full calendar with the snake at its start.
 3. Seed the `output` branch so that no image is broken at merge time. The steps work in a scratch clone and keep the seed files outside it. Start in an empty working folder, not inside any clone. The first command writes `seed/` there, the clone is made beside it, and the last line, `cd ..`, returns you to the working folder:

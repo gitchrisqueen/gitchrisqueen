@@ -8,7 +8,7 @@
 <circle cx="30" cy="30" r="6" fill="#ff7b72"/>
 <circle cx="50" cy="30" r="6" fill="#e9d437"/>
 <circle cx="70" cy="30" r="6" fill="#3fb950"/>
-<text x="260" y="35" text-anchor="middle" font-size="15" fill="#9ba7b4">simulated terminal (illustration)</text>
+<text x="260" y="35" text-anchor="middle" font-size="16" fill="#9ba7b4">simulated terminal (illustration)</text>
 <text class="m" x="26" y="66" font-size="16" fill="#e9d437" xml:space="preserve">$ cqc about --verbose</text>
 <text class="m" x="26" y="100" font-size="16" fill="#e9d437" xml:space="preserve"> ####   ####  </text>
 <text class="m" x="26" y="117" font-size="16" fill="#e9d437" xml:space="preserve">#    # #    # </text>
