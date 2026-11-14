@@ -353,3 +353,12 @@ def test_graph_tool_nodes_are_logo_discs_and_every_labelled_node_is_at_least_16p
         assert size == 0 or size >= 16, kind
     graph = assets.load_graph()
     assert all(n["id"] in assets.TECH_ICON or n["id"] == "litellm" for n in graph["nodes"] if n["kind"] == "tech")
+
+
+def test_the_last_terminal_panel_holds_long_enough_to_read():
+    start, end = assets.ACTS[3]
+    last_line_appears = start + 2.4 + 0.7 + (len(assets.NEO_ROWS) - 1) * 0.5
+    words = 4 + 2 + sum(len((k + " " + v).replace("/", " ").split()) for k, v in assets.NEO_ROWS)
+    reading_s = words / 180 * 60
+    assert end - last_line_appears >= reading_s, (end - last_line_appears, reading_s)
+    assert assets.TERM_CYCLE >= end + 1

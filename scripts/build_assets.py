@@ -471,7 +471,10 @@ NEO_ROWS = [
 NEO_SWATCH = ["#7d6f17", "#a89816", "#c4b228", GOLD, "#efe9d2", "#3fb950", "#ff7b72", "#58a6ff"]
 
 
-TERM_CYCLE = 39.0
+# The last panel is the one to read: about 40 words, so 13 s at 180 words a minute; held 15 s after its last line appears.
+FINAL_HOLD = 15.0
+ABOUT_REVEAL = 2.4 + 0.7 + len([0] * 8) * 0.5  # command, logo, then eight rows, then the swatches
+TERM_CYCLE = 29.4 + ABOUT_REVEAL + FINAL_HOLD + 1.5
 CHAR_W = 9.6
 HELP_LINES = [
     ("cqc: applied AI, forward-deployed engineer", TEXT),
@@ -502,7 +505,7 @@ AUDIT_ROWS = [
 ]
 GRADE_FILL = {"A": GREEN, "B": GOLD, "C": RED}
 # (start, end) seconds of each act inside one cycle
-ACTS = [(0.0, 8.0), (8.4, 18.8), (19.2, 29.0), (29.4, 37.4)]
+ACTS = [(0.0, 8.0), (8.4, 18.8), (19.2, 29.0), (29.4, 29.4 + ABOUT_REVEAL + FINAL_HOLD)]
 
 
 def _pct(seconds: float) -> str:
