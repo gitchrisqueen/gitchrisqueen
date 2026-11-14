@@ -6,7 +6,7 @@ Usage:
     python scripts/build_assets.py --check    # exit 1 if a committed file differs
 
 Outputs (all opaque-background, no script, no external reference):
-    assets/skills-build.svg, assets/skills-ai.svg   tool logos, two panels
+    assets/skills-*.svg                              tool logos: a title and eight linked tiles per panel, two panels
     assets/graph-animated.svg, assets/graph-static.svg  the knowledge-graph graphic
     docs/graph/index.html                              its interactive, draggable version
                                                        (no network call unless data/analytics.json sets a key)
@@ -119,43 +119,119 @@ def icon_group(icons: dict, slug: str, x: float, y: float, size: float, bg: str)
 
 # ---------------------------------------------------------------- skills
 
-# (panel id, title, [(slug or "mono:XX", label)])
+# (panel id, title, [(slug or "mono:XX", label, link)]). The link is the tool's own homepage, or its GitHub repo
+# where that is the home. Each tile is its own small image so it can carry its own link in the README
+# (GitHub does not follow links inside an SVG that is shown as an image).
 SKILL_PANELS = [
     ("skills-build", "Languages and services", [
-        ("python", "Python"), ("javascript", "JavaScript"), ("swift", "Swift"), ("nodedotjs", "Node.js"),
-        ("fastapi", "FastAPI"), ("celery", "Celery"), ("redis", "Redis"), ("mysql", "MySQL"),
+        ("python", "Python", "https://www.python.org/"),
+        ("javascript", "JavaScript", "https://developer.mozilla.org/en-US/docs/Web/JavaScript"),
+        ("swift", "Swift", "https://www.swift.org/"),
+        ("nodedotjs", "Node.js", "https://nodejs.org/"),
+        ("fastapi", "FastAPI", "https://fastapi.tiangolo.com/"),
+        ("celery", "Celery", "https://docs.celeryq.dev/"),
+        ("redis", "Redis", "https://redis.io/"),
+        ("mysql", "MySQL", "https://github.com/mysql/mysql-server"),
     ]),
     ("skills-ai", "AI, interface, test and ship", [
-        ("langchain", "LangChain"), ("mono:Li", "LiteLLM"), ("mono:OR", "OpenRouter"), ("react", "React"),
-        ("streamlit", "Streamlit"), ("selenium", "Selenium"), ("docker", "Docker"), ("githubactions", "Actions"),
+        ("langchain", "LangChain", "https://github.com/langchain-ai/langchain"),
+        ("mono:Li", "LiteLLM", "https://github.com/BerriAI/litellm"),
+        ("mono:OR", "OpenRouter", "https://openrouter.ai/"),
+        ("react", "React", "https://react.dev/"),
+        ("streamlit", "Streamlit", "https://streamlit.io/"),
+        ("selenium", "Selenium", "https://www.selenium.dev/"),
+        ("docker", "Docker", "https://www.docker.com/"),
+        ("githubactions", "Actions", "https://github.com/features/actions"),
     ]),
 ]
 SKILL_FULL_NAMES = {"Actions": "GitHub Actions"}
 
+# Tiles are drawn at several widths and the README picks one with <picture><source media="(... width ...)">, because
+# GitHub allows no CSS and an image's width is the only thing that decides how many fit on a line. The README's text
+# column is about 82 px narrower than the screen on a phone and 370 to 450 px narrower on a desktop (measured on the
+# live profile page, see tests/test_skill_tiles.py), so the width is chosen from the screen width:
+#   column wide enough for a panel in one row (640 px or more): the base tile, 80 px wide, eight to a line;
+#   narrower: a wider tile, so that exactly two fit on a line and a panel is four rows of two.
+# Each tier's width W satisfies 2*W <= narrowest column in its range and 3*W > widest column in its range, allowing 15 px
+# for a scroll bar. Ranges are screen widths in px, both ends included.
+SK_TITLE_W, SK_TITLE_H = 220, 34
+SK_TILE_W, SK_TILE_H, SK_MARGIN = 80, 74, 3
+SK_TIERS = [
+    (110, [(0, 399)]),
+    (145, [(400, 499)]),
+    (185, [(500, 599), (768, 899)]),
+    (230, [(600, 737), (900, 1089)]),
+]
 
-def build_skills(panel_id: str, icons: dict) -> str:
+
+def skill_tile_width_at(screen_width: int) -> int:
+    """The tile width the README serves at this screen width (what the <source> queries select)."""
+    for w, ranges in SK_TIERS:
+        if any(lo <= screen_width <= hi for lo, hi in ranges):
+            return w
+    return SK_TILE_W
+
+
+def _media(ranges: list[tuple[int, int]]) -> str:
+    return ", ".join(f"(min-width: {lo}px) and (max-width: {hi}px)" if lo else f"(max-width: {hi}px)" for lo, hi in ranges)
+
+
+def skill_file_stem(panel_id: str, n: int, width: int = SK_TILE_W) -> str:
+    items = next(i for p, _, i in SKILL_PANELS if p == panel_id)
+    stem = f"{panel_id}-{items[n][1].lower().replace('.', '')}"
+    return stem if width == SK_TILE_W else f"{stem}-{width}"
+
+
+def build_skills_title(panel_id: str) -> str:
     title, items = next((t, i) for p, t, i in SKILL_PANELS if p == panel_id)
-    width, tile_w, tile_h, gap, left = 392, 84, 72, 8, 16
-    height = 48 + 2 * (tile_h + gap) + 8
-    names = [SKILL_FULL_NAMES.get(label, label) for _, label in items]
-    out = svg_open(width, height, title, "Tools used in the projects on this page: " + ", ".join(names) + ".")
+    names = [SKILL_FULL_NAMES.get(label, label) for _, label, _ in items]
+    out = svg_open(SK_TITLE_W, SK_TITLE_H, title, "Tools used in the projects on this page: " + ", ".join(names) + ".")
     require_text_contrast(GOLD, BG, "skills panel title")
-    require_text_contrast(TEXT, TILE, "skills tile label")
-    out.append(f'<text x="{left}" y="28" font-size="14" font-weight="700" fill="{GOLD}">{escape(title)}</text>')
-    for n, (slug, label) in enumerate(items):
-        x = left + (n % 4) * (tile_w + gap)
-        y = 44 + (n // 4) * (tile_h + gap)
-        out.append(f'<rect x="{x}" y="{y}" width="{tile_w}" height="{tile_h}" rx="10" fill="{TILE}" stroke="{LINE}"/>')
-        if slug.startswith("mono:"):
-            out.append(f'<rect x="{x + 28}" y="{y + 9}" width="28" height="28" rx="7" fill="{GOLD}"/>')
-            out.append(f'<text x="{x + 42}" y="{y + 29}" text-anchor="middle" font-size="13" font-weight="800" '
-                       f'fill="{BG}">{escape(slug[5:])}</text>')
-        else:
-            out.append(icon_group(icons, slug, x + 28, y + 9, 28, TILE))
-        out.append(f'<text x="{x + tile_w / 2:g}" y="{y + 58}" text-anchor="middle" font-size="13" '
-                   f'fill="{TEXT}">{escape(label)}</text>')
+    out.append(f'<text x="{SK_MARGIN + 2}" y="22" font-size="14" font-weight="700" fill="{GOLD}">{escape(title)}</text>')
     out.append("</svg>")
     return "\n".join(out) + "\n"
+
+
+def build_skill_tile(panel_id: str, n: int, icons: dict, width: int = SK_TILE_W) -> str:
+    _, items = next((t, i) for p, t, i in SKILL_PANELS if p == panel_id)
+    slug, label, _ = items[n]
+    x = y = SK_MARGIN
+    card_w, card_h = width - 2 * SK_MARGIN, SK_TILE_H - 2 * SK_MARGIN
+    name = SKILL_FULL_NAMES.get(label, label)
+    out = svg_open(width, SK_TILE_H, name, f"{name}, one of the tools used in the projects on this page.")
+    require_text_contrast(TEXT, TILE, "skills tile label")
+    out.append(f'<rect x="{x}" y="{y}" width="{card_w}" height="{card_h}" rx="10" fill="{TILE}" stroke="{LINE}"/>')
+    ix = x + (card_w - 28) // 2
+    if slug.startswith("mono:"):
+        out.append(f'<rect x="{ix}" y="{y + 9}" width="28" height="28" rx="7" fill="{GOLD}"/>')
+        out.append(f'<text x="{ix + 14}" y="{y + 29}" text-anchor="middle" font-size="13" font-weight="800" '
+                   f'fill="{BG}">{escape(slug[5:])}</text>')
+    else:
+        out.append(icon_group(icons, slug, ix, y + 9, 28, TILE))
+    out.append(f'<text x="{x + card_w / 2:g}" y="{y + 57}" text-anchor="middle" font-size="12" '
+               f'fill="{TEXT}">{escape(label)}</text>')
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
+def skills_readme_block() -> str:
+    """The README's Tools block, one line: a title and the tiles for each panel. tests/test_skill_tiles.py compares it
+    with the README; print it with `python scripts/build_assets.py --tools-block`."""
+    lines = []
+    for panel, title, items in SKILL_PANELS:
+        lines.append(f'<picture><img src="assets/{panel}-title.svg" alt="{escape(title)}" width="{SK_TITLE_W}" '
+                     f'align="top"></picture><br>')
+        tiles = ""
+        for n, (_, label, url) in enumerate(items):
+            name = SKILL_FULL_NAMES.get(label, label)
+            host = url.removeprefix("https://").removeprefix("www.").rstrip("/")
+            host = host if host.startswith("github.com") else host.split("/")[0]
+            sources = "".join(f'<source media="{_media(r)}" srcset="assets/{skill_file_stem(panel, n, w)}.svg">'
+                              for w, r in SK_TIERS)
+            tiles += (f'<a href="{url}"><picture>{sources}<img src="assets/{skill_file_stem(panel, n)}.svg" '
+                      f'alt="{name}" title="{name}: {host}" align="top"></picture></a>')
+        lines.append(tiles + "<br>")
+    return "".join(lines)
 
 
 # ---------------------------------------------------------------- knowledge graph
@@ -1003,7 +1079,12 @@ def build_pill(pill_id: str) -> str:
 
 def build_all() -> dict[str, str]:
     icons = load_icons()
-    files = {f"{panel}.svg": build_skills(panel, icons) for panel, _, _ in SKILL_PANELS}
+    files = {}
+    for panel, _, items in SKILL_PANELS:
+        files[f"{panel}-title.svg"] = build_skills_title(panel)
+        for n in range(len(items)):
+            for w in [SK_TILE_W] + [t for t, _ in SK_TIERS]:
+                files[f"{skill_file_stem(panel, n, w)}.svg"] = build_skill_tile(panel, n, icons, w)
     files["graph-animated.svg"] = build_graph_svg(True)
     files["graph-static.svg"] = build_graph_svg(False)
     files["terminal-animated.svg"] = build_terminal(True)
@@ -1024,7 +1105,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--check", action="store_true", help="fail if a committed file differs")
     parser.add_argument("--out-dir", default=str(ROOT / "assets"))
+    parser.add_argument("--tools-block", action="store_true", help="print the README's Tools block and exit")
     args = parser.parse_args(argv)
+    if args.tools_block:
+        print(skills_readme_block())
+        return 0
     out_dir = Path(args.out_dir)
     files = build_all()
     bad = []
