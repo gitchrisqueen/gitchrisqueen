@@ -7,7 +7,7 @@
 
 <a href="https://christopherqueenconsulting.com/resume/?utm_source=github&utm_medium=readme&utm_campaign=resume"><img alt="Résumé" src="https://img.shields.io/badge/-R%C3%A9sum%C3%A9-e9d437?style=for-the-badge&labelColor=e9d437"></a>
 <a href="https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation"><img alt="Case study: what I caught and how I fixed it" src="https://img.shields.io/badge/-Case%20study-21262d?style=for-the-badge&labelColor=21262d"></a>
-<a href="https://christopherqueenconsulting.com/ai-ops-audit/"><img alt="The LLM audit: what you get" src="https://img.shields.io/badge/-LLM%20audit-21262d?style=for-the-badge&labelColor=21262d"></a>
+<a href="https://christopherqueenconsulting.com/ai-ops-audit/?utm_source=github&utm_medium=profile&utm_campaign=readme"><img alt="The LLM audit: what you get" src="https://img.shields.io/badge/-LLM%20audit-21262d?style=for-the-badge&labelColor=21262d"></a>
 <a href="https://www.linkedin.com/in/christopherqueen"><img alt="LinkedIn" src="https://img.shields.io/badge/-LinkedIn-21262d?style=for-the-badge&logo=linkedin&logoColor=white&labelColor=21262d"></a>
 <a href="mailto:christopher.queen@gmail.com"><img alt="Email" src="https://img.shields.io/badge/-Email-21262d?style=for-the-badge&logo=gmail&logoColor=white&labelColor=21262d"></a>
 
@@ -18,7 +18,7 @@
 
 <sub>The terminal above is <a href="https://github.com/gitchrisqueen/cqc"><code>cqc</code></a>, a small command line tool of AI-reliability checks served as MCP tools. <a href="https://github.com/gitchrisqueen/gitchrisqueen/blob/main/docs/PROOF.md#cqc-the-tool-behind-the-terminal">What each tool is based on</a>.</sub>
 
-<a href="https://gitchrisqueen.github.io/gitchrisqueen/graph/">
+<a href="https://gitchrisqueen.github.io/gitchrisqueen/graph/?utm_source=github&utm_medium=profile&utm_campaign=readme">
 <picture>
   <source media="(prefers-reduced-motion: no-preference)" srcset="assets/graph-animated.svg">
   <img src="assets/graph-static.svg" alt="A knowledge graph of what I work with. Christopher connects to four projects (LEM, the CPCC tool, hearing-copilot, panthera) and to the LLM audit. Practices (real checks, drift watch, human review, honest caveats) and tools (Python, FastAPI, Redis, React, Selenium, LangChain, LiteLLM, Docker, GitHub Actions, Node.js) tie them together. Select it to open the interactive version, where you can drag the nodes." width="776">
@@ -39,7 +39,7 @@ Test status, live: <a href="https://github.com/christopherqueenconsulting/linked
 <a href="https://github.com/gitchrisqueen/hearing-copilot/actions/workflows/ci.yml"><img alt="hearing-copilot automated tests and lint status" src="https://img.shields.io/github/actions/workflow/status/gitchrisqueen/hearing-copilot/ci.yml?branch=main&label=hearing-copilot&labelColor=24292f&color=57606a&style=flat-square"></a>
 <a href="https://github.com/gitchrisqueen/panthera/actions/workflows/mvp-morning.yml"><img alt="panthera daily pipeline run status" src="https://img.shields.io/github/actions/workflow/status/gitchrisqueen/panthera/mvp-morning.yml?branch=main&label=panthera%20daily%20run&labelColor=24292f&color=57606a&style=flat-square"></a>
 
-More: [the LEM live app](https://lem.christopherqueenconsulting.com/), [the CPCC case study](https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation), [hearing-copilot results and caveats](https://github.com/gitchrisqueen/hearing-copilot/blob/main/eval/diarization/RESULTS.md), [the panthera report](https://github.com/gitchrisqueen/panthera/blob/main/reports/BETTING_REPORT.md), and [cqc](https://github.com/gitchrisqueen/cqc), the tool behind the terminal above, and [every number with its caveats](https://github.com/gitchrisqueen/gitchrisqueen/blob/main/docs/PROOF.md). Also [CueSyncAR](https://github.com/gitchrisqueen/CueSyncAR), an iOS augmented-reality billiards prototype in Swift, declared paused on 2026-09-10.
+More: [the LEM live app](https://lem.christopherqueenconsulting.com/?utm_source=github&utm_medium=profile&utm_campaign=readme), [the CPCC case study](https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation), [hearing-copilot results and caveats](https://github.com/gitchrisqueen/hearing-copilot/blob/main/eval/diarization/RESULTS.md), [the panthera report](https://github.com/gitchrisqueen/panthera/blob/main/reports/BETTING_REPORT.md), and [cqc](https://github.com/gitchrisqueen/cqc), the tool behind the terminal above, and [every number with its caveats](https://github.com/gitchrisqueen/gitchrisqueen/blob/main/docs/PROOF.md). Also [CueSyncAR](https://github.com/gitchrisqueen/CueSyncAR), an iOS augmented-reality billiards prototype in Swift, declared paused on 2026-09-10.
 
 <details>
 <summary><img src="assets/pill-status.svg" alt="Live status of the four checks (select to open)" width="520"></summary>
@@ -86,7 +86,7 @@ My pull requests that were closed without merge are listed too: [full list on Gi
 
 **Hiring:** I start from the job someone still does by hand, write down the boundary before building, put a real check where the model is weakest, and leave a [hand-off document](https://github.com/christopherqueenconsulting/cpcc_task_automation/blob/master/docs/BRIGHTSPACE_AUTOMATION_HANDOFF.md) the next engineer can run from.
 
-**The audit:** one week, read-only access to your LLM logs and bills, a graded scorecard and a costed fix list. [See what you get](https://christopherqueenconsulting.com/ai-ops-audit/). [Book a free 30-minute call](https://christopherqueenconsulting.com/schedule/).
+**The audit:** one week, read-only access to your LLM logs and bills, a graded scorecard and a costed fix list. [See what you get](https://christopherqueenconsulting.com/ai-ops-audit/?utm_source=github&utm_medium=profile&utm_campaign=readme). [Book a free 30-minute call](https://christopherqueenconsulting.com/schedule/?utm_source=github&utm_medium=profile&utm_campaign=readme).
 </details>
 
 I build with AI coding agents in the loop; the upstream pull requests below were written that way too.
@@ -101,7 +101,7 @@ I build with AI coding agents in the loop; the upstream pull requests below were
 
 **Open source:** merged pull requests in LangChain, PostHog, lossless-claw, google_workspace_mcp and future-agi.
 
-**Contact:** [LinkedIn](https://www.linkedin.com/in/christopherqueen), christopher.queen@gmail.com, [christopherqueenconsulting.com](https://christopherqueenconsulting.com).
+**Contact:** [LinkedIn](https://www.linkedin.com/in/christopherqueen), christopher.queen@gmail.com, [christopherqueenconsulting.com](https://christopherqueenconsulting.com/?utm_source=github&utm_medium=profile&utm_campaign=readme).
 
 ## Contribution calendar
 
@@ -112,7 +112,7 @@ I build with AI coding agents in the loop; the upstream pull requests below were
 
 The snake grows a little with each active day it eats.
 
-For AI assistants: https://christopherqueenconsulting.com/for-agents/
+For AI assistants: [https://christopherqueenconsulting.com/for-agents/](https://christopherqueenconsulting.com/for-agents/?utm_source=github&utm_medium=profile&utm_campaign=readme)
 
 <picture>
   <source media="(prefers-reduced-motion: no-preference)" srcset="assets/footer-animated.svg">
