@@ -14,11 +14,11 @@ Three workflows live in `.github/workflows/`.
 | --- | --- | --- | --- |
 | `ci.yml` | every pull request and every push except a push to the `output` branch, no path filter | offline tests, `actionlint`, SVG lint, colour-contrast check, supply-chain and wording checks, a read-only dry run of the generator and of the snake | nothing (uploads artifacts only) |
 | `profile.yml` | daily at 06:23 UTC, on manual dispatch, and on a push to `main` that touches `scripts/**`, `data/**` or the workflow file | refreshes the two generated blocks in `README.md` | `README.md` on `main` |
-| `snake.yml` | daily at 05:37 UTC, on manual dispatch, and on a push to `main` that touches `scripts/**`, `data/**` or the workflow file | builds the contribution-calendar snake and its still-image twins | four SVG files on the `output` branch |
+| `snake.yml` | daily at 05:37 UTC, on manual dispatch, and on a push to `main` that touches `scripts/**`, `data/**` or the workflow file | draws the contribution-calendar snake (it grows as it eats active days) and its still-image twins | four SVG files on the `output` branch |
 
 The two writer workflows share one shape:
 
-1. `generate-text` (profile) or `generate-snake` (snake) has read-only access. It builds the new content, checks it, and uploads it as an artifact. The snake generator is third-party code, pinned to a full commit SHA, and runs only in a job that has a read-only token and nothing to steal.
+1. `generate-text` (profile) or `generate-snake` (snake) has read-only access. It builds the new content, checks it, and uploads it as an artifact. The snake generator is this repo's own `scripts/make_growing_snake.py` (standard library only); it reads the contribution calendar with the read-only token and fails the run on any malformed value. No third-party action is used.
 2. `publish` is the only job that can write. It runs only on `main`, downloads the artifact, checks it again with the scripts that are on `main`, copies only the named files, and commits as `github-actions[bot]`. It executes nothing from the artifact. If generation failed, `publish` still commits any block that was good, then fails the run on purpose.
 3. `report` runs only when the run failed. It opens one issue for its own workflow, or updates the one that is already open. The body is fixed text: workflow, stage, which generated block failed, run link.
 4. `close` runs only after a fully clean run and closes that workflow's open issue.
@@ -54,7 +54,7 @@ Run these once before the first run, and again after any settings change. The ex
 | Prerequisite | Check | Expect |
 | --- | --- | --- |
 | Actions are enabled | `gh api repos/gitchrisqueen/gitchrisqueen/actions/permissions --jq '{enabled, allowed_actions}'` | `enabled` is `true` |
-| Allowed actions include what the workflows use | `gh api repos/gitchrisqueen/gitchrisqueen/actions/permissions/selected-actions` (only meaningful when `allowed_actions` is `selected`) | patterns for `actions/*` and `Platane/snk@<40-hex sha>`; the sha equals the one in `snake.yml` and `ci.yml` |
+| Allowed actions include what the workflows use | `gh api repos/gitchrisqueen/gitchrisqueen/actions/permissions/selected-actions` (only meaningful when `allowed_actions` is `selected`) | a pattern for `actions/*` only; every action is pinned by full commit SHA |
 | Issues are enabled | `gh repo view gitchrisqueen/gitchrisqueen --json hasIssuesEnabled --jq .hasIssuesEnabled` | `true` (if `false`, the report and close jobs do nothing, so failures raise no issue) |
 | You are watching Issues for this repository | `gh api repos/gitchrisqueen/gitchrisqueen/subscription --jq '{subscribed, ignored}'` | `subscribed` is `true` and `ignored` is `false`. A 404 means you are not watching. The command cannot show which events you get, so open the Watch menu on the repository page and choose All activity, or Custom with Issues ticked. A failure issue notifies only people who watch Issues; if nobody does, a failed run is silent |
 | Labels exist | `gh label list --repo gitchrisqueen/gitchrisqueen --search profile-automation` | both labels below are listed |
@@ -88,7 +88,9 @@ python scripts/check_contrast.py assets/colors.json
 
 The script fails below 4.5:1 for text pairs and below 3:1 for graphics pairs. The empty-day level of the calendar is exempt from the 3:1 rule because it carries no information. CI runs the same command on every push.
 
-The calendar colours also appear in the `outputs:` lines of the snake generator step in `snake.yml` and `ci.yml`. If you change a colour, change `assets/colors.json` first, then both of those places, then run the script.
+The calendar colours live only in `assets/colors.json`; `scripts/make_growing_snake.py` reads them from there. If you change a colour, edit that file, then run `python scripts/check_contrast.py assets/colors.json`.
+
+The card, tool-logo and terminal graphics (`assets/card-*.svg`, `assets/skills.svg`, `assets/gate-*.svg`) are built by `python scripts/build_assets.py` from the text inside that script and `data/icons.json` (logo paths from simple-icons, CC0). Edit the script, rebuild, commit the SVGs; CI fails with `out of date` if a committed SVG differs from the build. To add a logo, copy its path from the simple-icons package into `data/icons.json`.
 
 ## First-run checklist
 
