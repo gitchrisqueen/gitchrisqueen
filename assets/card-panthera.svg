@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 392 402" width="392" height="402" role="img">
 <title>panthera</title>
-<desc>panthera. An MLB prediction pipeline, no real money. At stake: Scheduled runs produced nothing for 14 game days, and every run showed green. What I did: Fixed the cause; a daily health check now flags a dead run the next morning. I also won't call +7.99% an edge: it is about 1.2 standard errors from zero. Sound familiar? Do your scheduled jobs ever run green for weeks while quietly producing nothing? Built with Python and GitHub Actions.</desc>
+<desc>panthera. An MLB prediction pipeline, no real money. At stake: Scheduled runs produced no picks for 14 slate days, and every run showed green. What I did: Fixed the cause; a daily health check now flags a no-picks slate about a day later. I also won't call +7.99% an edge: it is about 1.2 standard errors from zero. Sound familiar? Do your scheduled jobs ever run green for weeks while quietly producing nothing? Built with Python and GitHub Actions.</desc>
 <style>text{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}.m{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace}</style>
 <rect width="392" height="402" fill="#0d1117"/>
 <defs><clipPath id="r"><rect x="1" y="1" width="390" height="400" rx="12"/></clipPath></defs>
@@ -11,13 +11,13 @@
 <text x="26" y="64" font-size="22" font-weight="700" fill="#e6edf3">panthera</text>
 <text x="26" y="88" font-size="13.5" fill="#9ba7b4">An MLB prediction pipeline, no real money.</text>
 <text x="26" y="118" font-size="13" font-weight="700" fill="#e9d437">At stake</text>
-<text x="26" y="138" font-size="13.5" fill="#e6edf3">Scheduled runs produced nothing for 14</text>
-<text x="26" y="157" font-size="13.5" fill="#e6edf3">game days, and every run showed green.</text>
+<text x="26" y="138" font-size="13.5" fill="#e6edf3">Scheduled runs produced no picks for 14</text>
+<text x="26" y="157" font-size="13.5" fill="#e6edf3">slate days, and every run showed green.</text>
 <text x="26" y="188" font-size="13" font-weight="700" fill="#e9d437">What I did</text>
 <text x="26" y="208" font-size="13.5" fill="#e6edf3">Fixed the cause; a daily health check now</text>
-<text x="26" y="227" font-size="13.5" fill="#e6edf3">flags a dead run the next morning. I also</text>
-<text x="26" y="246" font-size="13.5" fill="#e6edf3">won't call +7.99% an edge: it is about</text>
-<text x="26" y="265" font-size="13.5" fill="#e6edf3">1.2 standard errors from zero.</text>
+<text x="26" y="227" font-size="13.5" fill="#e6edf3">flags a no-picks slate about a day later.</text>
+<text x="26" y="246" font-size="13.5" fill="#e6edf3">I also won't call +7.99% an edge: it is</text>
+<text x="26" y="265" font-size="13.5" fill="#e6edf3">about 1.2 standard errors from zero.</text>
 <text x="26" y="296" font-size="13" font-weight="700" fill="#e9d437">Sound familiar?</text>
 <text x="26" y="316" font-size="13.5" fill="#e6edf3">Do your scheduled jobs ever run green for</text>
 <text x="26" y="335" font-size="13.5" fill="#e6edf3">weeks while quietly producing nothing?</text>

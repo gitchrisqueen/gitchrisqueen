@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 392 402" width="392" height="402" role="img">
 <title>LinkedIn Engagement Manager</title>
-<desc>LinkedIn Engagement Manager. A LinkedIn content and engagement app. At stake: Users stuck on an old release for a day, and nobody told. What I did: Safe database changes ship on their own; risky ones hold and alert me. Of 134 past changes, 102 would ship on their own. Sound familiar? Has a release sat unshipped because a gate held it and no one told you? Built with FastAPI, Celery, Redis, MySQL, React and Docker.</desc>
+<desc>LinkedIn Engagement Manager. A LinkedIn content and engagement app. At stake: The live app sat on an old release for a day, and nobody told. What I did: Safe database changes ship on their own; risky ones hold and alert me. Of 134 past changes, 102 would ship on their own. Sound familiar? Has a release sat unshipped because a gate held it and no one told you? Built with FastAPI, Celery, Redis, MySQL, React and Docker.</desc>
 <style>text{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}.m{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace}</style>
 <rect width="392" height="402" fill="#0d1117"/>
 <defs><clipPath id="r"><rect x="1" y="1" width="390" height="400" rx="12"/></clipPath></defs>
@@ -11,8 +11,8 @@
 <text x="26" y="64" font-size="22" font-weight="700" fill="#e6edf3">LinkedIn Engagement Manager</text>
 <text x="26" y="88" font-size="13.5" fill="#9ba7b4">A LinkedIn content and engagement app.</text>
 <text x="26" y="118" font-size="13" font-weight="700" fill="#e9d437">At stake</text>
-<text x="26" y="138" font-size="13.5" fill="#e6edf3">Users stuck on an old release for a day,</text>
-<text x="26" y="157" font-size="13.5" fill="#e6edf3">and nobody told.</text>
+<text x="26" y="138" font-size="13.5" fill="#e6edf3">The live app sat on an old release for a</text>
+<text x="26" y="157" font-size="13.5" fill="#e6edf3">day, and nobody told.</text>
 <text x="26" y="188" font-size="13" font-weight="700" fill="#e9d437">What I did</text>
 <text x="26" y="208" font-size="13.5" fill="#e6edf3">Safe database changes ship on their own;</text>
 <text x="26" y="227" font-size="13.5" fill="#e6edf3">risky ones hold and alert me. Of 134 past</text>

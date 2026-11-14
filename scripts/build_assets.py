@@ -654,7 +654,7 @@ CARDS = [
     {
         "id": "lem", "tag": "Live web app", "title": "LinkedIn Engagement Manager",
         "what": "A LinkedIn content and engagement app.",
-        "stake": ["Users stuck on an old release for a day,", "and nobody told."],
+        "stake": ["The live app sat on an old release for a", "day, and nobody told."],
         "did": ["Safe database changes ship on their own;", "risky ones hold and alert me. Of 134 past", "changes, 102 would ship on their own."],
         "familiar": ["Has a release sat unshipped because a", "gate held it and no one told you?"],
         "icons": ["fastapi", "celery", "redis", "mysql", "react", "docker"],
@@ -663,8 +663,8 @@ CARDS = [
     {
         "id": "cpcc", "tag": "Instructor admin tool", "title": "CPCC Task Automation",
         "what": "Grading and admin tool for my own courses.",
-        "stake": ["One false \"does not compile\" verdict floored", "a student's whole grade."],
-        "did": ["A real compiler now overrules the model.", "\"Can't verify\" never counts as a fail, and", "student code is compiled, never run."],
+        "stake": ["One false \"does not compile\" verdict floored", "a submission's whole grade."],
+        "did": ["A real compiler now overrules the model.", "\"Can't verify\" never counts as a fail; the", "compile check never runs student code."],
         "familiar": ["Does an AI verdict in your workflow ever count", "with no hard check behind it?"],
         "icons": ["python", "streamlit", "selenium", "langchain"],
         "built": "Python, Streamlit, Selenium and LangChain",
@@ -681,8 +681,8 @@ CARDS = [
     {
         "id": "panthera", "tag": "Prediction pipeline, paper only", "title": "panthera",
         "what": "An MLB prediction pipeline, no real money.",
-        "stake": ["Scheduled runs produced nothing for 14", "game days, and every run showed green."],
-        "did": ["Fixed the cause; a daily health check now", "flags a dead run the next morning. I also", "won't call +7.99% an edge: it is about", "1.2 standard errors from zero."],
+        "stake": ["Scheduled runs produced no picks for 14", "slate days, and every run showed green."],
+        "did": ["Fixed the cause; a daily health check now", "flags a no-picks slate about a day later.", "I also won't call +7.99% an edge: it is", "about 1.2 standard errors from zero."],
         "familiar": ["Do your scheduled jobs ever run green for", "weeks while quietly producing nothing?"],
         "icons": ["python", "githubactions"],
         "built": "Python and GitHub Actions",

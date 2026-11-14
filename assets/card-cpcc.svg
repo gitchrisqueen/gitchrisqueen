@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 392 402" width="392" height="402" role="img">
 <title>CPCC Task Automation</title>
-<desc>CPCC Task Automation. Grading and admin tool for my own courses. At stake: One false "does not compile" verdict floored a student's whole grade. What I did: A real compiler now overrules the model. "Can't verify" never counts as a fail, and student code is compiled, never run. Sound familiar? Does an AI verdict in your workflow ever count with no hard check behind it? Built with Python, Streamlit, Selenium and LangChain.</desc>
+<desc>CPCC Task Automation. Grading and admin tool for my own courses. At stake: One false "does not compile" verdict floored a submission's whole grade. What I did: A real compiler now overrules the model. "Can't verify" never counts as a fail; the compile check never runs student code. Sound familiar? Does an AI verdict in your workflow ever count with no hard check behind it? Built with Python, Streamlit, Selenium and LangChain.</desc>
 <style>text{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}.m{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace}</style>
 <rect width="392" height="402" fill="#0d1117"/>
 <defs><clipPath id="r"><rect x="1" y="1" width="390" height="400" rx="12"/></clipPath></defs>
@@ -12,11 +12,11 @@
 <text x="26" y="88" font-size="13.5" fill="#9ba7b4">Grading and admin tool for my own courses.</text>
 <text x="26" y="118" font-size="13" font-weight="700" fill="#e9d437">At stake</text>
 <text x="26" y="138" font-size="13.5" fill="#e6edf3">One false "does not compile" verdict floored</text>
-<text x="26" y="157" font-size="13.5" fill="#e6edf3">a student's whole grade.</text>
+<text x="26" y="157" font-size="13.5" fill="#e6edf3">a submission's whole grade.</text>
 <text x="26" y="188" font-size="13" font-weight="700" fill="#e9d437">What I did</text>
 <text x="26" y="208" font-size="13.5" fill="#e6edf3">A real compiler now overrules the model.</text>
-<text x="26" y="227" font-size="13.5" fill="#e6edf3">"Can't verify" never counts as a fail, and</text>
-<text x="26" y="246" font-size="13.5" fill="#e6edf3">student code is compiled, never run.</text>
+<text x="26" y="227" font-size="13.5" fill="#e6edf3">"Can't verify" never counts as a fail; the</text>
+<text x="26" y="246" font-size="13.5" fill="#e6edf3">compile check never runs student code.</text>
 <text x="26" y="277" font-size="13" font-weight="700" fill="#e9d437">Sound familiar?</text>
 <text x="26" y="297" font-size="13.5" fill="#e6edf3">Does an AI verdict in your workflow ever count</text>
 <text x="26" y="316" font-size="13.5" fill="#e6edf3">with no hard check behind it?</text>

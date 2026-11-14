@@ -17,7 +17,7 @@
       "id": "cpcc",
       "label": "CPCC tool",
       "kind": "project",
-      "note": "A real compiler overrules the model on compile errors; student code is compiled, never run."
+      "note": "A real compiler overrules the model on compile errors; the compile check never runs student code."
     },
     {
       "id": "hearing",
