@@ -35,7 +35,7 @@
       "id": "audit",
       "label": "LLM audit",
       "kind": "offer",
-      "note": "An offer only: no engagement delivered yet, and the sample scorecard is synthetic. One week, read-only, ending in a graded scorecard and a costed fix list."
+      "note": "One-week, read-only audit of LLM spend and reliability, ending in a graded scorecard and a costed fix list."
     },
     {
       "id": "checks",
@@ -110,6 +110,12 @@
       "id": "node",
       "label": "Node.js",
       "kind": "tech"
+    },
+    {
+      "id": "cqc",
+      "label": "cqc",
+      "kind": "project",
+      "note": "A small command line tool of AI-reliability checks, served as MCP tools. The terminal above runs it."
     }
   ],
   "edges": [
@@ -208,6 +214,26 @@
     [
       "panthera",
       "caveats"
+    ],
+    [
+      "me",
+      "cqc"
+    ],
+    [
+      "cqc",
+      "python"
+    ],
+    [
+      "cqc",
+      "checks"
+    ],
+    [
+      "cqc",
+      "drift"
+    ],
+    [
+      "cqc",
+      "review"
     ]
   ]
 }

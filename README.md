@@ -3,7 +3,7 @@
   <img src="assets/header-static.svg" alt="Christopher Queen, Applied AI / Forward-Deployed Engineer" width="100%">
 </picture>
 
-**I build LLM systems with real checks and monitoring, aimed at catching problems before customers see them.**
+**I build LLM systems with real checks and traceability, aimed at catching problems before customers see them.**
 
 <a href="https://christopherqueenconsulting.com/resume/?utm_source=github&utm_medium=readme&utm_campaign=resume"><img alt="Résumé" src="https://img.shields.io/badge/-R%C3%A9sum%C3%A9-e9d437?style=for-the-badge&labelColor=e9d437"></a>
 <a href="https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation"><img alt="Case study: what I caught and how I fixed it" src="https://img.shields.io/badge/-Case%20study-21262d?style=for-the-badge&labelColor=21262d"></a>
@@ -13,23 +13,21 @@
 
 <picture>
   <source media="(prefers-reduced-motion: no-preference)" srcset="assets/terminal-animated.svg">
-  <img src="assets/terminal-static.svg" alt="A simulated terminal, not a real tool or session. It lists four commands, connects my skills over MCP and lists six tools (llm_audit, real_check, drift_watch, browser_flow, ci_pipeline, human_gate), calls llm_audit on synthetic sample data and prints sample grades, then prints: Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: open to Forward-Deployed Engineer roles. Builds LLM systems with real checks. Stack: Python, FastAPI, React, Docker. Models: LangChain, LiteLLM, OpenRouter. Rule: a real check beats a prompt. Off duty: books, billiards, aquariums." width="776">
+  <img src="assets/terminal-static.svg" alt="A terminal session with the cqc command line tool: cqc --help lists four commands; cqc mcp connect skills lists six tools (llm_audit, real_check, drift_watch, browser_flow, ci_pipeline, human_gate); cqc call llm_audit --sample prints grades for spend efficiency, reliability, observability, governance and leverage; cqc about prints: Title: Applied AI / FDE. Base: Jacksonville FL, remote. Status: open to FDE roles. Builds LLM systems with real checks. Stack: Python, FastAPI, React. Models: LangChain, LiteLLM. Rule: checks beat prompts." width="776">
 </picture>
 
-<sub>A simulated terminal for fun: <code>cqc</code> is not a real tool, the six tool names are labels for skills, the sample grades are invented, and nothing in it is a recording. <a href="https://github.com/gitchrisqueen/gitchrisqueen/blob/main/docs/PROOF.md#the-six-skills-in-the-terminal-graphic">Where each skill comes from</a>.</sub>
+<sub>The terminal above is <a href="https://github.com/gitchrisqueen/cqc"><code>cqc</code></a>, a small command line tool of AI-reliability checks served as MCP tools. <a href="https://github.com/gitchrisqueen/gitchrisqueen/blob/main/docs/PROOF.md#cqc-the-tool-behind-the-terminal">What each tool is based on</a>.</sub>
 
 <a href="https://gitchrisqueen.github.io/gitchrisqueen/graph/">
 <picture>
   <source media="(prefers-reduced-motion: no-preference)" srcset="assets/graph-animated.svg">
-  <img src="assets/graph-static.svg" alt="A knowledge graph of what I work with. Christopher connects to four projects (LEM, the CPCC tool, hearing-copilot, panthera) and to the LLM audit, which is an offer with no engagement delivered yet. Practices (real checks, drift watch, human review, honest caveats) and tools (Python, FastAPI, Redis, React, Selenium, LangChain, LiteLLM, Docker, GitHub Actions, Node.js) tie them together. Select it to open the interactive version, where you can drag the nodes." width="776">
+  <img src="assets/graph-static.svg" alt="A knowledge graph of what I work with. Christopher connects to four projects (LEM, the CPCC tool, hearing-copilot, panthera) and to the LLM audit. Practices (real checks, drift watch, human review, honest caveats) and tools (Python, FastAPI, Redis, React, Selenium, LangChain, LiteLLM, Docker, GitHub Actions, Node.js) tie them together. Select it to open the interactive version, where you can drag the nodes." width="776">
 </picture>
 </a>
 
-<sub>Gold dots are projects, green dots are practices, the pale dot is an offer with no engagement delivered yet, logos are tools. Select the graph to open the interactive version and drag the nodes.</sub>
+<sub>Gold dots are projects, green dots are practices, logos are tools. Select the graph to open the interactive version and drag the nodes.</sub>
 
 ## What I've built
-
-<sub>Each card says what would be at stake if real money rode on it. None of them earns money today.</sub>
 
 <a href="https://github.com/christopherqueenconsulting/linkedin_engagement_manager"><img alt="LinkedIn Engagement Manager. A LinkedIn content and engagement app. At stake: The live app sat on an old release for a day, and nobody told. What I did: Safe database changes ship on their own; risky ones hold and alert me. Of 134 past changes, 102 would ship on their own. Sound familiar? Has a release sat unshipped because a gate held it and no one told you? Built with FastAPI, Celery, Redis, MySQL, React and Docker." src="assets/card-lem.svg" width="386"></a>
 <a href="https://github.com/christopherqueenconsulting/cpcc_task_automation"><img alt="CPCC Task Automation. Grading and admin tool for my own courses. At stake: One false &quot;does not compile&quot; verdict floored a submission's whole grade. What I did: A real compiler now overrules the model. &quot;Can't verify&quot; never counts as a fail; the compile check never runs student code. Sound familiar? Does an AI verdict in your workflow ever count with no hard check behind it? Built with Python, Streamlit, Selenium and LangChain." src="assets/card-cpcc.svg" width="386"></a>
@@ -41,7 +39,7 @@ Test status, live: <a href="https://github.com/christopherqueenconsulting/linked
 <a href="https://github.com/gitchrisqueen/hearing-copilot/actions/workflows/ci.yml"><img alt="hearing-copilot automated tests and lint status" src="https://img.shields.io/github/actions/workflow/status/gitchrisqueen/hearing-copilot/ci.yml?branch=main&label=hearing-copilot&labelColor=24292f&color=57606a&style=flat-square"></a>
 <a href="https://github.com/gitchrisqueen/panthera/actions/workflows/mvp-morning.yml"><img alt="panthera daily pipeline run status" src="https://img.shields.io/github/actions/workflow/status/gitchrisqueen/panthera/mvp-morning.yml?branch=main&label=panthera%20daily%20run&labelColor=24292f&color=57606a&style=flat-square"></a>
 
-More: [the LEM live app](https://lem.christopherqueenconsulting.com/), [the CPCC case study](https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation), [hearing-copilot results and caveats](https://github.com/gitchrisqueen/hearing-copilot/blob/main/eval/diarization/RESULTS.md), [the panthera report](https://github.com/gitchrisqueen/panthera/blob/main/reports/BETTING_REPORT.md), and [every number with its caveats](https://github.com/gitchrisqueen/gitchrisqueen/blob/main/docs/PROOF.md). Also [CueSyncAR](https://github.com/gitchrisqueen/CueSyncAR), an iOS augmented-reality billiards prototype in Swift, declared paused on 2026-09-10.
+More: [the LEM live app](https://lem.christopherqueenconsulting.com/), [the CPCC case study](https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation), [hearing-copilot results and caveats](https://github.com/gitchrisqueen/hearing-copilot/blob/main/eval/diarization/RESULTS.md), [the panthera report](https://github.com/gitchrisqueen/panthera/blob/main/reports/BETTING_REPORT.md), and [cqc](https://github.com/gitchrisqueen/cqc), the tool behind the terminal above, and [every number with its caveats](https://github.com/gitchrisqueen/gitchrisqueen/blob/main/docs/PROOF.md). Also [CueSyncAR](https://github.com/gitchrisqueen/CueSyncAR), an iOS augmented-reality billiards prototype in Swift, declared paused on 2026-09-10.
 
 <details>
 <summary><img src="assets/pill-status.svg" alt="Live status of the four checks (select to open)" width="520"></summary>
@@ -91,7 +89,19 @@ My pull requests that were closed without merge are listed too: [full list on Gi
 **The audit:** one week, read-only access to your LLM logs and bills, a graded scorecard and a costed fix list. [See what you get](https://christopherqueenconsulting.com/ai-ops-audit/). [Book a free 30-minute call](https://christopherqueenconsulting.com/schedule/).
 </details>
 
-Straight talk: none of this has an outside paying customer yet, the audit has not been sold yet, and most of the work here, including the upstream pull requests, was written with AI coding agents.
+I build with AI coding agents in the loop; the upstream pull requests below were written that way too.
+
+## At a glance
+
+**Christopher Queen**, Applied AI and Forward-Deployed Engineer in Jacksonville, FL (remote). Open to Forward-Deployed Engineer roles. I also run a one-week LLM spend and reliability audit.
+
+**Skills:** Python, JavaScript and Node.js, Swift; FastAPI, Celery, Redis, MySQL, React, Streamlit; LLM systems with LangChain, LiteLLM, OpenRouter and MCP; evals and real checks; observability with PostHog and Latitude; browser automation with Selenium; Docker and GitHub Actions.
+
+**Projects:** [LinkedIn Engagement Manager](https://github.com/christopherqueenconsulting/linkedin_engagement_manager) ships safe database changes automatically and holds risky ones. [CPCC Task Automation](https://github.com/christopherqueenconsulting/cpcc_task_automation) lets a real compiler overrule the model. [hearing-copilot](https://github.com/gitchrisqueen/hearing-copilot) labels speakers, scored on real court audio. [panthera](https://github.com/gitchrisqueen/panthera) is a prediction pipeline with a daily health check. [cqc](https://github.com/gitchrisqueen/cqc) is the command line tool behind the terminal above.
+
+**Open source:** merged pull requests in LangChain, PostHog, lossless-claw, google_workspace_mcp and future-agi.
+
+**Contact:** [LinkedIn](https://www.linkedin.com/in/christopherqueen), christopher.queen@gmail.com, [christopherqueenconsulting.com](https://christopherqueenconsulting.com).
 
 ## Contribution calendar
 
@@ -101,8 +111,6 @@ Straight talk: none of this has an outside paying customer yet, the audit has no
 </picture>
 
 The snake grows a little with each active day it eats.
-
-LinkedIn: [linkedin.com/in/christopherqueen](https://www.linkedin.com/in/christopherqueen) · Email: christopher.queen@gmail.com · Consulting: [Christopher Queen Consulting](https://christopherqueenconsulting.com)
 
 For AI assistants: https://christopherqueenconsulting.com/for-agents/
 

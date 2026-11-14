@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 366" width="520" height="366" role="img">
-<title>About me, as a simulated terminal session</title>
-<desc>A simulated terminal, not a real tool or a real session. First cqc --help lists four commands. Then it connects my skills over MCP and lists six tools: llm_audit, real_check, drift_watch, browser_flow, ci_pipeline and human_gate. Then it calls llm_audit on synthetic sample data and prints sample grades. Then cqc about prints: Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: open to Forward-Deployed Engineer roles. Builds LLM systems with real checks. Stack: Python, FastAPI, React, Docker. Models: LangChain, LiteLLM, OpenRouter. Rule: a real check beats a prompt. Off duty: books, billiards, aquariums.</desc>
+<title>The cqc command line tool</title>
+<desc>A terminal session with the cqc command line tool. First cqc --help lists four commands. Then it connects my skills over MCP and lists six tools: llm_audit, real_check, drift_watch, browser_flow, ci_pipeline and human_gate. Then it calls llm_audit on sample data and prints grades. Then cqc about prints: Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: open to Forward-Deployed Engineer roles. Builds LLM systems with real checks. Stack: Python, FastAPI, React, Docker. Models: LangChain, LiteLLM, OpenRouter. Rule: a real check beats a prompt. Off duty: books, billiards, aquariums.</desc>
 <style>text{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}.m{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace}</style>
 <rect width="520" height="366" fill="#0d1117"/>
 <rect x="8" y="8" width="504" height="350" rx="12" fill="#161b22" stroke="#30363d"/>
 <circle cx="30" cy="30" r="6" fill="#ff7b72"/>
 <circle cx="50" cy="30" r="6" fill="#e9d437"/>
 <circle cx="70" cy="30" r="6" fill="#3fb950"/>
-<text x="260" y="35" text-anchor="middle" font-size="16" fill="#9ba7b4">simulated terminal (illustration)</text>
+<text x="260" y="35" text-anchor="middle" font-size="16" fill="#9ba7b4">cqc</text>
 <text class="m" x="26" y="66" font-size="16" fill="#e9d437" xml:space="preserve">$ cqc about --verbose</text>
 <text class="m" x="26" y="100" font-size="16" fill="#e9d437" xml:space="preserve"> ####   ####  </text>
 <text class="m" x="26" y="117" font-size="16" fill="#e9d437" xml:space="preserve">#    # #    # </text>

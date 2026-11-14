@@ -280,11 +280,11 @@ def test_terminal_static_twin_has_no_motion_and_every_row_fits():
         assert len(value) <= 32
 
 
-def test_terminal_is_labelled_simulated_and_has_no_fake_identity():
+def test_terminal_shows_the_cqc_tool_and_has_no_fake_identity():
     for animated in (True, False):
         svg = assets.build_terminal(animated)
-        assert "simulated terminal" in svg
-        assert "christopher@" not in svg.lower() and "neofetch" not in svg.lower()
+        assert ">cqc<" in svg
+        assert "christopher@" not in svg.lower() and "neofetch" not in svg.lower() and "simulated" not in svg.lower()
 
 
 def test_terminal_animated_covers_do_not_leak_across_acts_and_respect_reduced_motion():
@@ -349,12 +349,13 @@ def test_card_and_skills_images_stay_narrow_enough_for_a_phone():
         assert width <= 520, f"{name} is {width} wide"
 
 
-def test_terminal_sample_report_is_labelled_synthetic_and_tools_match_the_skills_list():
+def test_terminal_text_matches_what_the_cqc_tool_prints():
     svg = assets.build_terminal(True)
-    assert "synthetic data" in svg and "sample output, not a real audit" in svg
-    for name, _ in assets.TOOLS:
-        assert name in svg
+    for name, desc in assets.TOOLS:
+        assert name in svg and desc in svg
+    assert "connected. 6 tools found:" in svg and "llm_audit: read-only, sample data" in svg
     assert len(assets.TOOLS) == 6 and all(g in "ABC" for _, g, _ in assets.AUDIT_ROWS)
+
 
 
 def test_pills_are_lined_up_with_the_readme_and_say_select_to_open():

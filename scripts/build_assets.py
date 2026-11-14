@@ -514,7 +514,7 @@ def _pct(seconds: float) -> str:
 
 
 def build_terminal(animated: bool) -> str:
-    """Four acts: --help, an MCP connection that lists my skills as tools, one tool call with a synthetic sample report, then about.  # preflight: ok
+    """Four acts: --help, an MCP connection that lists my skills as tools, one tool call with a sample report, then about.  # preflight: ok
 
     The static twin shows only the last act.
     """
@@ -549,11 +549,11 @@ def build_terminal(animated: bool) -> str:
     def shown(start: float, end: float) -> str:
         return f' class="{appear(start, end)}"' if animated else ""
 
-    out = svg_open(width, height, "About me, as a simulated terminal session",
-                   "A simulated terminal, not a real tool or a real session. First cqc --help lists four commands. Then it "  # preflight: ok
+    out = svg_open(width, height, "The cqc command line tool",
+                   "A terminal session with the cqc command line tool. First cqc --help lists four commands. Then it "
                    "connects my skills over MCP and lists six tools: llm_audit, real_check, drift_watch, browser_flow, "
-                   "ci_pipeline and human_gate. Then it calls llm_audit on synthetic sample data and prints sample "
-                   "grades. Then cqc about prints: Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: "  # preflight: ok
+                   "ci_pipeline and human_gate. Then it calls llm_audit on sample data and prints "
+                   "grades. Then cqc about prints: Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: "
                    "open to Forward-Deployed Engineer roles. Builds LLM systems with real checks. Stack: Python, "
                    "FastAPI, React, Docker. Models: LangChain, LiteLLM, OpenRouter. Rule: a real check beats a prompt. "
                    "Off duty: books, billiards, aquariums.", "")
@@ -563,7 +563,7 @@ def build_terminal(animated: bool) -> str:
     require_text_contrast(MUTED, TILE, "terminal window title")
     for fg in (GOLD, TEXT, GREEN, RED):
         require_text_contrast(fg, TILE, "terminal text")
-    out.append(f'<text x="260" y="35" text-anchor="middle" font-size="16" fill="{MUTED}">simulated terminal (illustration)</text>')  # preflight: ok
+    out.append(f'<text x="260" y="35" text-anchor="middle" font-size="16" fill="{MUTED}">cqc</text>')  # preflight: ok
 
     if animated:
         # Act 1: --help
@@ -589,7 +589,7 @@ def build_terminal(animated: bool) -> str:
         out.append(f'<path class="{appear(t + 0.8, b1)}" d="M{width - 50} 89 l4 4 l8 -9" fill="none" stroke="{GREEN}" '
                    f'stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>')
         out.append(f'<text class="m {appear(t + 1.6, b1)}" x="46" y="120" font-size="16" fill="{MUTED}">'
-                   f'connected (simulated). {len(TOOLS)} tools found:</text>')
+                   f'connected. {len(TOOLS)} tools found:</text>')
         t, y = t + 2.4, 148
         for name, note in TOOLS:
             vis = appear(t, b1)
@@ -598,13 +598,13 @@ def build_terminal(animated: bool) -> str:
             out.append(f'<text class="m {vis}" x="186" y="{y}" font-size="16" fill="{TEXT}">{escape(note)}</text>')
             t += 0.55
             y += 26
-        # Act 3: call one tool, read the report (synthetic sample)
+        # Act 3: call one tool, read the report (sample data)
         c0_, c1_ = ACTS[2]
         out += typed("$ cqc call llm_audit --sample", 26, 66, c0_ + 0.3, 1.7, c1_, GOLD)
         t = c0_ + 2.4
         vis = appear(t, c1_)
         out.append(f'<circle class="{vis}" cx="32" cy="90" r="4" fill="{TEXT}"/>')
-        out.append(f'<text class="m {vis}" x="46" y="94" font-size="16" fill="{TEXT}">llm_audit: read-only, synthetic data</text>')  # preflight: ok
+        out.append(f'<text class="m {vis}" x="46" y="94" font-size="16" fill="{TEXT}">llm_audit: read-only, sample data</text>')  # preflight: ok
         t, y = t + 1.0, 126
         for area, grade, bars in AUDIT_ROWS:
             vis = appear(t, c1_)
@@ -619,8 +619,6 @@ def build_terminal(animated: bool) -> str:
             y += 26
         vis = appear(t + 0.4, c1_)
         out.append(f'<text class="m {vis}" x="46" y="{y + 8}" font-size="16" fill="{GOLD}">next: put a real check behind the model</text>')  # preflight: ok
-        out.append(f'<text class="m {appear(t + 1.2, c1_)}" x="46" y="{y + 32}" font-size="16" fill="{MUTED}">'
-                   f'sample output, not a real audit</text>')
         c0, c1 = ACTS[3]
     else:
         c0, c1 = 0.0, TERM_CYCLE
