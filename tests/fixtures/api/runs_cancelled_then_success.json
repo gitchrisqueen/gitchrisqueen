@@ -1,0 +1,26 @@
+{
+  "total_count": 3,
+  "workflow_runs": [
+    {
+      "id": 1000,
+      "event": "push",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "created_at": "2026-11-13T00:00:00Z"
+    },
+    {
+      "id": 1001,
+      "event": "push",
+      "status": "completed",
+      "conclusion": "skipped",
+      "created_at": "2026-11-13T00:00:00Z"
+    },
+    {
+      "id": 1002,
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-13T00:00:00Z"
+    }
+  ]
+}

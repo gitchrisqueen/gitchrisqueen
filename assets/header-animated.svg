@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" width="600" height="200" role="img">
+<title>Christopher Queen</title>
+<desc>Christopher Queen, Applied AI and Forward-Deployed Engineer, beside a small neural network.</desc>
+<style>text{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}.m{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace}.serif{font-family:Georgia,'Times New Roman',serif}@keyframes shine{0%,55%{transform:translateX(-140px)}100%{transform:translateX(480px)}}.shine{animation:shine 8s ease-in-out infinite}@keyframes lit{0%{fill:#3a3611;stroke:#e9d437}12%,100%{fill:#161b22;stroke:#a89816}}@keyframes p000{0%,0.00%{stroke-dashoffset:16}16.67%,100%{stroke-dashoffset:-70}}.p000{animation:p000 4.8s linear infinite}@keyframes p001{0%,1.67%{stroke-dashoffset:16}18.33%,100%{stroke-dashoffset:-70}}.p001{animation:p001 4.8s linear infinite}@keyframes p002{0%,3.33%{stroke-dashoffset:16}20.00%,100%{stroke-dashoffset:-85}}.p002{animation:p002 4.8s linear infinite}@keyframes p003{0%,5.00%{stroke-dashoffset:16}21.67%,100%{stroke-dashoffset:-107}}.p003{animation:p003 4.8s linear infinite}@keyframes p010{0%,1.67%{stroke-dashoffset:16}18.33%,100%{stroke-dashoffset:-85}}.p010{animation:p010 4.8s linear infinite}@keyframes p011{0%,3.33%{stroke-dashoffset:16}20.00%,100%{stroke-dashoffset:-70}}.p011{animation:p011 4.8s linear infinite}@keyframes p012{0%,5.00%{stroke-dashoffset:16}21.67%,100%{stroke-dashoffset:-70}}.p012{animation:p012 4.8s linear infinite}@keyframes p013{0%,6.67%{stroke-dashoffset:16}23.33%,100%{stroke-dashoffset:-85}}.p013{animation:p013 4.8s linear infinite}@keyframes p020{0%,3.33%{stroke-dashoffset:16}20.00%,100%{stroke-dashoffset:-107}}.p020{animation:p020 4.8s linear infinite}@keyframes p021{0%,5.00%{stroke-dashoffset:16}21.67%,100%{stroke-dashoffset:-85}}.p021{animation:p021 4.8s linear infinite}@keyframes p022{0%,6.67%{stroke-dashoffset:16}23.33%,100%{stroke-dashoffset:-70}}.p022{animation:p022 4.8s linear infinite}@keyframes p023{0%,8.33%{stroke-dashoffset:16}25.00%,100%{stroke-dashoffset:-70}}.p023{animation:p023 4.8s linear infinite}@keyframes p100{0%,20.83%{stroke-dashoffset:16}37.50%,100%{stroke-dashoffset:-68}}.p100{animation:p100 4.8s linear infinite}@keyframes p101{0%,22.50%{stroke-dashoffset:16}39.17%,100%{stroke-dashoffset:-76}}.p101{animation:p101 4.8s linear infinite}@keyframes p102{0%,24.17%{stroke-dashoffset:16}40.83%,100%{stroke-dashoffset:-95}}.p102{animation:p102 4.8s linear infinite}@keyframes p103{0%,25.83%{stroke-dashoffset:16}42.50%,100%{stroke-dashoffset:-120}}.p103{animation:p103 4.8s linear infinite}@keyframes p110{0%,22.50%{stroke-dashoffset:16}39.17%,100%{stroke-dashoffset:-76}}.p110{animation:p110 4.8s linear infinite}@keyframes p111{0%,24.17%{stroke-dashoffset:16}40.83%,100%{stroke-dashoffset:-68}}.p111{animation:p111 4.8s linear infinite}@keyframes p112{0%,25.83%{stroke-dashoffset:16}42.50%,100%{stroke-dashoffset:-76}}.p112{animation:p112 4.8s linear infinite}@keyframes p113{0%,27.50%{stroke-dashoffset:16}44.17%,100%{stroke-dashoffset:-95}}.p113{animation:p113 4.8s linear infinite}@keyframes p120{0%,24.17%{stroke-dashoffset:16}40.83%,100%{stroke-dashoffset:-95}}.p120{animation:p120 4.8s linear infinite}@keyframes p121{0%,25.83%{stroke-dashoffset:16}42.50%,100%{stroke-dashoffset:-76}}.p121{animation:p121 4.8s linear infinite}@keyframes p122{0%,27.50%{stroke-dashoffset:16}44.17%,100%{stroke-dashoffset:-68}}.p122{animation:p122 4.8s linear infinite}@keyframes p123{0%,29.17%{stroke-dashoffset:16}45.83%,100%{stroke-dashoffset:-76}}.p123{animation:p123 4.8s linear infinite}@keyframes p130{0%,25.83%{stroke-dashoffset:16}42.50%,100%{stroke-dashoffset:-120}}.p130{animation:p130 4.8s linear infinite}@keyframes p131{0%,27.50%{stroke-dashoffset:16}44.17%,100%{stroke-dashoffset:-95}}.p131{animation:p131 4.8s linear infinite}@keyframes p132{0%,29.17%{stroke-dashoffset:16}45.83%,100%{stroke-dashoffset:-76}}.p132{animation:p132 4.8s linear infinite}@keyframes p133{0%,30.83%{stroke-dashoffset:16}47.50%,100%{stroke-dashoffset:-68}}.p133{animation:p133 4.8s linear infinite}@keyframes p200{0%,41.67%{stroke-dashoffset:16}58.33%,100%{stroke-dashoffset:-64}}.p200{animation:p200 4.8s linear infinite}@keyframes p201{0%,43.33%{stroke-dashoffset:16}60.00%,100%{stroke-dashoffset:-95}}.p201{animation:p201 4.8s linear infinite}@keyframes p210{0%,43.33%{stroke-dashoffset:16}60.00%,100%{stroke-dashoffset:-59}}.p210{animation:p210 4.8s linear infinite}@keyframes p211{0%,45.00%{stroke-dashoffset:16}61.67%,100%{stroke-dashoffset:-72}}.p211{animation:p211 4.8s linear infinite}@keyframes p220{0%,45.00%{stroke-dashoffset:16}61.67%,100%{stroke-dashoffset:-72}}.p220{animation:p220 4.8s linear infinite}@keyframes p221{0%,46.67%{stroke-dashoffset:16}63.33%,100%{stroke-dashoffset:-59}}.p221{animation:p221 4.8s linear infinite}@keyframes p230{0%,46.67%{stroke-dashoffset:16}63.33%,100%{stroke-dashoffset:-95}}.p230{animation:p230 4.8s linear infinite}@keyframes p231{0%,48.33%{stroke-dashoffset:16}65.00%,100%{stroke-dashoffset:-64}}.p231{animation:p231 4.8s linear infinite}.n0{animation:lit 4.8s linear infinite;animation-delay:0.7s}.n1{animation:lit 4.8s linear infinite;animation-delay:1.7s}.n2{animation:lit 4.8s linear infinite;animation-delay:2.7s}.n3{animation:lit 4.8s linear infinite;animation-delay:3.7s}@media (prefers-reduced-motion: reduce){*{animation:none!important}}</style>
+<rect width="600" height="200" fill="#0d1117"/>
+<defs><pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0 H0 V24" fill="none" stroke="#14191f" stroke-width="1"/></pattern><linearGradient id="beam" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffffff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff7b0" stop-opacity="0.85"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient><linearGradient id="fade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0d1117" stop-opacity="0"/><stop offset="1" stop-color="#0d1117" stop-opacity="0.9"/></linearGradient><clipPath id="name"><text class="serif" x="34" y="116" font-size="44">Christopher Queen</text></clipPath></defs>
+<rect width="600" height="200" fill="url(#grid)"/>
+<path d="M12 28 V12 H28" fill="none" stroke="#e9d437" stroke-width="2"/>
+<path d="M588 28 V12 H572" fill="none" stroke="#e9d437" stroke-width="2"/>
+<path d="M12 172 V188 H28" fill="none" stroke="#e9d437" stroke-width="2"/>
+<path d="M588 172 V188 H572" fill="none" stroke="#e9d437" stroke-width="2"/>
+<line x1="432" y1="74.0" x2="484" y2="59.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p000" x1="432" y1="74.0" x2="484" y2="59.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="432" y1="74.0" x2="484" y2="89.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p001" x1="432" y1="74.0" x2="484" y2="89.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="432" y1="74.0" x2="484" y2="119.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p002" x1="432" y1="74.0" x2="484" y2="119.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="432" y1="74.0" x2="484" y2="149.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p003" x1="432" y1="74.0" x2="484" y2="149.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="432" y1="104.0" x2="484" y2="59.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p010" x1="432" y1="104.0" x2="484" y2="59.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="432" y1="104.0" x2="484" y2="89.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p011" x1="432" y1="104.0" x2="484" y2="89.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="432" y1="104.0" x2="484" y2="119.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p012" x1="432" y1="104.0" x2="484" y2="119.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="432" y1="104.0" x2="484" y2="149.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p013" x1="432" y1="104.0" x2="484" y2="149.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="432" y1="134.0" x2="484" y2="59.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p020" x1="432" y1="134.0" x2="484" y2="59.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="432" y1="134.0" x2="484" y2="89.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p021" x1="432" y1="134.0" x2="484" y2="89.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="432" y1="134.0" x2="484" y2="119.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p022" x1="432" y1="134.0" x2="484" y2="119.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="432" y1="134.0" x2="484" y2="149.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p023" x1="432" y1="134.0" x2="484" y2="149.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="484" y1="59.0" x2="536" y2="59.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p100" x1="484" y1="59.0" x2="536" y2="59.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="484" y1="59.0" x2="536" y2="89.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p101" x1="484" y1="59.0" x2="536" y2="89.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="484" y1="59.0" x2="536" y2="119.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p102" x1="484" y1="59.0" x2="536" y2="119.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="484" y1="59.0" x2="536" y2="149.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p103" x1="484" y1="59.0" x2="536" y2="149.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="484" y1="89.0" x2="536" y2="59.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p110" x1="484" y1="89.0" x2="536" y2="59.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="484" y1="89.0" x2="536" y2="89.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p111" x1="484" y1="89.0" x2="536" y2="89.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="484" y1="89.0" x2="536" y2="119.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p112" x1="484" y1="89.0" x2="536" y2="119.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="484" y1="89.0" x2="536" y2="149.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p113" x1="484" y1="89.0" x2="536" y2="149.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="484" y1="119.0" x2="536" y2="59.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p120" x1="484" y1="119.0" x2="536" y2="59.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="484" y1="119.0" x2="536" y2="89.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p121" x1="484" y1="119.0" x2="536" y2="89.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="484" y1="119.0" x2="536" y2="119.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p122" x1="484" y1="119.0" x2="536" y2="119.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="484" y1="119.0" x2="536" y2="149.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p123" x1="484" y1="119.0" x2="536" y2="149.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="484" y1="149.0" x2="536" y2="59.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p130" x1="484" y1="149.0" x2="536" y2="59.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="484" y1="149.0" x2="536" y2="89.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p131" x1="484" y1="149.0" x2="536" y2="89.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="484" y1="149.0" x2="536" y2="119.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p132" x1="484" y1="149.0" x2="536" y2="119.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="484" y1="149.0" x2="536" y2="149.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p133" x1="484" y1="149.0" x2="536" y2="149.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="536" y1="59.0" x2="578" y2="82.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p200" x1="536" y1="59.0" x2="578" y2="82.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="536" y1="59.0" x2="578" y2="126.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p201" x1="536" y1="59.0" x2="578" y2="126.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="536" y1="89.0" x2="578" y2="82.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p210" x1="536" y1="89.0" x2="578" y2="82.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="536" y1="89.0" x2="578" y2="126.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p211" x1="536" y1="89.0" x2="578" y2="126.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="536" y1="119.0" x2="578" y2="82.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p220" x1="536" y1="119.0" x2="578" y2="82.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="536" y1="119.0" x2="578" y2="126.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p221" x1="536" y1="119.0" x2="578" y2="126.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="536" y1="149.0" x2="578" y2="82.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p230" x1="536" y1="149.0" x2="578" y2="82.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<line x1="536" y1="149.0" x2="578" y2="126.0" stroke="#2a313b" stroke-width="1.3"/>
+<line class="p231" x1="536" y1="149.0" x2="578" y2="126.0" stroke="#e9d437" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>
+<circle class="n0" cx="432" cy="74.0" r="7" fill="#161b22" stroke="#a89816" stroke-width="2"/>
+<circle class="n0" cx="432" cy="104.0" r="7" fill="#161b22" stroke="#a89816" stroke-width="2"/>
+<circle class="n0" cx="432" cy="134.0" r="7" fill="#161b22" stroke="#a89816" stroke-width="2"/>
+<circle class="n1" cx="484" cy="59.0" r="7" fill="#161b22" stroke="#a89816" stroke-width="2"/>
+<circle class="n1" cx="484" cy="89.0" r="7" fill="#161b22" stroke="#a89816" stroke-width="2"/>
+<circle class="n1" cx="484" cy="119.0" r="7" fill="#161b22" stroke="#a89816" stroke-width="2"/>
+<circle class="n1" cx="484" cy="149.0" r="7" fill="#161b22" stroke="#a89816" stroke-width="2"/>
+<circle class="n2" cx="536" cy="59.0" r="7" fill="#161b22" stroke="#a89816" stroke-width="2"/>
+<circle class="n2" cx="536" cy="89.0" r="7" fill="#161b22" stroke="#a89816" stroke-width="2"/>
+<circle class="n2" cx="536" cy="119.0" r="7" fill="#161b22" stroke="#a89816" stroke-width="2"/>
+<circle class="n2" cx="536" cy="149.0" r="7" fill="#161b22" stroke="#a89816" stroke-width="2"/>
+<circle class="n3" cx="578" cy="82.0" r="9" fill="#e9d437" stroke="#a89816" stroke-width="2"/>
+<circle class="n3" cx="578" cy="126.0" r="9" fill="#e9d437" stroke="#a89816" stroke-width="2"/>
+<rect x="34" y="52" width="40" height="3" fill="#e9d437"/>
+<text class="serif" x="34" y="116" font-size="44" fill="#e9d437">Christopher Queen</text>
+<g clip-path="url(#name)"><rect class="shine" x="0" y="60" width="90" height="70" fill="url(#beam)"/></g>
+<text x="34" y="152" font-size="18" fill="#e6edf3" letter-spacing="0.4">Applied AI / Forward-Deployed Engineer</text>
+</svg>

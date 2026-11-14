@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 104" width="600" height="104" role="img">
+<title>Where to find me</title>
+<desc>Jacksonville, FL. Remote. Open to Forward-Deployed Engineer roles.</desc>
+<style>text{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}.m{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace}</style>
+<rect width="600" height="104" fill="#0d1117"/>
+<line x1="24" y1="58" x2="576" y2="58" stroke="#2a313b" stroke-width="2"/>
+<circle cx="100" cy="58" r="8" fill="#161b22" stroke="#a89816" stroke-width="2"/>
+<text x="100" y="92" text-anchor="middle" font-size="17" fill="#e6edf3">Jacksonville, FL</text>
+<circle cx="300" cy="58" r="8" fill="#161b22" stroke="#a89816" stroke-width="2"/>
+<text x="300" y="92" text-anchor="middle" font-size="17" fill="#e6edf3">Remote</text>
+<circle cx="500" cy="58" r="8" fill="#161b22" stroke="#a89816" stroke-width="2"/>
+<text x="500" y="92" text-anchor="middle" font-size="17" fill="#e6edf3">Open to FDE roles</text>
+</svg>

@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "flagships": [
+    {
+      "name": "LinkedIn Engagement Manager",
+      "repo": "christopherqueenconsulting/linkedin_engagement_manager",
+      "workflow": "unit-tests.yml",
+      "check": "Automated unit tests"
+    },
+    {
+      "name": "CPCC Task Automation",
+      "repo": "christopherqueenconsulting/cpcc_task_automation",
+      "workflow": "unit-tests.yml",
+      "check": "Automated unit tests"
+    },
+    {
+      "name": "hearing-copilot",
+      "repo": "gitchrisqueen/hearing-copilot",
+      "workflow": "ci.yml",
+      "check": "Automated tests and lint"
+    },
+    {
+      "name": "panthera",
+      "repo": "gitchrisqueen/panthera",
+      "workflow": "mvp-morning.yml",
+      "check": "Daily pipeline run"
+    }
+  ]
+}

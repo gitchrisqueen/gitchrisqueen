@@ -1,0 +1,286 @@
+name: profile
+
+# Refreshes the two generated blocks of README.md once a day.
+#
+# generate-text  read-only, first-party code only: builds the new README as an artifact.
+# publish        the only job that can write to main: guards the artifact, then commits.
+# report         opens or updates the one issue for this workflow when the run failed.
+# close          closes that issue again after a clean run.
+#
+# On any ref other than main this workflow is a dry run: it uploads the
+# artifact and writes nothing.
+
+on:
+  schedule:
+    - cron: "23 6 * * *"
+  workflow_dispatch:
+    inputs:
+      inject_fault:
+        description: "Fault-injection drill. 'none' is a normal run."
+        type: choice
+        default: none
+        options:
+          - none
+          - bad-allowlist
+          - bad-marker
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/**"
+      - "data/**"
+      - ".github/workflows/profile.yml"
+
+permissions: {}
+
+jobs:
+  generate-text:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      has_good_block: ${{ steps.generate.outputs.has_good_block }}
+      failed_blocks: ${{ steps.generate.outputs.failed_blocks }}
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.11"
+
+      - name: Generate the text blocks
+        id: generate
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          INJECT_FAULT: ${{ inputs.inject_fault || 'none' }}
+        run: |
+          set -euo pipefail
+          case "${INJECT_FAULT}" in
+            none | bad-allowlist | bad-marker) ;;
+            *)
+              echo "::error::unknown inject_fault value"
+              exit 1
+              ;;
+          esac
+          mkdir -p out
+          rc=0
+          python scripts/update_profile.py --readme README.md --out out/README.md \
+            --inject-fault "${INJECT_FAULT}" 2>&1 | tee "${RUNNER_TEMP}/generate.log" || rc=$?
+          merged=false
+          flagships=false
+          if grep -q 'FAILED blocks:.*MERGED-UPSTREAM' "${RUNNER_TEMP}/generate.log"; then merged=true; fi
+          if grep -q 'FAILED blocks:.*FLAGSHIPS' "${RUNNER_TEMP}/generate.log"; then flagships=true; fi
+          # Block names for the issue come from this fixed list, never from log text.
+          failed=none
+          if [ "${merged}" = true ] && [ "${flagships}" = true ]; then
+            failed="merged-upstream,flagships"
+          elif [ "${merged}" = true ]; then
+            failed="merged-upstream"
+          elif [ "${flagships}" = true ]; then
+            failed="flagships"
+          elif [ "${rc}" -ne 0 ]; then
+            failed="unknown"
+          fi
+          # A good block exists when every block passed, or when exactly one failed.
+          good=false
+          if [ -s out/README.md ]; then
+            case "${rc}:${failed}" in
+              0:none | 1:merged-upstream | 1:flagships) good=true ;;
+              *) ;;
+            esac
+          fi
+          {
+            echo "has_good_block=${good}"
+            echo "failed_blocks=${failed}"
+          } >> "${GITHUB_OUTPUT}"
+          exit "${rc}"
+
+      - name: Upload the generated README
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: profile-text
+          path: out/README.md
+          retention-days: 14
+          if-no-files-found: ignore
+
+  publish:
+    needs: generate-text
+    if: always() && github.ref == 'refs/heads/main' && needs.generate-text.outputs.has_good_block == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    concurrency:
+      group: profile-main
+      cancel-in-progress: false
+    env:
+      GENERATE_RESULT: ${{ needs.generate-text.result }}
+    steps:
+      - name: Check out main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.11"
+
+      - name: Download the generated README
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: profile-text
+          path: ${{ runner.temp }}/profile-text
+
+      - name: Guard and copy README.md
+        env:
+          ARTIFACT_DIR: ${{ runner.temp }}/profile-text
+        run: |
+          set -euo pipefail
+          # The artifact must hold exactly one regular file, README.md. Nothing in it is executed.
+          if [ "$(find "${ARTIFACT_DIR}" -mindepth 1 | wc -l)" -ne 1 ] \
+            || [ ! -f "${ARTIFACT_DIR}/README.md" ] || [ -L "${ARTIFACT_DIR}/README.md" ]; then
+            echo "::error::the artifact is not exactly one regular README.md"
+            exit 1
+          fi
+          cp -- README.md "${RUNNER_TEMP}/README.base.md"
+          cp -- "${ARTIFACT_DIR}/README.md" README.md
+          # Guard scripts and the allowlist come from main, not from the artifact.
+          python scripts/guard_publish.py \
+            --base "${RUNNER_TEMP}/README.base.md" \
+            --new README.md \
+            --allowlist data/allowlist.json \
+            --git-diff
+
+      - name: Commit and push README.md
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- README.md; then
+            echo "README.md is unchanged; nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- README.md
+          git commit --message "chore: refresh profile data"
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:refs/heads/main; then
+              echo "Pushed on attempt ${attempt}."
+              exit 0
+            fi
+            echo "Push failed on attempt ${attempt}; fetching and rebasing."
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "::error::rebase onto main failed"
+              exit 1
+            fi
+            changed="$(git diff --name-only origin/main HEAD)"
+            if [ "${changed}" != "README.md" ]; then
+              echo "::error::after the rebase the commit touches more than README.md"
+              exit 1
+            fi
+            sleep $((attempt * 5))
+          done
+          echo "::error::could not push after 5 attempts"
+          exit 1
+
+      - name: Fail the run if text generation failed
+        if: always()
+        run: |
+          if [ "${GENERATE_RESULT}" != "success" ]; then
+            echo "::error::generate-text finished with: ${GENERATE_RESULT}"
+            exit 1
+          fi
+
+  report:
+    needs: [generate-text, publish]
+    if: failure() && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      WORKFLOW_NAME: profile
+      LABEL: "profile-automation:profile"
+      GENERATE_RESULT: ${{ needs.generate-text.result }}
+      PUBLISH_RESULT: ${{ needs.publish.result }}
+      FAILED_BLOCKS: ${{ needs.generate-text.outputs.failed_blocks }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      DOC_URL: ${{ github.server_url }}/${{ github.repository }}/blob/main/docs/MAINTENANCE.md
+    steps:
+      - name: Open or update the failure issue
+        run: |
+          set -euo pipefail
+          enabled="$(gh repo view --json hasIssuesEnabled --jq .hasIssuesEnabled)"
+          if [ "${enabled}" != "true" ]; then
+            echo "Issues are disabled for this repository; nothing to report."
+            exit 0
+          fi
+          # Every value in the body is a fixed word or a run URL built from run metadata.
+          case "${FAILED_BLOCKS}" in
+            none | merged-upstream | flagships | "merged-upstream,flagships" | unknown) blocks="${FAILED_BLOCKS}" ;;
+            *) blocks="unknown" ;;
+          esac
+          # The publish job also fails when generation failed, so generation wins.
+          stage="unknown"
+          if [ "${GENERATE_RESULT}" = "failure" ]; then
+            stage="generate-text"
+          elif [ "${PUBLISH_RESULT}" = "failure" ]; then
+            stage="publish"
+          fi
+          body_file="${RUNNER_TEMP}/issue-body.md"
+          {
+            echo "The scheduled \`${WORKFLOW_NAME}\` workflow failed."
+            echo
+            echo "- Stage that failed: \`${stage}\`"
+            echo "- Generated blocks that failed: \`${blocks}\`"
+            echo "- Run: ${RUN_URL}"
+            echo "- Last update: $(date -u +%Y-%m-%dT%H:%MZ)"
+            echo
+            echo "Nothing outside the generated blocks is ever changed by this workflow. Steps for this case: ${DOC_URL}"
+          } > "${body_file}"
+          gh label create "${LABEL}" --color "B60205" --description "Automated profile maintenance failures" >/dev/null 2>&1 || true
+          existing="$(gh issue list --label "${LABEL}" --state open --json number --jq '.[0].number // empty')"
+          if [ -n "${existing}" ]; then
+            gh issue edit "${existing}" --body-file "${body_file}"
+          else
+            gh issue create --title "Profile automation failing: ${WORKFLOW_NAME}" --label "${LABEL}" --body-file "${body_file}"
+          fi
+
+  close:
+    needs: [generate-text, publish]
+    if: needs.generate-text.result == 'success' && needs.publish.result == 'success' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      LABEL: "profile-automation:profile"
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Close this workflow's open failure issue
+        run: |
+          set -euo pipefail
+          enabled="$(gh repo view --json hasIssuesEnabled --jq .hasIssuesEnabled)"
+          if [ "${enabled}" != "true" ]; then
+            echo "Issues are disabled for this repository; nothing to close."
+            exit 0
+          fi
+          existing="$(gh issue list --label "${LABEL}" --state open --json number --jq '.[0].number // empty')"
+          if [ -z "${existing}" ]; then
+            echo "No open issue for this workflow."
+            exit 0
+          fi
+          gh issue close "${existing}" --reason completed --comment "A later run finished cleanly: ${RUN_URL}"

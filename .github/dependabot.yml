@@ -1,0 +1,22 @@
+# Dependabot only proposes pull requests. None of them merge by themselves:
+# the owner reads the upstream diff first (see docs/MAINTENANCE.md), above all
+# for the snake generator pin. Reviews are requested through .github/CODEOWNERS.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"

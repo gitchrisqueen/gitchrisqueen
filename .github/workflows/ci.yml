@@ -1,0 +1,182 @@
+name: ci
+
+# Read-only checks that run on every pull request and every push. No paths
+# filter: a security or privacy check must not be skippable by what changed.
+# Nothing here writes to the repository or to issues.
+
+on:
+  pull_request:
+  push:
+    # Manual pushes to the orphan output branch hold only SVGs and would start a
+    # red run. This is a branch filter, not a path filter: every other push runs.
+    branches-ignore:
+      - output
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      # actionlint is installed from a release artifact whose sha256 is checked
+      # below. To bump: read the new release's checksums file, update both lines.
+      ACTIONLINT_VERSION: "1.7.12"
+      ACTIONLINT_SHA256: "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.11"
+
+      - name: Install test requirements (hash-pinned)
+        run: |
+          python -m pip install --require-hashes --only-binary=:all: -r requirements-ci.txt
+
+      - name: Install actionlint (sha256-verified release artifact)
+        run: |
+          set -euo pipefail
+          asset="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          mkdir -p "${RUNNER_TEMP}/actionlint"
+          curl --silent --show-error --fail --location \
+            --output "${RUNNER_TEMP}/${asset}" \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/${asset}"
+          echo "${ACTIONLINT_SHA256}  ${RUNNER_TEMP}/${asset}" | sha256sum --check --strict -
+          tar -xzf "${RUNNER_TEMP}/${asset}" -C "${RUNNER_TEMP}/actionlint" actionlint
+          "${RUNNER_TEMP}/actionlint/actionlint" -version
+
+      - name: Offline tests
+        run: python -m pytest tests -q
+
+      - name: actionlint
+        run: '"${RUNNER_TEMP}/actionlint/actionlint" -color'
+
+      - name: Check the built assets are current, then lint them
+        run: |
+          set -euo pipefail
+          python scripts/build_assets.py --check
+          python scripts/lint_svg.py --profile chart --require-opaque-background --min-bytes 500 --max-bytes 200000 \
+            assets/header-*.svg assets/footer-*.svg assets/skills-*.svg assets/pill-*.svg assets/graph-*.svg assets/terminal-*.svg assets/card-*.svg
+
+      - name: Check colour contrast
+        run: python scripts/check_contrast.py assets/colors.json
+
+      - name: Supply-chain checks (pinned actions, no curl-to-shell, hashed pip)
+        run: |
+          set -euo pipefail
+          status=0
+          if grep -rnE '^[[:space:]]*-?[[:space:]]*uses:' .github \
+              | grep -vE 'uses:[[:space:]]+[A-Za-z0-9_./-]+@[0-9a-f]{40}[[:space:]]+#[[:space:]]*v[0-9]'; then
+            echo "::error::a uses: line is not pinned to a 40-character SHA with a version comment"
+            status=1
+          fi
+          if grep -rnE 'curl[^|]*\|[[:space:]]*(sudo[[:space:]]+)?(ba|z)?sh([[:space:]]|$)' .github scripts docs; then
+            echo "::error::a download is piped into a shell"
+            status=1
+          fi
+          if grep -rnE 'pip[0-9.]* install' .github scripts | grep -vE -- '--require-hashes'; then
+            echo "::error::pip install without --require-hashes"
+            status=1
+          fi
+          exit "${status}"
+
+      - name: Public-text check
+        run: |
+          set -euo pipefail
+          # The pattern is assembled from fragments so that this file does not match itself.
+          pattern='Click''Up|app\.click''up|rol''e:|agent-''secret|vau''lt|1Pass''word|\bQu''in\b|cqc-''ea'
+          if grep -rniIE --exclude-dir=.git -e "${pattern}" .; then
+            echo "::error::internal wording found in public text"
+            exit 1
+          fi
+
+      - name: Generate the text blocks (read-only dry run)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p dryrun
+          rc=0
+          python scripts/update_profile.py --readme README.md --out dryrun/README.generated.md || rc=$?
+          if [ -f dryrun/README.generated.md ]; then
+            diff=0
+            diff -u README.md dryrun/README.generated.md > dryrun/README.diff || diff=$?
+            if [ "${diff}" -gt 1 ]; then
+              echo "::error::diff failed"
+              exit 1
+            fi
+          fi
+          exit "${rc}"
+
+      - name: Guard the generated README
+        run: >-
+          python scripts/guard_publish.py
+          --base README.md
+          --new dryrun/README.generated.md
+          --allowlist data/allowlist.json
+
+      - name: Upload the dry-run result
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ci-dry-run
+          path: dryrun/
+          retention-days: 14
+          if-no-files-found: ignore
+
+  snake-dry-run:
+    # The snake generator runs here, in its own job, with a read-only token
+    # and nothing else to read. Its output is linted before it is uploaded.
+    # Nothing is published from this workflow.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.11"
+
+      - name: Draw the growing snake from the calendar
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/make_growing_snake.py --user gitchrisqueen --out-dir dist
+
+      - name: Lint and size-check the SVGs
+        run: |
+          set -euo pipefail
+          python scripts/lint_svg.py --profile chart --require-opaque-background --min-bytes 5000 --max-bytes 1500000 --expect rect=100 dist/*.svg
+          for f in snake.svg snake-dark.svg snake-static-light.svg snake-static-dark.svg; do
+            size=$(stat -c %s "dist/${f}")
+            echo "${f}: ${size} bytes"
+            if [ "${size}" -lt 5000 ] || [ "${size}" -gt 1500000 ]; then
+              echo "::error::${f} is outside the 5000..1500000 byte range"
+              exit 1
+            fi
+          done
+          sha256sum dist/*.svg
+
+      - name: Upload the validated SVGs
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: snake-artifacts
+          path: dist/*.svg
+          retention-days: 14
+          if-no-files-found: error

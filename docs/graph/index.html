@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Christopher Queen works with</title>
+<meta name="description" content="An interactive knowledge graph of the projects, practices and tools Christopher Queen works with. Drag the nodes.">
+<style>
+:root{--bg:#0d1117;--tile:#161b22;--line:#30363d;--gold:#e9d437;--text:#e6edf3;--muted:#9ba7b4}
+*{box-sizing:border-box}html,body{height:100%;margin:0;background:var(--bg);color:var(--text);
+font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;overflow:hidden}
+canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+canvas.over{cursor:pointer}canvas.drag{cursor:grabbing}
+header{position:fixed;left:16px;top:12px;right:16px;display:flex;justify-content:space-between;gap:12px;pointer-events:none}
+header h1{margin:0;font-size:15px;font-weight:700;color:var(--gold)}header p{margin:2px 0 0;font-size:12px;color:var(--muted)}
+header a{pointer-events:auto;color:var(--gold);font-size:13px;text-decoration:none;border:1px solid var(--line);
+border-radius:8px;padding:6px 10px;background:var(--tile);white-space:nowrap;align-self:flex-start}
+#card{position:fixed;left:12px;right:12px;bottom:12px;max-width:520px;background:var(--tile);border:1px solid var(--line);
+border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.4}
+#card b{color:var(--gold)}#card small{display:block;color:var(--muted);margin-top:6px}
+#legend{position:fixed;right:12px;bottom:12px;font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+#legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+details{position:fixed;left:12px;top:56px;max-width:min(520px,calc(100% - 24px));font-size:13px}
+details summary{color:var(--muted);cursor:pointer}
+details ul{margin:6px 0 0;padding:10px 14px 10px 28px;background:var(--tile);border:1px solid var(--line);border-radius:10px;
+max-height:50vh;overflow:auto}
+@media (max-width:640px){#legend{display:none}}
+</style>
+</head>
+<body>
+<canvas id="g" role="img" aria-label="Knowledge graph of the projects, practices and tools I work with. A text list of the same connections is under the Text version control."></canvas>
+<header><div><h1>What I work with</h1><p>Drag a node. Tap or hover to see how it ties in.</p></div>
+<a href="https://github.com/gitchrisqueen">Back to the profile</a></header>
+<details><summary>Text version</summary><ul id="list"></ul></details>
+<div id="card"><b>Christopher</b><br>Applied AI / Forward-Deployed Engineer. Builds LLM systems with real checks around the model.<small>Pull a node to see the web move.</small></div>
+<div id="legend"></div>
+<script>
+const DATA = {"version":1,"nodes":[{"id":"me","label":"Christopher","kind":"me","note":"Applied AI / Forward-Deployed Engineer. Builds LLM systems with real checks around the model."},{"id":"lem","label":"LEM","kind":"project","note":"Safe database changes ship on their own; risky ones hold and alert me. An hourly check flags a release that stalls."},{"id":"cpcc","label":"CPCC tool","kind":"project","note":"A real compiler overrules the model on compile errors; the compile check never runs student code."},{"id":"hearing","label":"hearing-copilot","kind":"project","note":"Scored on 91 minutes of real court audio before it was trusted; only confident names are accepted. One hearing, not held out."},{"id":"panthera","label":"panthera","kind":"project","note":"A daily health check flags a dead run the next morning, and results are reported with their error bars. Paper trading only."},{"id":"audit","label":"LLM audit","kind":"offer","note":"One-week, read-only audit of LLM spend and reliability, ending in a graded scorecard and a costed fix list."},{"id":"checks","label":"real checks","kind":"practice","note":"A deterministic check where the model is weakest."},{"id":"drift","label":"drift watch","kind":"practice","note":"Checks that keep running after a thing ships."},{"id":"review","label":"human review","kind":"practice","note":"Drafts, dry runs and approval steps before anything goes out."},{"id":"caveats","label":"honest caveats","kind":"practice","note":"Limits stated next to the numbers."},{"id":"python","label":"Python","kind":"tech"},{"id":"fastapi","label":"FastAPI","kind":"tech"},{"id":"redis","label":"Redis","kind":"tech"},{"id":"react","label":"React","kind":"tech"},{"id":"selenium","label":"Selenium","kind":"tech"},{"id":"langchain","label":"LangChain","kind":"tech"},{"id":"litellm","label":"LiteLLM","kind":"tech"},{"id":"docker","label":"Docker","kind":"tech"},{"id":"actions","label":"GitHub Actions","kind":"tech"},{"id":"node","label":"Node.js","kind":"tech"},{"id":"cqc","label":"cqc","kind":"project","note":"A small command line tool of AI-reliability checks, served as MCP tools. The terminal above runs it."}],"edges":[["me","lem"],["me","cpcc"],["me","hearing"],["me","panthera"],["me","audit"],["lem","fastapi"],["lem","redis"],["lem","react"],["lem","docker"],["lem","selenium"],["lem","litellm"],["cpcc","python"],["cpcc","selenium"],["cpcc","langchain"],["hearing","node"],["panthera","python"],["panthera","actions"],["cpcc","checks"],["lem","drift"],["panthera","drift"],["cpcc","review"],["lem","review"],["hearing","caveats"],["panthera","caveats"],["me","cqc"],["cqc","python"],["cqc","checks"],["cqc","drift"],["cqc","review"]]};
+const COLORS = {me:'#e9d437',project:'#c4b228',offer:'#efe9d2',practice:'#3fb950',tech:'#58a6ff'};
+const RADIUS = {me:17,project:12,offer:12,practice:10,tech:7};
+const LABEL = {me:'700 15px',project:'700 13px',offer:'700 13px',practice:'700 12.5px',tech:'400 11.5px'};
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cv = document.getElementById('g'), ctx = cv.getContext('2d');
+const card = document.getElementById('card');
+let W = 0, H = 0, dpr = 1;
+const idx = {}; DATA.nodes.forEach((n, i) => idx[n.id] = i);
+const nodes = DATA.nodes.map((n, i) => ({...n, r: RADIUS[n.kind], x: 0, y: 0, vx: 0, vy: 0, deg: 0, nb: new Set()}));
+const links = DATA.edges.map(([a, b]) => ({a: idx[a], b: idx[b]}));
+links.forEach(l => {nodes[l.a].deg++; nodes[l.b].deg++; nodes[l.a].nb.add(l.b); nodes[l.b].nb.add(l.a);});
+function connected(n) { return [...n.nb].map(i => nodes[i].label); }
+function describe(n) {
+  const names = connected(n).join(', ');
+  const note = n.note || ('Used in: ' + names + '.');
+  return '<b>' + n.label + '</b><br>' + note + (n.note ? '<small>Connected to: ' + names + '.</small>' : '');
+}
+const list = document.getElementById('list');
+nodes.forEach(n => {const li = document.createElement('li'); li.textContent = n.label + ' (' + n.kind + '): ' + (n.note ? n.note + ' ' : '') + 'Connected to ' + connected(n).join(', ') + '.'; list.appendChild(li);});
+const legend = document.getElementById('legend');
+[['me','me'],['project','projects'],['offer','offer'],['practice','practices'],['tech','tools']].forEach(([k, t]) => {
+  const d = document.createElement('div'); d.innerHTML = '<i style="background:' + COLORS[k] + '"></i>' + t; legend.appendChild(d);});
+function resize() {
+  dpr = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight;
+  cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (!nodes[0].x) nodes.forEach((n, i) => {const a = i / nodes.length * 6.283; n.x = W / 2 + Math.cos(a) * Math.min(W, H) * 0.3; n.y = H / 2 + Math.sin(a) * Math.min(W, H) * 0.3;});
+}
+addEventListener('resize', () => {resize(); draw();}); resize();
+let alpha = 1, hover = -1, sel = -1, dragging = -1, moved = 0, running = false;
+function step() {
+  const L = Math.max(80, Math.min(W, H) * 0.2), cx = W / 2, cy = H / 2 + 20;
+  for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
+    const a = nodes[i], b = nodes[j]; let dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy + 0.01; const d = Math.sqrt(d2);
+    const f = (L * L * 1.7) / d2 * alpha; dx /= d; dy /= d;
+    a.vx += dx * f; a.vy += dy * f; b.vx -= dx * f; b.vy -= dy * f;
+  }
+  for (const l of links) {
+    const a = nodes[l.a], b = nodes[l.b]; const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 0.01;
+    const f = (d - L) * 0.045 * alpha; a.vx += dx / d * f; a.vy += dy / d * f; b.vx -= dx / d * f; b.vy -= dy / d * f;
+  }
+  nodes.forEach((n, i) => {
+    n.vx += (cx - n.x) * 0.004 * alpha; n.vy += (cy - n.y) * 0.004 * alpha;
+    if (i === dragging) {n.vx = n.vy = 0; return;}
+    n.vx *= 0.82; n.vy *= 0.82; n.x += n.vx; n.y += n.vy;
+    n.x = Math.max(n.r + 8, Math.min(W - n.r - 8, n.x)); n.y = Math.max(n.r + 64, Math.min(H - n.r - card.offsetHeight - 30, n.y));
+  });
+}
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  const focus = hover >= 0 ? hover : (dragging >= 0 ? dragging : sel);
+  const near = focus >= 0 ? nodes[focus].nb : new Set();
+  for (const l of links) {
+    const on = focus >= 0 && (l.a === focus || l.b === focus);
+    ctx.strokeStyle = on ? '#e9d437' : (focus >= 0 ? '#232a33' : '#3b434d'); ctx.lineWidth = on ? 2 : 1.2;
+    ctx.beginPath(); ctx.moveTo(nodes[l.a].x, nodes[l.a].y); ctx.lineTo(nodes[l.b].x, nodes[l.b].y); ctx.stroke();
+  }
+  nodes.forEach((n, i) => {
+    const lit = focus < 0 || i === focus || near.has(i);
+    ctx.globalAlpha = lit ? 1 : 0.28;
+    ctx.fillStyle = COLORS[n.kind]; ctx.strokeStyle = '#0d1117'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(n.x, n.y, n.r + (i === focus ? 3 : 0), 0, 6.283); ctx.fill(); ctx.stroke();
+    ctx.font = LABEL[n.kind] + ' -apple-system, Segoe UI, Helvetica, Arial, sans-serif'; ctx.textAlign = 'center';
+    ctx.lineWidth = 3; ctx.strokeStyle = '#0d1117'; ctx.fillStyle = '#e6edf3';
+    ctx.strokeText(n.label, n.x, n.y + n.r + 15); ctx.fillText(n.label, n.x, n.y + n.r + 15);
+  });
+  ctx.globalAlpha = 1;
+}
+function loop() {
+  running = true; step(); draw();
+  alpha = Math.max(alpha * 0.985, dragging >= 0 ? 0.35 : (reduce ? 0 : 0.03));
+  if (alpha > 0.002 || dragging >= 0) requestAnimationFrame(loop); else running = false;
+}
+function kick(a) {alpha = Math.max(alpha, a); if (!running) loop();}
+if (reduce) {for (let i = 0; i < 400; i++) step(); draw();} else loop();
+function pick(x, y) {let best = -1, bd = 1e9; nodes.forEach((n, i) => {const d = Math.hypot(n.x - x, n.y - y); if (d < n.r + 12 && d < bd) {bd = d; best = i;}}); return best;}
+function pt(e) {const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top];}
+cv.addEventListener('pointerdown', e => {
+  const [x, y] = pt(e), i = pick(x, y); if (i < 0) return;
+  dragging = i; moved = 0; cv.setPointerCapture(e.pointerId); cv.classList.add('drag'); kick(0.6);
+});
+cv.addEventListener('pointermove', e => {
+  const [x, y] = pt(e);
+  if (dragging >= 0) {nodes[dragging].x = x; nodes[dragging].y = y; moved++; kick(0.5); return;}
+  const i = pick(x, y); if (i !== hover) {hover = i; cv.classList.toggle('over', i >= 0); card.innerHTML = describe(nodes[i >= 0 ? i : (sel >= 0 ? sel : 0)]); draw();}
+});
+function release(e) {
+  if (dragging < 0) return;
+  if (moved < 4) {sel = (sel === dragging) ? -1 : dragging; card.innerHTML = describe(nodes[sel >= 0 ? sel : 0]);}
+  dragging = -1; cv.classList.remove('drag'); draw();
+}
+cv.addEventListener('pointerup', release); cv.addEventListener('pointercancel', release);
+cv.addEventListener('pointerleave', () => {if (dragging < 0 && hover >= 0) {hover = -1; cv.classList.remove('over'); card.innerHTML = describe(nodes[sel >= 0 ? sel : 0]); draw();}});
+card.innerHTML = describe(nodes[0]);
+</script>
+</body>
+</html>

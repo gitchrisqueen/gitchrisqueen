@@ -1,0 +1,7 @@
+# Every change is reviewed by the owner. Workflow, script and data changes are
+# listed on their own lines so that they stay owned if the default line changes.
+*                   @gitchrisqueen
+/.github/           @gitchrisqueen
+/scripts/           @gitchrisqueen
+/data/              @gitchrisqueen
+/requirements-ci.txt @gitchrisqueen

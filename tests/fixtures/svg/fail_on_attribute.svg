@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 600 160" width="600" height="160">
+  <title>Fixture banner</title>
+  <style>
+    .wave{animation:drift 20s linear infinite}
+    @keyframes drift{from{transform:translateX(0px)}to{transform:translateX(-200px)}}
+    @media (prefers-reduced-motion: reduce){*{animation:none!important}}
+  </style>
+  <rect x="0" y="0" width="600" height="160" fill="#0d1117"/>
+  <g class="wave" fill="none" stroke="#a89816" stroke-width="1.2"><path d="M0 140 q50 -10 100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0"/></g>
+  <text x="40" y="80" fill="#e9d437" font-family="Georgia, serif" font-size="40">Fixture Name</text>
+  <text x="40" y="115" fill="#d9d3bd" font-family="Arial, sans-serif" font-size="24">Fixture role line for tests</text>
+  <circle cx="5" cy="5" r="2" fill="#e9d437" onload="alert(1)"/>
+</svg>
