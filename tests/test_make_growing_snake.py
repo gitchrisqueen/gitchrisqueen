@@ -93,7 +93,7 @@ def keyframes(svg: str, name: str) -> list[tuple[float, float, float]]:
     start = svg.index("@keyframes " + name + "{")
     block = svg[start:svg.index("}}", start)]
     out = []
-    frame = r"(\d{1,3}(?:\.\d+)?)%\{stroke-dasharray:(\d+(?:\.\d+)?) 1000;stroke-dashoffset:(-?\d+(?:\.\d+)?)\}"
+    frame = r"(\d{1,3}(?:\.\d+)?)%\{stroke-dasharray:(\d+(?:\.\d+)?) 100000;stroke-dashoffset:(-?\d+(?:\.\d+)?)\}"
     for m in re.finditer(frame, block):
         out.append((float(m.group(1)), float(m.group(2)), float(m.group(3))))
     return out
@@ -104,11 +104,11 @@ def test_snake_gets_longer_only_when_it_eats_and_never_shrinks():
     svg = snake.build_svg(cells, total, "dark", True)
     frames = keyframes(svg, "sb")
     lengths = [f[1] for f in frames]
-    assert lengths[0] == snake.START_LEN
+    assert lengths[0] == snake.START_LEN * snake.PITCH
     assert all(b >= a for a, b in zip(lengths, lengths[1:]))
     eaten = sum(c["level"] > 0 for c in cells)
-    assert lengths[-1] == pytest.approx(snake.START_LEN + snake.GROWTH * eaten, abs=0.01)
-    assert lengths[-1] > lengths[0] + 5, "the snake visibly grows"
+    assert lengths[-1] == pytest.approx((snake.START_LEN + snake.GROWTH * eaten) * snake.PITCH, abs=0.5)
+    assert lengths[-1] > lengths[0] + 5 * snake.PITCH, "the snake visibly grows"
 
 
 def test_head_stays_at_the_front_of_the_body():
@@ -117,7 +117,7 @@ def test_head_stays_at_the_front_of_the_body():
     body = keyframes(svg, "sb")
     for i, (_, length, offset) in enumerate(body[:-1]):
         # dash covers path positions [-offset, length - offset]; its end is the head at index i
-        assert length - offset == pytest.approx(i, abs=0.01)
+        assert length - offset == pytest.approx(i * snake.PITCH, abs=0.5)
 
 
 def test_eaten_squares_empty_when_the_head_arrives_and_refill_at_the_end():
@@ -362,3 +362,12 @@ def test_the_last_terminal_panel_holds_long_enough_to_read():
     reading_s = words / 180 * 60
     assert end - last_line_appears >= reading_s, (end - last_line_appears, reading_s)
     assert assets.TERM_CYCLE >= end + 1
+
+
+def test_dashes_use_real_pixels_so_one_snake_is_drawn_on_every_browser():
+    """WebKit ignores pathLength for dashes; a pixel-exact dash plus a gap longer than the path draws one snake."""
+    cells, total = cells_of(payload(53, 2))
+    svg = snake.build_svg(cells, total, "dark", True)
+    assert "pathLength" not in svg
+    path_px = (len(snake.build_path(53)) - 1) * snake.PITCH
+    assert snake.GAP > path_px + max(f[1] for f in keyframes(svg, "sb"))

@@ -42,6 +42,8 @@ CELL = 12           # square size, px
 WIDTH = 840
 SPEED = 16.0        # squares per second
 START_LEN = 4       # snake length before it eats anything
+GAP = 100000        # dash gap in px, longer than the whole path, so exactly one snake is ever drawn
+HEAD_DASH = 1       # px, the head is a round-capped dot
 GROWTH = 0.3        # squares of length gained per square eaten
 PAD = 3             # off-board squares the snake walks in from
 HOLD = 1.0          # seconds the full snake stays after the last square
@@ -194,12 +196,13 @@ def build_svg(cells: list[dict], total: int, theme: str, animated: bool, freeze:
                 eaten_so_far += 1
             length = round(START_LEN + GROWTH * eaten_so_far, 3)
             at = fmt(pct(k / SPEED))
-            body_frames.append(f"{at}%{{stroke-dasharray:{length} 1000;stroke-dashoffset:{length - k}}}")
-            head_frames.append(f"{at}%{{stroke-dashoffset:{1 - k}}}")
+            body_frames.append(f"{at}%{{stroke-dasharray:{fmt(length * PITCH)} {GAP};"
+                               f"stroke-dashoffset:{fmt((length - k) * PITCH)}}}")
+            head_frames.append(f"{at}%{{stroke-dashoffset:{fmt(HEAD_DASH - k * PITCH)}}}")
         end = fmt(pct(run))
-        css.append("@keyframes sb{" + "".join(body_frames) + f"100%{{stroke-dasharray:{length} 1000;"
-                   f"stroke-dashoffset:{length - steps}}}}}")
-        css.append("@keyframes sh{" + "".join(head_frames) + f"100%{{stroke-dashoffset:{1 - steps}}}}}")
+        css.append("@keyframes sb{" + "".join(body_frames) + f"100%{{stroke-dasharray:{fmt(length * PITCH)} {GAP};"
+                   f"stroke-dashoffset:{fmt((length - steps) * PITCH)}}}}}")
+        css.append("@keyframes sh{" + "".join(head_frames) + f"100%{{stroke-dashoffset:{fmt(HEAD_DASH - steps * PITCH)}}}}}")
         fade_a, fade_b = pct(run + HOLD), pct(run + HOLD + FADE)
         css.append(f"@keyframes sg{{0%,{fmt(fade_a)}%{{opacity:1}}{fmt(fade_b)}%,99.9%{{opacity:0}}100%{{opacity:1}}}}")
         css.append(".sb{animation-name:sb}.sh{animation-name:sh}.sg{animation-name:sg}")
@@ -207,12 +210,12 @@ def build_svg(cells: list[dict], total: int, theme: str, animated: bool, freeze:
         if freeze is not None:
             css.append(f"*{{animation-play-state:paused!important;animation-delay:-{fmt(freeze)}s!important}}")
         d = "M" + " L".join(f"{fmt(centre(p)[0])} {fmt(centre(p)[1])}" for p in path)
-        stroke = (f'fill="none" stroke-linecap="round" stroke-linejoin="round" pathLength="{steps}"')
+        stroke = (f'fill="none" stroke-linecap="round" stroke-linejoin="round"')
         body.append(
             f'<g class="a sg"><path class="a sb" d="{d}" {stroke} stroke="{col["snake"]}" stroke-width="7" '
-            f'stroke-dasharray="{START_LEN} 1000" stroke-dashoffset="{START_LEN}"/>'
+            f'stroke-dasharray="{START_LEN * PITCH} {GAP}" stroke-dashoffset="{START_LEN * PITCH}"/>'
             f'<path class="a sh" d="{d}" {stroke} stroke="{col["head"]}" stroke-width="10" '
-            f'stroke-dasharray="1 1000" stroke-dashoffset="1"/></g>')
+            f'stroke-dasharray="{HEAD_DASH} {GAP}" stroke-dashoffset="{HEAD_DASH}"/></g>')
 
     head = [
         '<?xml version="1.0" encoding="UTF-8"?>',
