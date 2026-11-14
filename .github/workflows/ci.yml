@@ -63,7 +63,14 @@ jobs:
         run: '"${RUNNER_TEMP}/actionlint/actionlint" -color'
 
       - name: Lint the banner SVGs
-        run: python scripts/lint_svg.py --require-opaque-background assets/*.svg
+        run: python scripts/lint_svg.py --require-opaque-background assets/header-*.svg assets/footer-*.svg
+
+      - name: Check the built assets are current, then lint them
+        run: |
+          set -euo pipefail
+          python scripts/build_assets.py --check
+          python scripts/lint_svg.py --profile chart --require-opaque-background --min-bytes 1000 --max-bytes 200000 \
+            assets/skills.svg assets/gate-*.svg assets/card-*.svg
 
       - name: Check colour contrast
         run: python scripts/check_contrast.py assets/colors.json
@@ -132,9 +139,9 @@ jobs:
           if-no-files-found: ignore
 
   snake-dry-run:
-    # The third-party snake generator runs here, in its own job, with a
-    # read-only token and nothing else to read. Its output is linted before it
-    # is uploaded. Nothing is published from this workflow.
+    # The snake generator runs here, in its own job, with a read-only token
+    # and nothing else to read. Its output is linted before it is uploaded.
+    # Nothing is published from this workflow.
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
@@ -150,22 +157,10 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Generate the snake with the read-only token
-        uses: Platane/snk/svg-only@d8f6715049803e982ee5ff501b6b9b7d5deeb09b # v3.5.0
-        with:
-          github_user_name: gitchrisqueen
-          outputs: |
-            raw/snake.svg?palette=github-light&color_dots=#ebedf0,#9c8c12,#8f7f10,#75680c,#4a4106&color_snake=#0d1117
-            raw/snake-dark.svg?palette=github-dark&color_dots=#161b22,#7d6f17,#a89816,#c4b228,#e9d437&color_snake=#efe9d2
-
-      - name: Build the animated copies and the static twins
-        run: |
-          set -euo pipefail
-          mkdir -p dist
-          python scripts/make_snake_static.py raw/snake.svg dist/snake.svg --bg "#ffffff" --keep-animation
-          python scripts/make_snake_static.py raw/snake-dark.svg dist/snake-dark.svg --bg "#0d1117" --keep-animation
-          python scripts/make_snake_static.py raw/snake.svg dist/snake-static-light.svg --bg "#ffffff"
-          python scripts/make_snake_static.py raw/snake-dark.svg dist/snake-static-dark.svg --bg "#0d1117"
+      - name: Draw the growing snake from the calendar
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/make_growing_snake.py --user gitchrisqueen --out-dir dist
 
       - name: Lint and size-check the SVGs
         run: |

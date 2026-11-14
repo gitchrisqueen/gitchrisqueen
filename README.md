@@ -1,59 +1,59 @@
 <picture>
   <source media="(prefers-reduced-motion: no-preference)" srcset="assets/header-animated.svg">
-  <img src="assets/header-static.svg" alt="" width="100%">
+  <img src="assets/header-static.svg" alt="Christopher Queen, Applied AI / Forward-Deployed Engineer" width="100%">
 </picture>
 
-# Christopher Queen
+<p align="center">
+  <b>I build LLM systems that are tested, measured and deployed, and I write down what broke.</b><br>
+  Remote from Jacksonville, FL. Open to Forward-Deployed Engineer roles, and I run a one-week LLM spend and reliability audit.
+</p>
 
-**Applied AI / Forward-Deployed Engineer.** I work inside your team to build large language model (LLM) systems that are tested, measured and deployed, and I write down what broke. In my grading tool, a real compiler, not the model, decides whether student code compiles. I also run a one-week, fixed-price audit of LLM spend and reliability that ends in a graded scorecard and a costed fix list.
+<p align="center">
+  <a href="https://christopherqueenconsulting.com/resume/?utm_source=github&utm_medium=readme&utm_campaign=resume"><img alt="Résumé" src="https://img.shields.io/badge/-R%C3%A9sum%C3%A9-e9d437?style=for-the-badge&labelColor=e9d437"></a>
+  <a href="https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation"><img alt="Case study: what broke and what I changed" src="https://img.shields.io/badge/-Case%20study-e9d437?style=for-the-badge&labelColor=e9d437"></a>
+  <a href="https://christopherqueenconsulting.com/ai-ops-audit/"><img alt="The LLM audit: what you get" src="https://img.shields.io/badge/-LLM%20audit-e9d437?style=for-the-badge&labelColor=e9d437"></a>
+  <a href="https://www.linkedin.com/in/christopherqueen"><img alt="LinkedIn" src="https://img.shields.io/badge/-LinkedIn-0a66c2?style=for-the-badge&logo=linkedin&logoColor=white&labelColor=0a66c2"></a>
+  <a href="mailto:christopher.queen@gmail.com"><img alt="Email" src="https://img.shields.io/badge/-Email-24292f?style=for-the-badge&logo=gmail&logoColor=white&labelColor=24292f"></a>
+</p>
 
-None of the systems below has an outside paying customer yet, the audit has not been sold yet, and most of the work here, including the upstream pull requests, was written with AI coding agents.
-
-[Résumé (remote, Jacksonville FL)](https://christopherqueenconsulting.com/resume/?utm_source=github&utm_medium=readme&utm_campaign=resume) · [Case study: what broke and what I changed](https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation) · [Audit: what you get](https://christopherqueenconsulting.com/ai-ops-audit/)
-
-[![LinkedIn Engagement Manager automated tests status](https://img.shields.io/github/actions/workflow/status/christopherqueenconsulting/linkedin_engagement_manager/unit-tests.yml?branch=main&label=LinkedIn%20Engagement%20Manager%3A%20automated%20tests&labelColor=24292f&color=57606a)](https://github.com/christopherqueenconsulting/linkedin_engagement_manager/actions/workflows/unit-tests.yml)
-[![Instructor admin tool automated tests status](https://img.shields.io/github/actions/workflow/status/christopherqueenconsulting/cpcc_task_automation/unit-tests.yml?branch=master&label=Instructor%20admin%20tool%3A%20automated%20tests&labelColor=24292f&color=57606a)](https://github.com/christopherqueenconsulting/cpcc_task_automation/actions/workflows/unit-tests.yml)
-[![MLB paper-trading experiment daily pipeline run status](https://img.shields.io/github/actions/workflow/status/gitchrisqueen/panthera/mvp-morning.yml?branch=main&label=MLB%20paper-trading%20experiment%3A%20daily%20pipeline%20run&labelColor=24292f&color=57606a)](https://github.com/gitchrisqueen/panthera/actions/workflows/mvp-morning.yml)
+<picture>
+  <source media="(prefers-reduced-motion: no-preference)" srcset="assets/gate-animated.svg">
+  <img src="assets/gate-static.svg" alt="Illustration: a language model wrongly judges valid C++ as not compiling, then a real compiler returns exit code 0, so the grade stands." width="100%">
+</picture>
 
 ## What I've built
 
-### LinkedIn Engagement Manager (LEM)
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://github.com/christopherqueenconsulting/linkedin_engagement_manager"><img alt="LinkedIn Engagement Manager, a live web app: a 30-day content plan, quality-gated AI posts and daily-capped engagement. What broke: the live app sat behind new releases inside a green run; an hourly check now flags it. Built with FastAPI, Celery, Redis, MySQL, React and Docker." src="assets/card-lem.svg" width="100%"></a><br>
+      <a href="https://github.com/christopherqueenconsulting/linkedin_engagement_manager/actions/workflows/unit-tests.yml"><img alt="LEM automated tests status" src="https://img.shields.io/github/actions/workflow/status/christopherqueenconsulting/linkedin_engagement_manager/unit-tests.yml?branch=main&label=tests&labelColor=24292f&color=57606a&style=flat-square"></a>
+      <a href="https://lem.christopherqueenconsulting.com/">Live app</a>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://github.com/christopherqueenconsulting/cpcc_task_automation"><img alt="CPCC Task Automation, an instructor admin tool: attendance, withdrawals and rubric grading with a human review step. What broke: the model called valid C++ not compiling; a real compiler now makes that call. Built with Python, Streamlit, Selenium and LangChain." src="assets/card-cpcc.svg" width="100%"></a><br>
+      <a href="https://github.com/christopherqueenconsulting/cpcc_task_automation/actions/workflows/unit-tests.yml"><img alt="CPCC Task Automation automated tests status" src="https://img.shields.io/github/actions/workflow/status/christopherqueenconsulting/cpcc_task_automation/unit-tests.yml?branch=master&label=tests&labelColor=24292f&color=57606a&style=flat-square"></a>
+      <a href="https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation">Case study</a>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://github.com/gitchrisqueen/hearing-copilot"><img alt="hearing-copilot, speaker identification for live transcripts, scored offline on real oral-argument audio. Limits: one hearing, no confidence interval; numbers and caveats are in RESULTS.md. Built with JavaScript and Node.js." src="assets/card-hearing.svg" width="100%"></a><br>
+      <a href="https://github.com/gitchrisqueen/hearing-copilot/actions/workflows/ci.yml"><img alt="hearing-copilot automated tests and lint status" src="https://img.shields.io/github/actions/workflow/status/gitchrisqueen/hearing-copilot/ci.yml?branch=main&label=tests&labelColor=24292f&color=57606a&style=flat-square"></a>
+      <a href="https://github.com/gitchrisqueen/hearing-copilot/blob/main/eval/diarization/RESULTS.md">Results and caveats</a>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://github.com/gitchrisqueen/panthera"><img alt="panthera, an MLB paper-trading experiment graded against pre-registered rules, paper trading only. What broke: a config whitelist skipped the postseason and 14 days passed unnoticed; a health check now flags it. Built with Python and GitHub Actions." src="assets/card-panthera.svg" width="100%"></a><br>
+      <a href="https://github.com/gitchrisqueen/panthera/actions/workflows/mvp-morning.yml"><img alt="panthera daily pipeline run status" src="https://img.shields.io/github/actions/workflow/status/gitchrisqueen/panthera/mvp-morning.yml?branch=main&label=daily%20run&labelColor=24292f&color=57606a&style=flat-square"></a>
+      <a href="https://github.com/gitchrisqueen/panthera/blob/main/reports/BETTING_REPORT.md">Report</a>
+    </td>
+  </tr>
+</table>
 
-Keeping up a LinkedIn presence means a content plan, posts at the right hours, and replies and comments every day. [LEM](https://github.com/christopherqueenconsulting/linkedin_engagement_manager) is a web app (FastAPI, Celery and Redis, MySQL, React, Selenium, LiteLLM, Docker Compose) that builds a 30-day content plan, runs AI-generated posts through quality gates and an optional approval step, and handles engagement under per-user targeting and daily caps. It is live at [lem.christopherqueenconsulting.com](https://lem.christopherqueenconsulting.com/).
+Numbers, caveats and what broke, in full: [docs/PROOF.md](https://github.com/gitchrisqueen/gitchrisqueen/blob/main/docs/PROOF.md). Also: [CueSyncAR](https://github.com/gitchrisqueen/CueSyncAR), an iOS augmented-reality billiards prototype in Swift, paused since 2026-09-10.
 
-What broke: in September 2026 the live app sat on v0.176.5 for about a day while v0.177.0 to v0.178.1 were tagged, and the only trace was a warning inside a green run. Since 2026-09-25 an [hourly check](https://github.com/christopherqueenconsulting/linkedin_engagement_manager/blob/main/.github/workflows/deploy-drift-check.yml) compares the live app's public version with the published releases and opens one issue when a release has waited too long ([#2194](https://github.com/christopherqueenconsulting/linkedin_engagement_manager/pull/2194)).
-
-Limits: deployed and CI-gated (continuous integration: tests run on every change); no revenue.
-
-### CPCC Task Automation (instructor admin tool)
-
-Every week, for each course I teach, I took attendance, recorded withdrawals and graded programming work by hand, and one missed submission is a wrong record. [CPCC Task Automation](https://github.com/christopherqueenconsulting/cpcc_task_automation) (Python, Streamlit, Selenium, LangChain, OpenRouter) drives the student information system and the learning platform through a real browser, grades against a rubric with a human review step, and writes grades back as drafts where the platform allows one, with a dry run as the default.
-
-What broke: the model flagged valid C++ as "does not compile", a major rubric error, and took the whole grade to the floor. The fix was not a better prompt: a [real compiler now decides "does not compile"](https://github.com/christopherqueenconsulting/cpcc_task_automation/blob/master/docs/compiler-gate.md), and student code is compiled, never run (merged 2026-09-02, [#267](https://github.com/christopherqueenconsulting/cpcc_task_automation/pull/267)).
-
-Limits: invite-only, built for instructor admin work; no public demo; I am its only user, for my own courses ([case study](https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation)).
-
-### hearing-copilot: speaker identification
-
-A live transcript is only useful if it says who is talking. [hearing-copilot](https://github.com/gitchrisqueen/hearing-copilot) is a local JavaScript app that transcribes a hearing and labels the speakers. Before speaker identification went into the app, I ran an offline bake-off on real Supreme Court oral-argument audio, with Oyez transcripts as ground truth.
-
-The number ([RESULTS.md](https://github.com/gitchrisqueen/hearing-copilot/blob/main/eval/diarization/RESULTS.md), dated 2026-07-24): in the cold-start run (no voice samples enrolled beforehand) on *Bowe v. United States* (argued 2025-10-14, 91 minutes, 12 speakers), it auto-accepted 89.8% of the chunks (short audio segments) and was right on 99.2% of the chunks it auto-accepted.
-
-Limits: this is one hearing and one cold-start run, clustered and scored on the same 91 minutes with no train and test split, and RESULTS.md gives no chunk counts or confidence interval for the two percentages. The accept threshold (0.65) was chosen from a calibration table over both main runs, so the headline is not held-out; that table lists 91 to 92% coverage at 0.65, a little above the 89.8% headline, and I have not re-derived which threshold produced the headline row. The cold-start numbers use an optimistic greedy cluster-to-speaker mapping; no Zoom-quality audio has been tested; the cold-start chunk total is not reported.
-
-### panthera and lottery-guru: paper trading and a chance experiment
-
-[panthera](https://github.com/gitchrisqueen/panthera) is an automated MLB paper-trading pipeline on GitHub Actions: odds snapshots three times a day, picks from documented rules, graded the next morning, ledger committed to git. Each strategy is pre-registered, meaning its success criteria were written down before the data came in, and [the report](https://github.com/gitchrisqueen/panthera/blob/main/reports/BETTING_REPORT.md) says plainly that at these sample sizes no ROI bar controls both error rates. [lottery-guru](https://github.com/gitchrisqueen/lottery-guru) is a null-hypothesis experiment on lottery-draw prediction: daily predictions from folk strategies plus LLM arms, scored against real draws, with z and p per strategy on [a leaderboard](https://github.com/gitchrisqueen/lottery-guru/blob/main/REPORT.md).
-
-What broke: the repo's own [health-check workflow](https://github.com/gitchrisqueen/panthera/blob/main/.github/workflows/health.yml) records where it came from: the last regular-season pick landed on 2026-09-27, the first all-silent slate was 2026-09-29, and, by the repo's own count, nobody noticed for 14 slate days because every workflow stayed green. The cause was a config whitelist that excluded the MLB postseason, [fixed on 2026-10-15](https://github.com/gitchrisqueen/panthera/commit/1c4619f); the report's later picks, such as 2026-10-19, are postseason ones. A daily health check now scores each finished slate day and opens an issue for a dead one; its run status alone does not show a dead slate.
-
-Limits: panthera is paper trading only, and its ledger is idle outside the MLB season. On the ledger updated 2026-10-23, the one strategy marked supported shows +7.99% ROI over 227 graded picks (124 wins, 103 losses). The 6.7 points in the report is one standard error, not a confidence interval. Its regular-season picks returned +8.59% and its 4 postseason picks -36.90% (too few to read), it overlaps 54% with other strategies' picks, and with several strategies running at once the report expects at least one false-positive screen, so it treats the result as a screen, not proof. lottery-guru's expected result is that every arm converges to chance, and its leaderboard applies no multiple-comparison correction across its many strategies.
-
-Also: [CueSyncAR](https://github.com/gitchrisqueen/CueSyncAR), an iOS augmented-reality billiards prototype in Swift, paused since 2026-09-10.
-
-## Status of the flagship repos
-
-This table is the readable version of the badges above, plus hearing-copilot: the last run of each check on the default branch, shown as passing, failing, or unavailable when it cannot be read. A failing row stays visible. For panthera, passing means the daily pipeline ran, not that its data is healthy; a separate health check opens an issue for a dead slate.
+<details>
+<summary>Live status of the four checks (generated from GitHub Actions)</summary>
 
 <!-- FLAGSHIPS:START -->
 | Repo | Check | Status |
@@ -64,9 +64,16 @@ This table is the readable version of the badges above, plus hearing-copilot: th
 | [panthera](https://github.com/gitchrisqueen/panthera) | Daily pipeline run | passing |
 <!-- FLAGSHIPS:END -->
 
+For panthera, passing means the daily pipeline ran, not that its data is healthy; a separate health check opens an issue for a dead slate.
+</details>
+
+## Tools
+
+<img src="assets/skills.svg" alt="Tools used in the projects above: Python, JavaScript, Swift, FastAPI, Celery, Redis, MySQL, Node.js, React, Streamlit, LangChain, LiteLLM, OpenRouter, Selenium, Docker and GitHub Actions." width="100%">
+
 ## Merged into other people's projects
 
-Mostly small fixes, merged by each project's maintainers. The list is generated from public GitHub data by a scheduled check in this repo.
+Small fixes, merged by each project's maintainers. Generated from public GitHub data by a scheduled check in this repo.
 
 <!-- MERGED-UPSTREAM:START -->
 - [future-agi/future-agi #1327](https://github.com/future-agi/future-agi/pull/1327): Makes the eval log's explanation panel scroll, so long explanations are not cut off (issue 1071)
@@ -77,44 +84,32 @@ Mostly small fixes, merged by each project's maintainers. The list is generated 
 - [langchain-ai/langchain #15251](https://github.com/langchain-ai/langchain/pull/15251): Fixes the dev container build by copying the core and community libraries in the Dockerfile (issue 14631)
 <!-- MERGED-UPSTREAM:END -->
 
-Closed without merge, a sample, 6 of 14: LangChain agent tool-input parser fix ([#14668](https://github.com/langchain-ai/langchain/pull/14668), [#15422](https://github.com/langchain-ai/langchain/pull/15422)); mem0 session-memory scoping, provider environment variables and a hook migration ([#4574](https://github.com/mem0ai/mem0/pull/4574), [#4987](https://github.com/mem0ai/mem0/pull/4987), [#5077](https://github.com/mem0ai/mem0/pull/5077)); Lossless-Claw SQLite busy timeout ([#303](https://github.com/Martian-Engineering/lossless-claw/pull/303)). [Full list on GitHub](https://github.com/search?q=is%3Apr+is%3Aclosed+is%3Aunmerged+author%3Agitchrisqueen+-user%3Agitchrisqueen+-org%3Achristopherqueenconsulting&type=pullrequests).
+Another 14 pull requests of mine were closed without merge: [full list on GitHub](https://github.com/search?q=is%3Apr+is%3Aclosed+is%3Aunmerged+author%3Agitchrisqueen+-user%3Agitchrisqueen+-org%3Achristopherqueenconsulting&type=pullrequests).
 
 ## Hire me, or have me audit your LLM system
 
-**Hiring.** I work remote from Jacksonville, FL, and travel is fine. I start from the job someone still does by hand, write down the boundary before building, put a real check where the model is weakest (the compiler gate above), and leave a [hand-off document](https://github.com/christopherqueenconsulting/cpcc_task_automation/blob/master/docs/BRIGHTSPACE_AUTOMATION_HANDOFF.md) the next engineer can run from. [Résumé](https://christopherqueenconsulting.com/resume/?utm_source=github&utm_medium=readme&utm_campaign=resume).
+**Hiring:** I start from the job someone still does by hand, write down the boundary before building, put a real check where the model is weakest (the compiler gate above), and leave a [hand-off document](https://github.com/christopherqueenconsulting/cpcc_task_automation/blob/master/docs/BRIGHTSPACE_AUTOMATION_HANDOFF.md) the next engineer can run from.
 
-**Running an LLM system.** The audit takes one week. With read-only access to wherever your LLM calls are logged, plus the bills, I trace where the spend goes and where calls fail, grade five areas from A to F (spend efficiency, reliability, observability, governance, and "leverage", the audit page's name for work still done by hand that an AI feature could take), and hand over an 8 to 12 page report with a costed fix list. The readout call walks you through the report.
+**The audit:** one week, read-only access to your LLM logs and bills, a graded scorecard and a costed fix list. [What you get](https://christopherqueenconsulting.com/ai-ops-audit/) · [Book a free 30-minute call](https://christopherqueenconsulting.com/schedule/).
 
-The audit is read-only and delivers the fix list; it does not include implementing it, and with only the bills I can grade spend efficiency alone. The failures described above were silent ones, and finding that kind of failure is what the reliability grade is for.
+Straight talk: none of this has an outside paying customer yet, the audit has not been sold yet, and most of the work here, including the upstream pull requests, was written with AI coding agents.
 
-I have not yet audited an outside company's LLM bill, and the sample scorecard on the audit page is synthetic. [Book a free 30-minute call](https://christopherqueenconsulting.com/schedule/), no card needed, or [read what you get](https://christopherqueenconsulting.com/ai-ops-audit/).
-
-## Tools I use
-
-Python, FastAPI, Celery and Redis, MySQL, React, LiteLLM, Docker Compose, Streamlit, Selenium, LangChain, OpenRouter, JavaScript on Node, GitHub Actions and Swift. Each appears in one of the projects above.
-
-## Off the keyboard
-
-Reader, billiards player, and aquarist (yes, I keep the tanks alive too).
-
-## Connect
-
-- LinkedIn: [linkedin.com/in/christopherqueen](https://www.linkedin.com/in/christopherqueen)
-- Email: christopher.queen@gmail.com
-- Consulting: [Christopher Queen Consulting](https://christopherqueenconsulting.com)
-- For AI assistants: https://christopherqueenconsulting.com/for-agents/
-
-## Contribution calendar
+## Shipping, as a snake
 
 <picture>
   <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/gitchrisqueen/gitchrisqueen/output/snake-static-dark.svg">
   <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/gitchrisqueen/gitchrisqueen/output/snake-static-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/gitchrisqueen/gitchrisqueen/output/snake-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/gitchrisqueen/gitchrisqueen/output/snake.svg">
-  <img alt="Contribution calendar for the past year" src="https://raw.githubusercontent.com/gitchrisqueen/gitchrisqueen/output/snake-static-light.svg">
+  <img alt="Contribution calendar for the past year" src="https://raw.githubusercontent.com/gitchrisqueen/gitchrisqueen/output/snake-static-light.svg" width="100%">
 </picture>
 
-Calendar includes private work.
+Off the keyboard: reader, billiards player, aquarist.
+
+- LinkedIn: [linkedin.com/in/christopherqueen](https://www.linkedin.com/in/christopherqueen)
+- Email: christopher.queen@gmail.com
+- Consulting: [Christopher Queen Consulting](https://christopherqueenconsulting.com)
+- For AI assistants: https://christopherqueenconsulting.com/for-agents/
 
 <picture>
   <source media="(prefers-reduced-motion: no-preference)" srcset="assets/footer-animated.svg">

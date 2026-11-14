@@ -3,8 +3,8 @@ name: snake
 # Builds the contribution-calendar snake once a day and publishes it to the
 # orphan branch `output`. The README embeds the files from there.
 #
-# generate-snake  read-only: runs the pinned third-party snake generator with a
-#                 read-only token, builds the static twins and checks every file.
+# generate-snake  read-only: draws the snake with scripts/make_growing_snake.py using
+#                 the read-only token, and checks every file.
 # publish         the only job that can write: re-checks the files with scripts
 #                 from main, then commits exactly four named SVGs to `output`.
 # report / close  open, update and close the one issue for this workflow.
@@ -51,22 +51,10 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Generate the snake with the read-only token
-        uses: Platane/snk/svg-only@d8f6715049803e982ee5ff501b6b9b7d5deeb09b # v3.5.0
-        with:
-          github_user_name: gitchrisqueen
-          outputs: |
-            raw/snake.svg?palette=github-light&color_dots=#ebedf0,#9c8c12,#8f7f10,#75680c,#4a4106&color_snake=#0d1117
-            raw/snake-dark.svg?palette=github-dark&color_dots=#161b22,#7d6f17,#a89816,#c4b228,#e9d437&color_snake=#efe9d2
-
-      - name: Build the animated copies and the static twins
-        run: |
-          set -euo pipefail
-          mkdir -p dist
-          python scripts/make_snake_static.py raw/snake.svg dist/snake.svg --bg "#ffffff" --keep-animation
-          python scripts/make_snake_static.py raw/snake-dark.svg dist/snake-dark.svg --bg "#0d1117" --keep-animation
-          python scripts/make_snake_static.py raw/snake.svg dist/snake-static-light.svg --bg "#ffffff"
-          python scripts/make_snake_static.py raw/snake-dark.svg dist/snake-static-dark.svg --bg "#0d1117"
+      - name: Draw the growing snake from the calendar
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/make_growing_snake.py --user gitchrisqueen --out-dir dist
 
       - name: Fault-injection drill
         env:

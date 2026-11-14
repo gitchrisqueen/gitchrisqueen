@@ -20,12 +20,16 @@
     {"id": "snake-light-level-3", "kind": "graphic", "foreground": "#75680c", "background": "#ffffff", "where": "snake (light): level 3 cell"},
     {"id": "snake-light-level-4", "kind": "graphic", "foreground": "#4a4106", "background": "#ffffff", "where": "snake (light): level 4 cell"},
     {"id": "snake-light-snake", "kind": "graphic", "foreground": "#0d1117", "background": "#ffffff", "where": "snake (light): the snake"},
+    {"id": "snake-light-head", "kind": "graphic", "foreground": "#4a4106", "background": "#ffffff", "where": "snake (light): the head"},
+    {"id": "snake-light-caption", "kind": "text", "foreground": "#57606a", "background": "#ffffff", "where": "snake (light): caption"},
 
     {"id": "snake-dark-level-0", "kind": "graphic", "foreground": "#161b22", "background": "#0d1117", "where": "snake (dark): empty day cell", "exempt": true, "reason": "level-0 cell marks a day with no contributions; it carries no information beyond the grid position"},
     {"id": "snake-dark-level-1", "kind": "graphic", "foreground": "#7d6f17", "background": "#0d1117", "where": "snake (dark): level 1 cell"},
     {"id": "snake-dark-level-2", "kind": "graphic", "foreground": "#a89816", "background": "#0d1117", "where": "snake (dark): level 2 cell"},
     {"id": "snake-dark-level-3", "kind": "graphic", "foreground": "#c4b228", "background": "#0d1117", "where": "snake (dark): level 3 cell"},
     {"id": "snake-dark-level-4", "kind": "graphic", "foreground": "#e9d437", "background": "#0d1117", "where": "snake (dark): level 4 cell"},
-    {"id": "snake-dark-snake", "kind": "graphic", "foreground": "#efe9d2", "background": "#0d1117", "where": "snake (dark): the snake"}
+    {"id": "snake-dark-snake", "kind": "graphic", "foreground": "#efe9d2", "background": "#0d1117", "where": "snake (dark): the snake"},
+    {"id": "snake-dark-head", "kind": "graphic", "foreground": "#e9d437", "background": "#0d1117", "where": "snake (dark): the head"},
+    {"id": "snake-dark-caption", "kind": "text", "foreground": "#9ba7b4", "background": "#0d1117", "where": "snake (dark): caption"}
   ]
 }

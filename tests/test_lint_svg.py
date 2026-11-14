@@ -115,9 +115,11 @@ def test_lint_svg_real_assets_pass():
         "footer-static.svg",
     } <= names
     for path in files:
-        result = lint_svg.lint_file(path, require_opaque_background=True)
+        banner = path.name.startswith(("header-", "footer-"))
+        kwargs = {} if banner else {"profile": "chart"}
+        result = lint_svg.lint_file(path, require_opaque_background=True, **kwargs)
         assert result.ok, (path.name, result.violations)
-        if path.name.endswith("-animated.svg"):
+        if banner and path.name.endswith("-animated.svg"):
             m = result.metrics
             assert m["animated"] is True
             assert m["amplitude_px"] <= 8.0
@@ -125,7 +127,7 @@ def test_lint_svg_real_assets_pass():
             assert m["period_s"] >= 12
             assert m["viewbox"][2] <= 600 and m["viewbox"][3] >= 140
         else:
-            assert result.metrics["animated"] is False
+            assert result.metrics["animated"] is path.name.endswith("-animated.svg")
 
 
 def test_lint_svg_static_twin_matches_animated_design():
@@ -140,7 +142,7 @@ def test_lint_svg_static_twin_matches_animated_design():
 
 
 def test_lint_svg_cli_real_assets_exit_zero(capsys):
-    files = [str(p) for p in sorted(ASSETS.glob("*.svg"))]
+    files = [str(p) for p in sorted(ASSETS.glob("*.svg")) if p.name.startswith(("header-", "footer-"))]
     assert lint_svg.main(files + ["--require-opaque-background"]) == 0
     assert "0 failed" in capsys.readouterr().out
 

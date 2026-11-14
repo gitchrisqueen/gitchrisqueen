@@ -34,9 +34,6 @@ EXPECTED_JOB_PERMISSIONS = {
         "close": {"issues": "write"},
     },
 }
-# Jobs allowed to run the third-party snake generator, and nothing else.
-THIRD_PARTY_JOBS = {("ci", "snake-dry-run"), ("snake", "generate-snake")}
-SNK_PIN = "Platane/snk/svg-only@d8f6715049803e982ee5ff501b6b9b7d5deeb09b"
 
 # Wording that must never appear in public text. Built from fragments so this
 # file does not match itself.
@@ -125,51 +122,19 @@ def test_every_uses_is_a_full_sha_with_a_version_comment(name):
         assert re.fullmatch(r"[\w.-]+/[\w./-]+@[0-9a-f]{40}", action), line.strip()  # preflight: ok
 
 
-def test_snake_generator_pin_is_exact_and_confined():
+def test_no_third_party_actions():
     for name in NAMES:
         for job_id, job in jobs(name).items():
-            uses = [s["uses"] for s in steps(job) if "uses" in s]
-            has_snk = any(u.startswith("Platane/") for u in uses)
-            if (name, job_id) in THIRD_PARTY_JOBS:
-                assert SNK_PIN in uses, f"{name}/{job_id} must use the pinned snake generator"
-            else:
-                assert not has_snk, f"{name}/{job_id} must not run the snake generator"
-            if (name, job_id) not in THIRD_PARTY_JOBS:
-                for u in uses:
-                    assert u.startswith("actions/"), f"{name}/{job_id}: third-party action {u}"
+            for step in steps(job):
+                if "uses" in step:
+                    assert step["uses"].startswith("actions/"), f"{name}/{job_id}: {step['uses']}"
 
 
-def test_snake_generator_step_arguments():
-    for name, job_id in sorted(THIRD_PARTY_JOBS):
-        step = next(s for s in steps(jobs(name)[job_id]) if s.get("uses", "").startswith("Platane/"))
-        assert step["with"]["github_user_name"] == "gitchrisqueen"
-        assert "github_token" not in step["with"], "the default read-only token is used"
-        outputs = [line for line in step["with"]["outputs"].splitlines() if line.strip()]
-        assert len(outputs) == 2
-        for line in outputs:
-            m = re.search(r"color_dots=([^&]+)", line)
-            assert m and len(m.group(1).split(",")) == 5, "snk wants exactly five dot colours"
-
-
-def test_snake_palette_matches_assets_colors_json():
-    """assets/colors.json owns the colours; the generator lines must repeat them exactly."""
-    import json
-
-    pairs = {
-        p["id"]: p["foreground"]
-        for p in json.loads((ROOT / "assets" / "colors.json").read_text(encoding="utf-8"))["pairs"]
-    }
-    want = {}
-    for theme in ("light", "dark"):
-        dots = ",".join(pairs[f"snake-{theme}-level-{n}"] for n in range(5))
-        want[theme] = (dots, pairs[f"snake-{theme}-snake"])
-    for name, job_id in sorted(THIRD_PARTY_JOBS):
-        step = next(s for s in steps(jobs(name)[job_id]) if s.get("uses", "").startswith("Platane/"))
-        lines = [l for l in step["with"]["outputs"].splitlines() if l.strip()]
-        for line, theme in zip(lines, ("light", "dark")):
-            dots = re.search(r"color_dots=([^&]+)", line).group(1)
-            snake = re.search(r"color_snake=(\S+)", line).group(1)
-            assert (dots, snake) == want[theme], f"{name}/{job_id} {theme} palette differs from colors.json"
+def test_snake_generator_step():
+    for name, job_id in (("snake", "generate-snake"), ("ci", "snake-dry-run")):
+        step = next(s for s in steps(jobs(name)[job_id]) if s.get("name") == "Draw the growing snake from the calendar")
+        assert step["env"] == {"GITHUB_TOKEN": "${{ github.token }}"}, "the default read-only token is used"
+        assert step["run"].strip() == "python scripts/make_growing_snake.py --user gitchrisqueen --out-dir dist"
 
 
 @pytest.mark.parametrize("name", NAMES)
@@ -179,7 +144,6 @@ def test_actions_majors_are_current_enough(name):
         "actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0": "v7.1.0",
         "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9": "v7.0.2",
         "actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333": "v8.0.2",
-        SNK_PIN: "v3.5.0",
     }
     for line in uses_lines(name):
         m = re.match(r"^\s*-?\s*uses:\s+(\S+)\s+#\s*(\S+)", line)
@@ -444,15 +408,12 @@ def test_snake_publish_bootstrap_and_no_force_flags():
     assert 'git commit --message "chore: refresh snake assets"' in block
 
 
-def test_snake_generate_runs_static_twins_lint_and_size_check_before_upload():
+def test_snake_generate_runs_lint_and_size_check_before_upload():
     job_steps = steps(jobs("snake")["generate-snake"])
     names = [s["name"] for s in job_steps]
-    assert names.index("Build the animated copies and the static twins") < names.index(
+    assert names.index("Draw the growing snake from the calendar") < names.index(
         "Lint and size-check the SVGs"
     ) < names.index("Upload the validated SVGs")
-    build = next(s["run"] for s in job_steps if s["name"].startswith("Build the animated"))
-    assert build.count("make_snake_static.py") == 4
-    assert build.count("--keep-animation") == 2
     lint = next(s["run"] for s in job_steps if s["name"].startswith("Lint and size-check"))
     assert "--profile chart" in lint and "--require-opaque-background" in lint
     upload = next(s for s in job_steps if s["name"] == "Upload the validated SVGs")
@@ -465,7 +426,8 @@ def test_ci_steps():
     for needle in (
         "python -m pytest tests -q",
         "actionlint",
-        "scripts/lint_svg.py --require-opaque-background assets/*.svg",
+        "scripts/lint_svg.py --require-opaque-background assets/header-*.svg assets/footer-*.svg",
+        "scripts/build_assets.py --check",
         "scripts/check_contrast.py assets/colors.json",
         "scripts/update_profile.py --readme README.md",
         "scripts/guard_publish.py",
