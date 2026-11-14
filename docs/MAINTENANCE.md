@@ -376,3 +376,21 @@ The Connect list in the README points to the owner's own for-agents page. The pa
 ## The interactive graph page
 
 `docs/graph/index.html` is built by `scripts/build_assets.py` from `data/graph.json` (one script, no libraries, no network). It is meant to be served by GitHub Pages: Settings, Pages, source `main`, folder `/docs`. The README graph image links to `https://gitchrisqueen.github.io/gitchrisqueen/graph/`, so that link returns 404 until Pages is switched on. To change the graph, edit `data/graph.json`, run `python scripts/build_assets.py`, and commit the regenerated SVGs and page.
+
+### Counting visits to the graph page (off by default)
+
+The graph page can count page views with PostHog. It is off: `data/analytics.json` ships with an empty `posthog_key`, and while the key is empty the page has no external script, no network call and no mention of PostHog. To turn it on:
+
+1. In PostHog, copy the project key (it starts with `phc_`). It is a public project key, not a secret: it ships in the page's source by design. A personal API key (it starts with `phx_`) must never go in this file; the build refuses one.
+2. Put the key in `data/analytics.json` as `posthog_key`. Leave the two host fields as they are for PostHog US Cloud; for EU Cloud use `https://eu.i.posthog.com` and `https://eu-assets.i.posthog.com`. Only those four PostHog Cloud addresses are accepted.
+3. Run `python scripts/build_assets.py`. A malformed key makes the build fail with a message.
+4. Commit `data/analytics.json` and `docs/graph/index.html`, open a pull request, and merge it. CI runs `python scripts/build_assets.py --check`, so the page and the settings file cannot drift apart.
+5. In PostHog, open Project settings, General, "IP data capture configuration", and set it to discard IP data. The page cannot do this itself: the `ip` option of the browser library is documented as having no effect, so the server setting is what stops IP storage.
+
+What the page then does: it loads `/static/array.js` from the PostHog assets host, sends one page view per visit, and sends one `graph_interact` event (with an `action` of `drag` or `text_list`) the first time a visitor drags a node or opens the text list. The settings are `persistence: 'memory'` (no cookie or browser storage), `autocapture: false`, `disable_session_recording: true`, `disable_surveys: true`, `respect_dnt: true`, `person_profiles: 'never'` and `capture_pageleave: false`. The footer shows "Anonymous page-view counts, no cookies." Do-Not-Track is honoured only by browsers that still send it. The loader file has no version in its address, so it cannot be pinned or given an integrity hash; it is always the current PostHog release.
+
+To turn it off again, set `posthog_key` back to an empty string, run the build, commit and merge.
+
+### Campaign tags on README links
+
+Links in `README.md` that point at the owner's own sites (`christopherqueenconsulting.com` and its subdomains, `chrisqueen.com`, and the graph page) carry `utm_source=github&utm_medium=profile&utm_campaign=readme`, so visits show up in the owner's analytics. Two links keep older, more specific tags (`utm_campaign=resume` and `utm_campaign=cpcc-task-automation`). Links to other sites, repositories, badges and images are never tagged. A test checks both rules.

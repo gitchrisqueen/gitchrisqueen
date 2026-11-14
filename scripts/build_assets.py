@@ -9,6 +9,7 @@ Outputs (all opaque-background, no script, no external reference):
     assets/skills-build.svg, assets/skills-ai.svg   tool logos, two panels
     assets/graph-animated.svg, assets/graph-static.svg  the knowledge-graph graphic
     docs/graph/index.html                              its interactive, draggable version
+                                                       (no network call unless data/analytics.json sets a key)
     assets/terminal-animated.svg, assets/terminal-static.svg  the terminal session about me
     assets/card-<id>.svg                              one card per project
     assets/header-*.svg, assets/footer-*.svg          the CLI-session header and footer
@@ -27,6 +28,7 @@ import argparse
 import json
 import math
 import random
+import re
 import sys
 from pathlib import Path
 from xml.sax.saxutils import escape
@@ -333,7 +335,7 @@ details summary{color:var(--muted);cursor:pointer}
 details ul{margin:6px 0 0;padding:10px 14px 10px 28px;background:var(--tile);border:1px solid var(--line);border-radius:10px;
 max-height:50vh;overflow:auto}
 @media (max-width:640px){#legend{display:none}}
-</style>
+</style>__ANALYTICS_HEAD__
 </head>
 <body>
 <canvas id="g" role="img" aria-label="Knowledge graph of the projects, practices and tools I work with. A text list of the same connections is under the Text version control."></canvas>
@@ -437,16 +439,114 @@ function release(e) {
 cv.addEventListener('pointerup', release); cv.addEventListener('pointercancel', release);
 cv.addEventListener('pointerleave', () => {if (dragging < 0 && hover >= 0) {hover = -1; cv.classList.remove('over'); card.innerHTML = describe(nodes[sel >= 0 ? sel : 0]); draw();}});
 card.innerHTML = describe(nodes[0]);
-</script>
+</script>__ANALYTICS_BODY__
 </body>
 </html>
 """
 
 
-def build_graph_page() -> str:
+# ---- optional page-view counting for the graph page (off unless data/analytics.json holds a key)
+
+ANALYTICS_PATH = ROOT / "data" / "analytics.json"
+ANALYTICS_DEFAULTS = {
+    "posthog_key": "",
+    "posthog_host": "https://us.i.posthog.com",
+    "posthog_assets_host": "https://us-assets.i.posthog.com",
+}
+POSTHOG_KEY_RE = re.compile(r"phc_[A-Za-z0-9]{20,}")  # used with fullmatch: "$" would accept a trailing newline
+POSTHOG_HOST_RE = re.compile(r"https://(us|eu)(-assets)?\.i\.posthog\.com")
+PRIVACY_LINE = "Anonymous page-view counts, no cookies."
+
+# Loader from https://posthog.com/docs/libraries/js, with one change: the script address is the
+# configured assets host, not derived from the API host. The file served there (/static/array.js)
+# has no version in its path, so it cannot be pinned or given an integrity hash.
+POSTHOG_LOADER = (
+    '!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){'
+    'function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){'
+    't.push([e].concat(Array.prototype.slice.call(arguments,0)))}}'
+    '(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,'
+    'p.src=__ASSETS__+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);'
+    'var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],'
+    'Object.defineProperty(u,"toString",{configurable:!0,enumerable:!0,writable:!0,value:function(t){'
+    'var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e}}),'
+    'Object.defineProperty(u.people,"toString",{configurable:!0,enumerable:!0,writable:!0,value:function(){'
+    'return u.toString(1)+".people (stub)"}}),'
+    'o="init capture register register_once register_for_session unregister unregister_for_session '
+    'getFeatureFlag getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment '
+    'getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey '
+    'canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags '
+    'resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id '
+    'getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording '
+    'sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile '
+    'opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing '
+    'clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}'
+    '(document,window.posthog||[]);'
+)
+# Minimum-privacy settings, option names from https://posthog.com/docs/libraries/js/config
+POSTHOG_INIT = (
+    "posthog.init(__KEY__,{api_host:__HOST__,persistence:'memory',autocapture:false,capture_pageview:true,"
+    "capture_pageleave:false,disable_session_recording:true,disable_surveys:true,respect_dnt:true,"
+    "person_profiles:'never'});"
+)
+# One event, at most once per page view, with no personal property: the first drag of a node, or the
+# first opening of the text list. cv, dragging and moved belong to the page script above it.
+POSTHOG_EVENT = (
+    "(function(){var sent=false;"
+    "function track(a){if(sent)return;sent=true;try{posthog.capture('graph_interact',{action:a});}catch(e){}}"
+    "cv.addEventListener('pointermove',function(){if(dragging>=0&&moved>=4)track('drag');});"
+    "document.querySelector('details').addEventListener('toggle',function(e){if(e.target.open)track('text_list');});"
+    "})();"
+)
+ANALYTICS_HEAD = (
+    "\n<style>#privacy{position:fixed;left:12px;right:12px;bottom:6px;margin:0;font-size:11px;color:var(--muted)}"
+    "#card,#legend{bottom:28px}</style>"
+)
+
+
+def parse_analytics(raw: object) -> dict:
+    """Validate the analytics settings. Raises SystemExit on anything malformed."""
+    if not isinstance(raw, dict):
+        raise SystemExit("data/analytics.json must be a JSON object")
+    unknown = sorted(set(raw) - set(ANALYTICS_DEFAULTS))
+    if unknown:
+        raise SystemExit(f"data/analytics.json has unknown field(s): {', '.join(unknown)}")
+    cfg = {**ANALYTICS_DEFAULTS, **raw}
+    for name, value in cfg.items():
+        if not isinstance(value, str):
+            raise SystemExit(f"data/analytics.json: {name} must be a string")
+    key = cfg["posthog_key"]
+    if key.startswith("phx_"):
+        raise SystemExit("data/analytics.json: posthog_key looks like a personal API key (phx_). "
+                         "Never put one in this repository. Use the public project key (phc_).")
+    if key and not POSTHOG_KEY_RE.fullmatch(key):
+        raise SystemExit("data/analytics.json: posthog_key is not a project key (expected phc_ followed by "
+                         "20 or more letters and digits)")
+    for name in ("posthog_host", "posthog_assets_host"):
+        if not POSTHOG_HOST_RE.fullmatch(cfg[name]):
+            raise SystemExit(f"data/analytics.json: {name} must be one of the PostHog Cloud hosts "
+                             "(https://us.i.posthog.com, https://us-assets.i.posthog.com, or the eu ones)")
+    return cfg
+
+
+def load_analytics() -> dict:
+    if not ANALYTICS_PATH.is_file():
+        return dict(ANALYTICS_DEFAULTS)
+    return parse_analytics(json.loads(ANALYTICS_PATH.read_text(encoding="utf-8")))
+
+
+def build_graph_page(analytics: dict | None = None) -> str:
     graph = load_graph()
+    cfg = load_analytics() if analytics is None else analytics
     data = json.dumps(graph, separators=(",", ":")).replace("</", "<\\/")
-    return GRAPH_PAGE.replace("__DATA__", data)
+    head = body = ""
+    if cfg["posthog_key"]:
+        init = (POSTHOG_INIT.replace("__KEY__", json.dumps(cfg["posthog_key"]))
+                .replace("__HOST__", json.dumps(cfg["posthog_host"])))
+        loader = POSTHOG_LOADER.replace("__ASSETS__", json.dumps(cfg["posthog_assets_host"]))
+        head = ANALYTICS_HEAD
+        body = (f'\n<p id="privacy">{PRIVACY_LINE}</p>\n<script>\n{loader}\n{init}\n{POSTHOG_EVENT}\n</script>')
+    return (GRAPH_PAGE.replace("__ANALYTICS_HEAD__", head).replace("__ANALYTICS_BODY__", body)
+            .replace("__DATA__", data))
 
 
 # ---------------------------------------------------------------- terminal content
