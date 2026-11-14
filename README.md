@@ -95,7 +95,7 @@ I build with AI coding agents in the loop; the upstream pull requests below were
 
 **Christopher Queen**, Applied AI and Forward-Deployed Engineer in Jacksonville, FL (remote). Open to Forward-Deployed Engineer roles. I also run a one-week LLM spend and reliability audit.
 
-**Skills:** Python, JavaScript and Node.js, Swift; FastAPI, Celery, Redis, MySQL, React, Streamlit; LLM systems with LangChain, LiteLLM, OpenRouter and MCP; evals and real checks; observability with PostHog and Latitude; browser automation with Selenium; Docker and GitHub Actions.
+**Skills:** Python, JavaScript and Node.js, Swift; FastAPI, Celery, Redis, MySQL, React, Streamlit; LLM systems with LangChain, LiteLLM, OpenRouter and MCP; evals and real checks; observability with PostHog; browser automation with Selenium; Docker and GitHub Actions.
 
 **Projects:** [LinkedIn Engagement Manager](https://github.com/christopherqueenconsulting/linkedin_engagement_manager) ships safe database changes automatically and holds risky ones. [CPCC Task Automation](https://github.com/christopherqueenconsulting/cpcc_task_automation) lets a real compiler overrule the model. [hearing-copilot](https://github.com/gitchrisqueen/hearing-copilot) labels speakers, scored on real court audio. [panthera](https://github.com/gitchrisqueen/panthera) is a prediction pipeline with a daily health check. [cqc](https://github.com/gitchrisqueen/cqc) is the command line tool behind the terminal above.
 
