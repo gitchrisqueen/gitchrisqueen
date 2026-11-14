@@ -279,11 +279,28 @@ def test_contrast_helper_rejects_low_contrast():
         assets.require_text_contrast("#777777", "#888888", "test")
 
 
-def test_card_claims_are_the_short_forms_of_the_readme_claims():
-    """Guard against a card drifting into a claim the README does not make."""
-    joined = " ".join(" ".join(c["lines"] + c["broke"]) for c in assets.CARDS).lower()
-    for banned in ("roi of", "%", "revenue", "customers", "production-grade"):
-        assert banned not in joined
+def test_card_claims_stay_inside_what_the_projects_support():
+    """Guard against a card drifting into a claim the projects do not support."""
+    joined = " ".join(" ".join(c["stake"] + c["did"] + c["familiar"] + [c["what"]]) for c in assets.CARDS).lower()
+    for banned in ("revenue", "customers", "production-grade", "profit", "betting", "traceab", "guarantee"):
+        assert banned not in joined, banned
+    by_id = {c["id"]: c for c in assets.CARDS}
+    assert any("held out" in line for line in by_id["hearing"]["did"]), "the accuracy number keeps its caveat"
+    assert any("1.2 standard errors" in line for line in by_id["panthera"]["did"])
+    assert "paper" in by_id["panthera"]["tag"].lower() and "no real money" in by_id["panthera"]["what"]
+
+
+def test_every_card_line_fits_and_every_card_has_the_three_blocks():
+    for card in assets.CARDS:
+        for key in ("stake", "did", "familiar"):
+            assert card[key], (card["id"], key)
+            assert all(len(line) <= 50 for line in card[key]), (card["id"], key)
+
+
+def test_readme_card_alt_text_is_the_card_text():
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    for card in assets.CARDS:
+        assert assets.card_alt(card).replace('"', "&quot;") in readme, card["id"]
 
 
 def test_every_output_uses_the_dark_panel_and_carries_no_count_text():

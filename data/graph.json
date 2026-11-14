@@ -11,25 +11,25 @@
       "id": "lem",
       "label": "LEM",
       "kind": "project",
-      "note": "LinkedIn Engagement Manager: a live web app with a 30-day content plan, quality-gated AI posts and daily-capped engagement."
+      "note": "Safe database changes ship on their own; risky ones hold and alert me. An hourly check flags a release that stalls."
     },
     {
       "id": "cpcc",
       "label": "CPCC tool",
       "kind": "project",
-      "note": "Instructor admin tool: attendance, withdrawals and rubric grading, with a real compiler deciding compile errors."
+      "note": "A real compiler overrules the model on compile errors; student code is compiled, never run."
     },
     {
       "id": "hearing",
       "label": "hearing-copilot",
       "kind": "project",
-      "note": "Speaker identification for live transcripts, scored offline on real oral-argument audio, with its caveats written down."
+      "note": "Scored on 91 minutes of real court audio before it was trusted; only confident names are accepted. One hearing, not held out."
     },
     {
       "id": "panthera",
       "label": "panthera",
       "kind": "project",
-      "note": "MLB paper-trading pipeline graded against rules declared in git. Paper trading only."
+      "note": "A daily health check flags a dead run the next morning, and results are reported with their error bars. Paper trading only."
     },
     {
       "id": "audit",

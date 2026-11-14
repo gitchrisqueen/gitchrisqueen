@@ -653,48 +653,60 @@ def build_terminal(animated: bool) -> str:
 CARDS = [
     {
         "id": "lem", "tag": "Live web app", "title": "LinkedIn Engagement Manager",
-        "lines": ["Builds a 30-day content plan, gates AI-written", "posts on quality, caps daily engagement."],
-        "label": "Caught and fixed",
-        "broke": ["The live app sat behind new releases for a day,",
-                  "inside a green run. An hourly check now flags it."],
+        "what": "A LinkedIn content and engagement app.",
+        "stake": ["Users stuck on an old release for a day,", "and nobody told."],
+        "did": ["Safe database changes ship on their own;", "risky ones hold and alert me. Of 134 past", "changes, 102 would ship on their own."],
+        "familiar": ["Has a release sat unshipped because a", "gate held it and no one told you?"],
         "icons": ["fastapi", "celery", "redis", "mysql", "react", "docker"],
+        "built": "FastAPI, Celery, Redis, MySQL, React and Docker",
     },
     {
         "id": "cpcc", "tag": "Instructor admin tool", "title": "CPCC Task Automation",
-        "lines": ["Attendance, withdrawals and rubric grading for", "my own courses. Grades go back as drafts."],
-        "label": "Caught and fixed",
-        "broke": ["The model called valid C++ \"does not compile\".", "A real compiler now makes that call."],
+        "what": "Grading and admin tool for my own courses.",
+        "stake": ["One false \"does not compile\" verdict floored", "a student's whole grade."],
+        "did": ["A real compiler now overrules the model.", "\"Can't verify\" never counts as a fail, and", "student code is compiled, never run."],
+        "familiar": ["Does an AI verdict in your workflow ever count", "with no hard check behind it?"],
         "icons": ["python", "streamlit", "selenium", "langchain"],
+        "built": "Python, Streamlit, Selenium and LangChain",
     },
     {
         "id": "hearing", "tag": "Speaker identification", "title": "hearing-copilot",
-        "lines": ["Labels who is speaking in a live transcript.", "Scored offline on real oral-argument audio."],
-        "label": "Limits",
-        "broke": ["The headline score comes from one hearing, with",
-                  "no confidence interval. Caveats are in RESULTS.md."],
+        "what": "Names the speakers in a hearing transcript.",
+        "stake": ["A wrong speaker name pins words on the", "wrong person."],
+        "did": ["Scored 91 min of real court audio first:", "99.2% right on the 89.8% it auto-accepted.", "One hearing, not held out, no interval."],
+        "familiar": ["Does your AI guess who said what, with", "nobody checking the guesses?"],
         "icons": ["javascript", "nodedotjs"],
+        "built": "JavaScript and Node.js",
     },
     {
-        "id": "panthera", "tag": "Paper trading experiment", "title": "panthera",
-        "lines": ["MLB picks graded against rules declared in git.",
-                  "Paper trading only; the ROI is a screen, not proof."],
-        "label": "Caught and fixed",
-        "broke": ["A config whitelist skipped the postseason and",
-                  "14 slate days passed unnoticed. A health check", "now flags it."],
+        "id": "panthera", "tag": "Prediction pipeline, paper only", "title": "panthera",
+        "what": "An MLB prediction pipeline, no real money.",
+        "stake": ["Scheduled runs produced nothing for 14", "game days, and every run showed green."],
+        "did": ["Fixed the cause; a daily health check now", "flags a dead run the next morning. I also", "won't call +7.99% an edge: it is about", "1.2 standard errors from zero."],
+        "familiar": ["Do your scheduled jobs ever run green for", "weeks while quietly producing nothing?"],
         "icons": ["python", "githubactions"],
+        "built": "Python and GitHub Actions",
     },
 ]
+CARD_BLOCKS = (("At stake", "stake"), ("What I did", "did"), ("Sound familiar?", "familiar"))
 
 
-CARD_HEIGHT = 272  # every card the same height so a pair sits level
+def card_alt(card: dict) -> str:
+    return (f'{card["title"]}. {card["what"]} At stake: {" ".join(card["stake"])} What I did: {" ".join(card["did"])} '
+            f'Sound familiar? {" ".join(card["familiar"])} Built with {card["built"]}.')
+
+
+def _card_height() -> int:
+    most = max(sum(24 + 19 * len(c[key]) + 8 for _, key in CARD_BLOCKS) for c in CARDS)
+    return 110 + most + 44
+
+
+CARD_HEIGHT = _card_height()  # every card the same height so a pair sits level
 
 
 def build_card(card: dict, icons: dict) -> str:
-    width = 392
-    broke_lines = card["broke"]
-    height = CARD_HEIGHT
-    out = svg_open(width, height, card["title"],
-                   f'{card["title"]}. {" ".join(card["lines"])} {card["label"]}: {" ".join(broke_lines)}')
+    width, height = 392, CARD_HEIGHT
+    out = svg_open(width, height, card["title"], card_alt(card))
     out.append(f'<defs><clipPath id="r"><rect x="1" y="1" width="{width - 2}" height="{height - 2}" rx="12"/>'
                f'</clipPath></defs>')
     out.append(f'<rect x="1" y="1" width="{width - 2}" height="{height - 2}" rx="12" fill="{TILE}" stroke="{LINE}"/>')
@@ -703,17 +715,15 @@ def build_card(card: dict, icons: dict) -> str:
         require_text_contrast(fg, TILE, where)
     out.append(f'<text x="26" y="34" font-size="13" fill="{GOLD}">{escape(card["tag"])}</text>')
     out.append(f'<text x="26" y="64" font-size="22" font-weight="700" fill="{TEXT}">{escape(card["title"])}</text>')
-    y = 92
-    for line in card["lines"]:
-        out.append(f'<text x="26" y="{y}" font-size="13.5" fill="{MUTED}">{escape(line)}</text>')
+    out.append(f'<text x="26" y="88" font-size="13.5" fill="{MUTED}">{escape(card["what"])}</text>')
+    y = 118
+    for label, key in CARD_BLOCKS:
+        out.append(f'<text x="26" y="{y}" font-size="13" font-weight="700" fill="{GOLD}">{escape(label)}</text>')
         y += 20
-    out.append(f'<line x1="26" y1="{y + 4}" x2="{width - 26}" y2="{y + 4}" stroke="{LINE}"/>')
-    out.append(f'<text x="26" y="{y + 28}" font-size="13" font-weight="700" fill="{GOLD}">'
-               f'{escape(card["label"])}</text>')
-    y += 50
-    for line in broke_lines:
-        out.append(f'<text x="26" y="{y}" font-size="13.5" fill="{TEXT}">{escape(line)}</text>')
-        y += 20
+        for line in card[key]:
+            out.append(f'<text x="26" y="{y}" font-size="13.5" fill="{TEXT}">{escape(line)}</text>')
+            y += 19
+        y += 12
     x = 26
     for slug in card["icons"]:
         out.append(icon_group(icons, slug, x, height - 44, 24, TILE))
