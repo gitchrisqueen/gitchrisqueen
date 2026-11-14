@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 36" width="132" height="36" role="img">
+<title>Practices</title>
+<desc>Legend: green dots in the graph are practices.</desc>
+<style>text{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}.m{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace}</style>
+<rect width="132" height="36" fill="#0d1117"/>
+<rect x="3" y="3" width="126" height="30" rx="9" fill="#161b22" stroke="#30363d"/>
+<circle cx="20" cy="18" r="8" fill="#3fb950"/>
+<text x="39" y="22.5" font-size="13" fill="#e6edf3">Practices</text>
+</svg>

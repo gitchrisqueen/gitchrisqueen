@@ -44,9 +44,20 @@ MERGED_ROW_RE = re.compile(
 )
 FLAG_HEADER = "| Repo | Check | Status |"
 FLAG_SEPARATOR = "| --- | --- | --- |"
+FLAG_BADGE_STYLE = r"labelColor=24292f&style=flat-square"
+FLAG_WORKFLOW = r"[A-Za-z0-9._-]{1,100}\.ya?ml"
 FLAG_ROW_RE = re.compile(
     rf"\| \[(?P<name>{NAME_CLASS}{{1,60}})\]\(https://github\.com/(?P<repo>{REPO_PART}/{REPO_PART})\)"
-    rf" \| (?P<check>{NAME_CLASS}{{1,60}}) \| (?P<status>passing|failing|unavailable) \|"
+    rf" \| (?P<check>{NAME_CLASS}{{1,60}}) \| (?:unavailable|"
+    # a status badge (shields.io, green or red by itself) that links to the workflow's runs, then optionally a
+    # version badge that links to the releases
+    rf"\[!\[(?P<status>passing|failing)\]\(https://img\.shields\.io/github/actions/workflow/status/"
+    rf"(?P<srepo>{REPO_PART}/{REPO_PART})/(?P<wf>{FLAG_WORKFLOW})\?label=status&{FLAG_BADGE_STYLE}\)\]"
+    rf"\(https://github\.com/(?P<arepo>{REPO_PART}/{REPO_PART})/actions/workflows/(?P<awf>{FLAG_WORKFLOW})\)"
+    rf"(?: \[!\[Latest release\]\(https://img\.shields\.io/github/v/release/(?P<vrepo>{REPO_PART}/{REPO_PART})"
+    rf"\?include_prereleases&label=version&{FLAG_BADGE_STYLE}\)\]"
+    rf"\(https://github\.com/(?P<rrepo>{REPO_PART}/{REPO_PART})/releases\))?"
+    rf") \|"
 )
 DENIED_SUBSTRINGS = ("://", "www.", "<!--", "-->", "](", "<", ">")
 URL_RE = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://\S*")
@@ -101,7 +112,16 @@ def flagship_row(line: str) -> str | None:
         value = m.group(key)
         if value != value.strip() or has_denied(value):
             return None
-    return m.group("repo")
+    repo = m.group("repo")
+    if m.group("status") is not None:
+        if any(m.group(k) != repo for k in ("srepo", "arepo")) or m.group("wf") != m.group("awf"):
+            return None
+        for k in ("vrepo", "rrepo"):
+            if m.group(k) is not None and m.group(k) != repo:
+                return None
+        if (m.group("vrepo") is None) != (m.group("rrepo") is None):
+            return None
+    return repo
 
 
 def read_text(path: str, problems: list[str], label: str) -> str | None:
@@ -205,9 +225,11 @@ def check_block_lines(name: str, first_line_no: int, lines: list[str], allowed: 
             rows += 1
             if repo.lower() not in allowed:
                 problems.append(f"{name}: line {ln_no} repo is not in the allowlist")
-    # URL rule, defence in depth: anything with a scheme must be github.com.
+    # URL rule, defence in depth: anything with a scheme must be github.com. The one exception is a flagship row
+    # that matched the strict grammar above, whose status cell carries two fixed shields.io badge URLs.
     for idx, line in enumerate(lines):
-        for url in URL_RE.findall(line):
+        grammar_checked = name == BLOCK_FLAGSHIPS and flagship_row(line) is not None
+        for url in [] if grammar_checked else URL_RE.findall(line):
             if not re.fullmatch(rf"https://github\.com/{REPO_PART}/{REPO_PART}(/pull/[0-9]+)?\)?:?", url):
                 problems.append(f"{name}: line {first_line_no + idx} has a URL that is not on github.com")
         if re.search(r"www\.", line, re.IGNORECASE):

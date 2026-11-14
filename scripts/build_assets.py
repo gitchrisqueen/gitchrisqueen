@@ -234,6 +234,44 @@ def skills_readme_block() -> str:
     return "".join(lines)
 
 
+# ---------------------------------------------------------------- graph legend
+
+# One small chip per kind of dot in the graph, each its own image so the row wraps on a phone (one wide image would
+# shrink its text to nothing). The colours are read from KIND_STYLE below, so the legend cannot drift from the graph.
+LEGEND_W, LEGEND_H, LEGEND_MARGIN = 132, 36, 3
+LEGEND = [
+    # (file stem, kind in KIND_STYLE, label, what the dot means in the graph above)
+    ("me", "me", "Me", "Legend: the large gold dot at the centre of the graph is Christopher."),
+    ("projects", "project", "Projects", "Legend: gold dots in the graph are projects."),
+    ("practices", "practice", "Practices", "Legend: green dots in the graph are practices."),
+    ("tools", "tech", "Tools", "Legend: logos in the graph are tools."),
+    ("audit", "offer", "The LLM audit", "Legend: the pale dot in the graph is the LLM audit I offer."),
+]
+
+
+def legend_file(stem: str) -> str:
+    return f"graph-legend-{stem}.svg"
+
+
+def build_legend_chip(stem: str, icons: dict) -> str:
+    _, kind, label, desc = next(item for item in LEGEND if item[0] == stem)
+    _, fill, _, _ = KIND_STYLE[kind]
+    m = LEGEND_MARGIN
+    w, h = LEGEND_W - 2 * m, LEGEND_H - 2 * m
+    cx, cy = m + 17, m + h / 2
+    out = svg_open(LEGEND_W, LEGEND_H, label, desc)
+    require_text_contrast(TEXT, TILE, "graph legend label")
+    out.append(f'<rect x="{m}" y="{m}" width="{w}" height="{h}" rx="9" fill="{TILE}" stroke="{LINE}"/>')
+    if kind == "tech":
+        out.append(f'<circle cx="{cx}" cy="{cy:g}" r="11" fill="{TILE}" stroke="{MUTED}"/>')
+        out.append(icon_group(icons, "python", cx - 7, cy - 7, 14, TILE))
+    else:
+        out.append(f'<circle cx="{cx}" cy="{cy:g}" r="8" fill="{fill}"/>')
+    out.append(f'<text x="{m + 36}" y="{cy + 4.5:g}" font-size="13" fill="{TEXT}">{escape(label)}</text>')
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
 # ---------------------------------------------------------------- knowledge graph
 
 KIND_STYLE = {
@@ -1085,6 +1123,8 @@ def build_all() -> dict[str, str]:
         for n in range(len(items)):
             for w in [SK_TILE_W] + [t for t, _ in SK_TIERS]:
                 files[f"{skill_file_stem(panel, n, w)}.svg"] = build_skill_tile(panel, n, icons, w)
+    for stem, *_ in LEGEND:
+        files[legend_file(stem)] = build_legend_chip(stem, icons)
     files["graph-animated.svg"] = build_graph_svg(True)
     files["graph-static.svg"] = build_graph_svg(False)
     files["terminal-animated.svg"] = build_terminal(True)

@@ -71,9 +71,20 @@ MERGED_ROW_RE = re.compile(
 )
 FLAG_HEADER = "| Repo | Check | Status |"
 FLAG_SEPARATOR = "| --- | --- | --- |"
+FLAG_BADGE_STYLE = r"labelColor=24292f&style=flat-square"
+FLAG_WORKFLOW = r"[A-Za-z0-9._-]{1,100}\.ya?ml"
 FLAG_ROW_RE = re.compile(
     rf"\| \[(?P<name>{NAME_CLASS}{{1,60}})\]\(https://github\.com/(?P<repo>{REPO_PART}/{REPO_PART})\)"
-    rf" \| (?P<check>{NAME_CLASS}{{1,60}}) \| (?P<status>passing|failing|unavailable) \|"
+    rf" \| (?P<check>{NAME_CLASS}{{1,60}}) \| (?:unavailable|"
+    # a status badge (shields.io, green or red by itself) that links to the workflow's runs, then optionally a
+    # version badge that links to the releases
+    rf"\[!\[(?P<status>passing|failing)\]\(https://img\.shields\.io/github/actions/workflow/status/"
+    rf"(?P<srepo>{REPO_PART}/{REPO_PART})/(?P<wf>{FLAG_WORKFLOW})\?label=status&{FLAG_BADGE_STYLE}\)\]"
+    rf"\(https://github\.com/(?P<arepo>{REPO_PART}/{REPO_PART})/actions/workflows/(?P<awf>{FLAG_WORKFLOW})\)"
+    rf"(?: \[!\[Latest release\]\(https://img\.shields\.io/github/v/release/(?P<vrepo>{REPO_PART}/{REPO_PART})"
+    rf"\?include_prereleases&label=version&{FLAG_BADGE_STYLE}\)\]"
+    rf"\(https://github\.com/(?P<rrepo>{REPO_PART}/{REPO_PART})/releases\))?"
+    rf") \|"
 )
 STATUSES = ("passing", "failing", "unavailable")
 DENIED_SUBSTRINGS = ("://", "www.", "<!--", "-->", "](", "<", ">")
@@ -196,16 +207,48 @@ def validate_merged_row(line: str) -> tuple[str, int] | None:
     return (repo, int(num)) if ok else None
 
 
-def validate_flagship_row(line: str) -> tuple[str, str] | None:
-    """Return (repo, status) if the line matches the flagship-row grammar, else None."""
-    m = FLAG_ROW_RE.fullmatch(line)
+def flagship_row_ok(m: re.Match | None) -> str | None:
+    """Return the row's owner/repo if the match is a valid flagship row: the text cells pass the text allowlist and
+    every link in the status cell points at the row's own repository."""
     if not m or not valid_repo(m.group("repo")):
         return None
     for key in ("name", "check"):
         value = m.group(key)
         if value != value.strip() or has_denied(value):
             return None
-    return m.group("repo"), m.group("status")
+    repo = m.group("repo")
+    if m.group("status") is not None:
+        if any(m.group(k) != repo for k in ("srepo", "arepo")) or m.group("wf") != m.group("awf"):
+            return None
+        for k in ("vrepo", "rrepo"):
+            if m.group(k) is not None and m.group(k) != repo:
+                return None
+        if (m.group("vrepo") is None) != (m.group("rrepo") is None):
+            return None
+    return repo
+
+
+def validate_flagship_row(line: str) -> tuple[str, str] | None:
+    """Return (repo, status) if the line matches the flagship-row grammar, else None."""
+    m = FLAG_ROW_RE.fullmatch(line)
+    repo = flagship_row_ok(m)
+    if repo is None:
+        return None
+    return repo, m.group("status") or "unavailable"
+
+
+def flagship_status_cell(entry: dict, status: str) -> str:
+    """The Status cell: shields.io badges drawn live by shields.io (the status colour follows the workflow), with the
+    alt text from the last run of this script. A repository that is not available gets the bare word."""
+    if status == "unavailable":
+        return "unavailable"
+    repo, wf, style = entry["repo"], entry["workflow"], "labelColor=24292f&style=flat-square"
+    cell = (f"[![{status}](https://img.shields.io/github/actions/workflow/status/{repo}/{wf}?label=status&{style})]"
+            f"(https://github.com/{repo}/actions/workflows/{wf})")
+    if entry.get("release"):
+        cell += (f" [![Latest release](https://img.shields.io/github/v/release/{repo}?include_prereleases"
+                 f"&label=version&{style})](https://github.com/{repo}/releases)")
+    return cell
 
 
 # --------------------------------------------------------------------------
@@ -443,7 +486,10 @@ def load_flagships(data_dir: str, allow: Allowlist) -> list[dict]:
             if (not isinstance(value, str) or not NAME_RE.fullmatch(value)
                     or value != value.strip() or has_denied(value)):
                 raise BlockError(f"flagships: {label} fails the text allowlist")
-        out.append({"name": name, "repo": repo, "workflow": workflow, "check": check})
+        release = entry.get("release", False)
+        if not isinstance(release, bool):
+            raise BlockError("flagships: release must be true or false")
+        out.append({"name": name, "repo": repo, "workflow": workflow, "check": check, "release": release})
     return out
 
 
@@ -637,7 +683,8 @@ def gen_flagships(client: GitHubClient, data_dir: str, inject: str, current_text
     for entry in entries:
         status = flagship_status(client, entry)
         counts[status] += 1
-        lines.append(f"| [{entry['name']}](https://github.com/{entry['repo']}) | {entry['check']} | {status} |")
+        lines.append(f"| [{entry['name']}](https://github.com/{entry['repo']}) | {entry['check']} | "
+                     f"{flagship_status_cell(entry, status)} |")
     for line in lines[2:]:
         if validate_flagship_row(line) is None:
             raise BlockError("generated row failed the row grammar")

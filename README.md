@@ -25,7 +25,9 @@
 </picture>
 </a>
 
-<sub>Gold dots are projects, green dots are practices, logos are tools. Select the graph to open the interactive version and drag the nodes.</sub>
+<a href="https://gitchrisqueen.github.io/gitchrisqueen/graph/?utm_source=github&utm_medium=profile&utm_campaign=readme"><img src="assets/graph-legend-me.svg" alt="Legend: the large gold dot at the centre of the graph is Christopher." align="top"></a><a href="https://gitchrisqueen.github.io/gitchrisqueen/graph/?utm_source=github&utm_medium=profile&utm_campaign=readme"><img src="assets/graph-legend-projects.svg" alt="Legend: gold dots in the graph are projects." align="top"></a><a href="https://gitchrisqueen.github.io/gitchrisqueen/graph/?utm_source=github&utm_medium=profile&utm_campaign=readme"><img src="assets/graph-legend-practices.svg" alt="Legend: green dots in the graph are practices." align="top"></a><a href="https://gitchrisqueen.github.io/gitchrisqueen/graph/?utm_source=github&utm_medium=profile&utm_campaign=readme"><img src="assets/graph-legend-tools.svg" alt="Legend: logos in the graph are tools." align="top"></a><a href="https://gitchrisqueen.github.io/gitchrisqueen/graph/?utm_source=github&utm_medium=profile&utm_campaign=readme"><img src="assets/graph-legend-audit.svg" alt="Legend: the pale dot in the graph is the LLM audit I offer." align="top"></a>
+
+<sub>Click the graph to see the interactive version.</sub>
 
 ## What I've built
 
@@ -34,12 +36,7 @@
 <a href="https://github.com/gitchrisqueen/hearing-copilot"><img alt="hearing-copilot. Names the speakers in a hearing transcript. At stake: A wrong speaker name pins words on the wrong person. What I did: Scored 91 min of real court audio first: 99.2% right on the 89.8% it auto-accepted. One hearing, not held out, no interval. Sound familiar? Does your AI guess who said what, with nobody checking the guesses? Built with JavaScript and Node.js." src="assets/card-hearing.svg" width="386"></a>
 <a href="https://github.com/gitchrisqueen/panthera"><img alt="panthera. An MLB prediction pipeline, no real money. At stake: Scheduled runs produced no picks for 14 slate days, and every run showed green. What I did: Fixed the cause; a daily health check now flags a no-picks slate about a day later. I also won't call +7.99% an edge: it is about 1.2 standard errors from zero. Sound familiar? Do your scheduled jobs ever run green for weeks while quietly producing nothing? Built with Python and GitHub Actions." src="assets/card-panthera.svg" width="386"></a>
 
-Test status, live: <a href="https://github.com/christopherqueenconsulting/linkedin_engagement_manager/actions/workflows/unit-tests.yml"><img alt="LinkedIn Engagement Manager automated tests status" src="https://img.shields.io/github/actions/workflow/status/christopherqueenconsulting/linkedin_engagement_manager/unit-tests.yml?branch=main&label=LEM&labelColor=24292f&color=57606a&style=flat-square"></a>
-<a href="https://github.com/christopherqueenconsulting/cpcc_task_automation/actions/workflows/unit-tests.yml"><img alt="CPCC Task Automation automated tests status" src="https://img.shields.io/github/actions/workflow/status/christopherqueenconsulting/cpcc_task_automation/unit-tests.yml?branch=master&label=CPCC&labelColor=24292f&color=57606a&style=flat-square"></a>
-<a href="https://github.com/gitchrisqueen/hearing-copilot/actions/workflows/ci.yml"><img alt="hearing-copilot automated tests and lint status" src="https://img.shields.io/github/actions/workflow/status/gitchrisqueen/hearing-copilot/ci.yml?branch=main&label=hearing-copilot&labelColor=24292f&color=57606a&style=flat-square"></a>
-<a href="https://github.com/gitchrisqueen/panthera/actions/workflows/mvp-morning.yml"><img alt="panthera daily pipeline run status" src="https://img.shields.io/github/actions/workflow/status/gitchrisqueen/panthera/mvp-morning.yml?branch=main&label=panthera%20daily%20run&labelColor=24292f&color=57606a&style=flat-square"></a>
-
-More: [the LEM live app](https://lem.christopherqueenconsulting.com/?utm_source=github&utm_medium=profile&utm_campaign=readme), [the CPCC case study](https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation), [hearing-copilot results and caveats](https://github.com/gitchrisqueen/hearing-copilot/blob/main/eval/diarization/RESULTS.md), [the panthera report](https://github.com/gitchrisqueen/panthera/blob/main/reports/BETTING_REPORT.md), and [cqc](https://github.com/gitchrisqueen/cqc), the tool behind the terminal above, and [every number with its caveats](https://github.com/gitchrisqueen/gitchrisqueen/blob/main/docs/PROOF.md). Also [CueSyncAR](https://github.com/gitchrisqueen/CueSyncAR), an iOS augmented-reality billiards prototype in Swift, declared paused on 2026-09-10.
+More: [the LEM live app](https://lem.christopherqueenconsulting.com/?utm_source=github&utm_medium=profile&utm_campaign=readme), [the CPCC case study](https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation), [hearing-copilot results and caveats](https://github.com/gitchrisqueen/hearing-copilot/blob/main/eval/diarization/RESULTS.md), [the panthera report](https://github.com/gitchrisqueen/panthera/blob/main/reports/BETTING_REPORT.md), and [cqc](https://github.com/gitchrisqueen/cqc), the tool behind the terminal above, and [every number with its caveats](https://github.com/gitchrisqueen/gitchrisqueen/blob/main/docs/PROOF.md). Also [CueSyncAR](https://github.com/gitchrisqueen/CueSyncAR), an iOS augmented-reality billiards prototype in Swift.
 
 <details>
 <summary><picture><img src="assets/pill-status.svg" alt="Live status of the four checks (select to open)" width="520"></picture></summary>
@@ -47,13 +44,11 @@ More: [the LEM live app](https://lem.christopherqueenconsulting.com/?utm_source=
 <!-- FLAGSHIPS:START -->
 | Repo | Check | Status |
 | --- | --- | --- |
-| [LinkedIn Engagement Manager](https://github.com/christopherqueenconsulting/linkedin_engagement_manager) | Automated unit tests | passing |
-| [CPCC Task Automation](https://github.com/christopherqueenconsulting/cpcc_task_automation) | Automated unit tests | passing |
-| [hearing-copilot](https://github.com/gitchrisqueen/hearing-copilot) | Automated tests and lint | passing |
-| [panthera](https://github.com/gitchrisqueen/panthera) | Daily pipeline run | passing |
+| [LinkedIn Engagement Manager](https://github.com/christopherqueenconsulting/linkedin_engagement_manager) | Automated unit tests | [![passing](https://img.shields.io/github/actions/workflow/status/christopherqueenconsulting/linkedin_engagement_manager/unit-tests.yml?label=status&labelColor=24292f&style=flat-square)](https://github.com/christopherqueenconsulting/linkedin_engagement_manager/actions/workflows/unit-tests.yml) [![Latest release](https://img.shields.io/github/v/release/christopherqueenconsulting/linkedin_engagement_manager?include_prereleases&label=version&labelColor=24292f&style=flat-square)](https://github.com/christopherqueenconsulting/linkedin_engagement_manager/releases) |
+| [CPCC Task Automation](https://github.com/christopherqueenconsulting/cpcc_task_automation) | Automated unit tests | [![passing](https://img.shields.io/github/actions/workflow/status/christopherqueenconsulting/cpcc_task_automation/unit-tests.yml?label=status&labelColor=24292f&style=flat-square)](https://github.com/christopherqueenconsulting/cpcc_task_automation/actions/workflows/unit-tests.yml) [![Latest release](https://img.shields.io/github/v/release/christopherqueenconsulting/cpcc_task_automation?include_prereleases&label=version&labelColor=24292f&style=flat-square)](https://github.com/christopherqueenconsulting/cpcc_task_automation/releases) |
+| [hearing-copilot](https://github.com/gitchrisqueen/hearing-copilot) | Automated tests and lint | [![passing](https://img.shields.io/github/actions/workflow/status/gitchrisqueen/hearing-copilot/ci.yml?label=status&labelColor=24292f&style=flat-square)](https://github.com/gitchrisqueen/hearing-copilot/actions/workflows/ci.yml) [![Latest release](https://img.shields.io/github/v/release/gitchrisqueen/hearing-copilot?include_prereleases&label=version&labelColor=24292f&style=flat-square)](https://github.com/gitchrisqueen/hearing-copilot/releases) |
+| [panthera](https://github.com/gitchrisqueen/panthera) | Daily pipeline run | [![passing](https://img.shields.io/github/actions/workflow/status/gitchrisqueen/panthera/mvp-morning.yml?label=status&labelColor=24292f&style=flat-square)](https://github.com/gitchrisqueen/panthera/actions/workflows/mvp-morning.yml) |
 <!-- FLAGSHIPS:END -->
-
-For panthera, passing means the daily pipeline ran, not that its data is healthy; a separate health check opens an issue for a dead slate.
 </details>
 
 ## Tools
@@ -110,7 +105,7 @@ I build with AI coding agents in the loop; the upstream pull requests below were
   <img alt="Contribution calendar for the past year, drawn as a snake that eats each active day." src="https://raw.githubusercontent.com/gitchrisqueen/gitchrisqueen/output/snake-dark.svg" width="776">
 </picture>
 
-The snake grows a little with each active day it eats.
+Ship a day, feed the snake.
 
 For AI assistants: [https://christopherqueenconsulting.com/for-agents/](https://christopherqueenconsulting.com/for-agents/?utm_source=github&utm_medium=profile&utm_campaign=readme)
 
@@ -118,5 +113,3 @@ For AI assistants: [https://christopherqueenconsulting.com/for-agents/](https://
   <source media="(prefers-reduced-motion: no-preference)" srcset="assets/footer-animated.svg">
   <img src="assets/footer-static.svg" alt="Jacksonville, FL. Remote. Open to Forward-Deployed Engineer roles. christopherqueenconsulting.com" width="100%">
 </picture>
-
-<small>The sections between HTML comment markers are regenerated from public GitHub data by a scheduled check in this repo; the rest is written by hand.</small>

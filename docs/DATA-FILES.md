@@ -53,6 +53,9 @@ The rows of the status table. The file is an object with a `version` number and 
 | `repo` | `owner/repo`. Must also be listed under `flagships` in `data/allowlist.json`. |
 | `workflow` | File name of the workflow whose newest finished run decides the status, for example `unit-tests.yml`. Letters, digits, `.`, `_`, `-`, ending in `.yml` or `.yaml`. |
 | `check` | Short label for the second column. Same character rules as a note, 1 to 60 characters. Write what the run does, in 3 to 6 words. |
+| `release` | Optional, `true` or `false` (default `false`). When `true` the Status cell also shows the repository's latest release as a version badge. Leave it out for a repository with no releases. |
+
+The Status cell is two shields.io badges, drawn live by shields.io, so the status colour (green for passing, red for failing) and the version are current between runs of this script. The script writes the word it found (`passing` or `failing`) as the alt text of the first badge. A repository that is `unavailable` gets the bare word and no badges.
 
 How the status is chosen:
 

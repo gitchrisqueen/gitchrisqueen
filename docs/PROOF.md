@@ -42,7 +42,7 @@ In more detail: the repo's own [health-check workflow](https://github.com/gitchr
 
 Limits: panthera is paper trading only, and its ledger is idle outside the MLB season. On the ledger updated 2026-10-23, the one strategy marked supported shows +7.99% ROI over 227 graded picks (124 wins, 103 losses). The 6.7 points in the report is one standard error, not a confidence interval, so +7.99% is about 1.2 standard errors above zero: not distinguishable from no edge. "Supported" is the repo's own label for a screen-grade verdict, not a finding. Its regular-season picks returned +8.59% and its 4 postseason picks -36.90% (too few to read), it overlaps 54% with other strategies' picks, and with several strategies running at once the report expects at least one false-positive screen, so it treats the result as a screen, not proof. lottery-guru's expected result is that every arm converges to chance, and its leaderboard applies no multiple-comparison correction across its many strategies.
 
-Also: [CueSyncAR](https://github.com/gitchrisqueen/CueSyncAR), an iOS augmented-reality billiards prototype in Swift, declared paused on 2026-09-10 in its own README.
+Also: [CueSyncAR](https://github.com/gitchrisqueen/CueSyncAR), an iOS augmented-reality billiards prototype in Swift.
 
 ## Traceability
 
