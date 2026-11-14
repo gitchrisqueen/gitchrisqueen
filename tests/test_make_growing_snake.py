@@ -221,12 +221,27 @@ def test_loop_animated_has_reduced_motion_rule_and_bounded_motion():
     assert "visibility" not in animated and "display:none" not in animated
 
 
-def test_neofetch_rows_fit_and_static_twin_has_no_motion():
-    static = assets.build_neofetch(False)
+def test_terminal_static_twin_has_no_motion_and_every_row_fits():
+    static = assets.build_terminal(False)
     assert "animation" not in static
     for key, value in assets.NEO_ROWS:
         assert key in static and value in static
         assert len(value) <= 32
+
+
+def test_terminal_is_labelled_simulated_and_has_no_fake_identity():
+    for animated in (True, False):
+        svg = assets.build_terminal(animated)
+        assert "simulated terminal" in svg
+        assert "christopher@" not in svg.lower() and "neofetch" not in svg.lower()
+
+
+def test_terminal_animated_covers_do_not_leak_across_acts_and_respect_reduced_motion():
+    svg = assets.build_terminal(True)
+    assert "@media (prefers-reduced-motion: reduce){*{animation:none!important}}" in svg
+    # every typed-text cover is wrapped in a group that is only visible during its own act
+    assert svg.count('<g class="v') >= 3
+    assert assets.TERM_CYCLE >= 12
 
 
 def test_contrast_helper_rejects_low_contrast():

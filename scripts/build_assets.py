@@ -8,7 +8,7 @@ Usage:
 Outputs (all opaque-background, no script, no external reference):
     assets/skills-build.svg, assets/skills-ai.svg   tool logos, two panels
     assets/loop-animated.svg, assets/loop-static.svg  the automation-loop graphic
-    assets/neofetch-animated.svg, assets/neofetch-static.svg  the terminal readout about me
+    assets/terminal-animated.svg, assets/terminal-static.svg  the terminal session about me
     assets/card-<id>.svg                              one card per project
 
 Every text-bearing image is at most 520 units wide, so a phone column scales
@@ -234,7 +234,7 @@ def build_loop(animated: bool) -> str:
     return "\n".join(out) + "\n"
 
 
-# ---------------------------------------------------------------- neofetch panel
+# ---------------------------------------------------------------- terminal content
 
 LOGO = [
     " ####   ####  ",
@@ -255,56 +255,145 @@ NEO_ROWS = [
     ("off duty", "books, billiards, aquariums"),
 ]
 NEO_SWATCH = ["#7d6f17", "#a89816", "#c4b228", GOLD, "#efe9d2", "#3fb950", "#ff7b72", "#58a6ff"]
-NEO_STEP = 0.35
 
 
-def build_neofetch(animated: bool) -> str:
+TERM_CYCLE = 30.0
+CHAR_W = 8.4
+HELP_LINES = [
+    ("cqc: applied AI, forward-deployed engineer", TEXT),
+    None,
+    ("USAGE     cqc <command>", MUTED),
+    ("COMMANDS", GOLD),
+    ("  build    ship LLM systems with real checks", TEXT),
+    ("  audit    grade an LLM stack, A to F", TEXT),
+    ("  explain  write down what broke", TEXT),
+    ("  hire     remote, Jacksonville FL", TEXT),
+]
+RUN_STEPS = [
+    ("ingest", "the job someone does by hand"),
+    ("llm", "drafts and dry runs, never auto-publish"),
+    ("tool", "run the real check, not a guess"),
+    ("eval", "score it before anyone sees it"),
+    ("human", "a person approves"),
+    ("ship", "then watch it after it ships"),
+]
+# (start, end) seconds of each act inside one cycle
+ACTS = [(0.0, 9.0), (9.4, 20.0), (20.4, 28.6)]
+
+
+def _pct(seconds: float) -> str:
+    return f"{seconds / TERM_CYCLE * 100:.3f}"
+
+
+def build_terminal(animated: bool) -> str:
+    """Three acts: --help, a build run in the style of an agent CLI, then whoami --verbose.
+
+    The static twin shows only the last act.
+    """
     width, height = 520, 330
-    css = ""
-    n_lines = 2 + len(NEO_ROWS) + 1
-    if animated:
-        rules = [".n{opacity:0;animation:nf .01s linear forwards}"]
-        rules.append("@keyframes nf{to{opacity:1}}")
-        for i in range(n_lines + 6):
-            rules.append(f".d{i}{{animation-delay:{0.4 + i * NEO_STEP:.2f}s}}")
-        css = "".join(rules) + REDUCED
-    out = svg_open(width, height, "About me, as a terminal readout",
-                   "Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: open to "
-                   "Forward-Deployed Engineer roles. Builds LLM systems with real checks. Stack: Python, FastAPI, "
-                   "React, Docker. Models: LangChain, LiteLLM, OpenRouter. Rule: a real check beats a prompt. "
-                   "Off duty: books, billiards, aquariums.", css)
+    css_rules: list[str] = []
+    counter = [0]
+
+    def appear(start: float, end: float) -> str:
+        """Class name for an element visible from `start` to `end` seconds (within one cycle)."""
+        n = counter[0]
+        counter[0] += 1
+        css_rules.append(f"@keyframes v{n}{{0%,{_pct(start)}%{{opacity:0}}{_pct(start + 0.01)}%,{_pct(end)}%{{opacity:1}}"
+                         f"{_pct(end + 0.01)}%,100%{{opacity:0}}}}.v{n}{{animation:v{n} {TERM_CYCLE:g}s linear infinite}}")
+        return f"v{n}"
+
+    def typed(text: str, x: float, y: float, start: float, dur: float, end: float, fill: str) -> list[str]:
+        cls = "m " + appear(start, end) if animated else "m"
+        out = [f'<text class="{cls}" x="{x}" y="{y}" font-size="14" fill="{fill}" xml:space="preserve">'
+               f'{escape(text)}</text>']
+        if animated:
+            n = counter[0]
+            counter[0] += 1
+            w = len(text) * CHAR_W + 8
+            css_rules.append(
+                f"@keyframes t{n}{{0%,{_pct(start)}%{{transform:scaleX(1);animation-timing-function:steps({len(text)},end)}}"
+                f"{_pct(start + dur)}%,100%{{transform:scaleX(0)}}}}"
+                f".t{n}{{transform-origin:{x + w:g}px {y}px;animation:t{n} {TERM_CYCLE:g}s linear infinite}}")
+            out.append(f'<g class="{appear(start, end)}"><rect class="t{n}" x="{x - 2}" y="{y - 15}" '
+                       f'width="{w:g}" height="21" fill="{TILE}"/></g>')
+        return out
+
+    def shown(start: float, end: float) -> str:
+        return f' class="{appear(start, end)}"' if animated else ""
+
+    out = svg_open(width, height, "About me, as a simulated terminal session",
+                   "A simulated terminal, not a real tool or a real session. First cqc --help lists four commands: build, "
+                   "audit, explain and hire. Then a run steps through ingest, llm, tool, eval, human review and ship. "
+                   "Then cqc about prints: Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: "
+                   "open to Forward-Deployed Engineer roles. Builds LLM systems with real checks. Stack: Python, "
+                   "FastAPI, React, Docker. Models: LangChain, LiteLLM, OpenRouter. Rule: a real check beats a prompt. "
+                   "Off duty: books, billiards, aquariums.", "")
     out.append(f'<rect x="8" y="8" width="504" height="314" rx="12" fill="{TILE}" stroke="{LINE}"/>')
     for i, col in enumerate((RED, GOLD, GREEN)):
         out.append(f'<circle cx="{30 + i * 20}" cy="30" r="6" fill="{col}"/>')
-    require_text_contrast(MUTED, TILE, "neofetch window title")
-    out.append(f'<text x="260" y="35" text-anchor="middle" font-size="13" fill="{MUTED}">christopher@github: ~</text>')
+    require_text_contrast(MUTED, TILE, "terminal window title")
+    for fg in (GOLD, TEXT, GREEN, RED):
+        require_text_contrast(fg, TILE, "terminal text")
+    out.append(f'<text x="260" y="35" text-anchor="middle" font-size="13" fill="{MUTED}">simulated terminal (illustration)</text>')
 
-    def cls(i: int) -> str:
-        return f' class="n d{i}"' if animated else ""
+    if animated:
+        # Act 1: --help
+        a0, a1 = ACTS[0]
+        out += typed("$ cqc --help", 26, 66, a0 + 0.4, 1.3, a1, GOLD)
+        t, y = a0 + 2.2, 94
+        for line in HELP_LINES:
+            if line is None:
+                y += 10
+                continue
+            text, fill = line
+            out.append(f'<text class="m {appear(t, a1)}" x="26" y="{y}" font-size="14" fill="{fill}" '
+                       f'xml:space="preserve">{escape(text)}</text>')
+            t += 0.55
+            y += 20
+        # Act 2: a build run
+        b0, b1 = ACTS[1]
+        out += typed("$ cqc run --with-review", 26, 66, b0 + 0.3, 1.5, b1, GOLD)
+        t, y = b0 + 2.6, 98
+        for name, note in RUN_STEPS:
+            vis = appear(t, b1)
+            out.append(f'<circle class="{vis}" cx="32" cy="{y - 4}" r="4" fill="{TEXT}"/>')
+            out.append(f'<text class="m {vis}" x="46" y="{y}" font-size="14" fill="{TEXT}" font-weight="700">'
+                       f'{escape(name)}</text>')
+            out.append(f'<text class="m {vis}" x="112" y="{y}" font-size="14" fill="{MUTED}">{escape(note)}</text>')
+            tick = appear(t + 0.7, b1)
+            out.append(f'<path class="{tick}" d="M{width - 50} {y - 5} l4 4 l8 -9" fill="none" stroke="{GREEN}" '
+                       f'stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>')
+            t += 1.15
+            y += 26
+        out.append(f'<text class="m {appear(t + 0.2, b1)}" x="46" y="{y + 6}" font-size="14" fill="{GREEN}">'
+                   f'ready for review</text>')
+        c0, c1 = ACTS[2]
+    else:
+        c0, c1 = 0.0, TERM_CYCLE
 
-    require_text_contrast(GOLD, TILE, "neofetch gold")
-    require_text_contrast(TEXT, TILE, "neofetch text")
-    out.append(f'<text{cls(0)} x="26" y="66" font-size="15" fill="{GOLD}" class="m">$ neofetch</text>'
-               if not animated else
-               f'<text class="m n d0" x="26" y="66" font-size="15" fill="{GOLD}">$ neofetch</text>')
+    # Act 3 (and the static twin): whoami --verbose
+    out += typed("$ cqc about --verbose", 26, 66, c0 + 0.3, 1.8, c1, GOLD)
+    t0 = c0 + 2.4
     for r, row in enumerate(LOGO):
-        y = 100 + r * 17
-        out.append(f'<text class="m{" n d1" if animated else ""}" x="26" y="{y}" font-size="14" fill="{GOLD}" '
-                   f'xml:space="preserve">{escape(row)}</text>')
-    out.append(f'<text class="m{" n d2" if animated else ""}" x="170" y="92" font-size="14" font-weight="700" '
-               f'fill="{TEXT}">christopher@github</text>')
-    out.append(f'<line class="{"n d2" if animated else ""}" x1="170" y1="100" x2="330" y2="100" stroke="{LINE}"/>'
-               .replace(' class=""', ""))
+        out.append(f'<text class="m{(" " + appear(t0, c1)) if animated else ""}" x="26" y="{100 + r * 17}" '
+                   f'font-size="14" fill="{GOLD}" xml:space="preserve">{escape(row)}</text>')
+    out.append(f'<text class="m{(" " + appear(t0 + 0.3, c1)) if animated else ""}" x="170" y="92" font-size="14" '
+               f'font-weight="700" fill="{TEXT}">Christopher Queen</text>')
+    out.append(f'<line{shown(t0 + 0.3, c1)} x1="170" y1="100" x2="330" y2="100" stroke="{LINE}"/>')
     for i, (k, v) in enumerate(NEO_ROWS):
         y = 124 + i * 22
-        d = f" n d{3 + i}" if animated else ""
-        out.append(f'<text class="m{d}" x="170" y="{y}" font-size="14" fill="{GOLD}" font-weight="700">'
-                   f'{escape(k)}</text>')
-        out.append(f'<text class="m{d}" x="250" y="{y}" font-size="14" fill="{TEXT}">{escape(v)}</text>')
-    for i, col in enumerate(NEO_SWATCH):
-        d = f' class="n d{3 + len(NEO_ROWS)}"' if animated else ""
-        out.append(f'<rect{d} x="{170 + i * 26}" y="{124 + len(NEO_ROWS) * 22 + 6}" width="22" height="14" rx="3" '
-                   f'fill="{col}"/>')
+        vis = f' class="{appear(t0 + 0.7 + i * 0.5, c1)}"' if animated else ""
+        out.append(f'<g{vis}><text class="m" x="170" y="{y}" font-size="14" fill="{GOLD}" font-weight="700">'
+                   f'{escape(k)}</text><text class="m" x="250" y="{y}" font-size="14" fill="{TEXT}">'
+                   f'{escape(v)}</text></g>')
+    sw_vis = f' class="{appear(t0 + 0.7 + len(NEO_ROWS) * 0.5, c1)}"' if animated else ""
+    swatches = "".join(f'<rect x="{170 + i * 26}" y="{124 + len(NEO_ROWS) * 22 + 6}" width="22" height="14" rx="3" '
+                       f'fill="{col}"/>' for i, col in enumerate(NEO_SWATCH))
+    out.append(f"<g{sw_vis}>{swatches}</g>")
+    if animated:
+        # the style element was opened empty above; fill it now
+        css = f"text{{font-family:{SANS}}}.m{{font-family:{MONO}}}" + "".join(css_rules) + REDUCED
+        out = [line if not line.startswith("<style>") else f"<style>{css}</style>" for line in out]
     out.append("</svg>")
     return "\n".join(out) + "\n"
 
@@ -390,8 +479,8 @@ def build_all() -> dict[str, str]:
     files = {f"{panel}.svg": build_skills(panel, icons) for panel, _, _ in SKILL_PANELS}
     files["loop-animated.svg"] = build_loop(True)
     files["loop-static.svg"] = build_loop(False)
-    files["neofetch-animated.svg"] = build_neofetch(True)
-    files["neofetch-static.svg"] = build_neofetch(False)
+    files["terminal-animated.svg"] = build_terminal(True)
+    files["terminal-static.svg"] = build_terminal(False)
     for card in CARDS:
         files[f"card-{card['id']}.svg"] = build_card(card, icons)
     return files

@@ -12,9 +12,11 @@
 <a href="mailto:christopher.queen@gmail.com"><img alt="Email" src="https://img.shields.io/badge/-Email-21262d?style=for-the-badge&logo=gmail&logoColor=white&labelColor=21262d"></a>
 
 <picture>
-  <source media="(prefers-reduced-motion: no-preference)" srcset="assets/neofetch-animated.svg">
-  <img src="assets/neofetch-static.svg" alt="About me as a terminal readout. Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: open to Forward-Deployed Engineer roles. Builds LLM systems with real checks. Stack: Python, FastAPI, React, Docker. Models: LangChain, LiteLLM, OpenRouter. Rule: a real check beats a prompt. Off duty: books, billiards, aquariums." width="100%">
+  <source media="(prefers-reduced-motion: no-preference)" srcset="assets/terminal-animated.svg">
+  <img src="assets/terminal-static.svg" alt="A simulated terminal, not a real tool or session. It lists four commands (build, audit, explain, hire), steps through a run (ingest, llm, tool, eval, human review, ship), then prints: Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: open to Forward-Deployed Engineer roles. Builds LLM systems with real checks. Stack: Python, FastAPI, React, Docker. Models: LangChain, LiteLLM, OpenRouter. Rule: a real check beats a prompt. Off duty: books, billiards, aquariums." width="100%">
 </picture>
+
+<sub>A simulated terminal for fun: <code>cqc</code> is not a real tool, and nothing in it is a recording.</sub>
 
 <picture>
   <source media="(prefers-reduced-motion: no-preference)" srcset="assets/loop-animated.svg">
