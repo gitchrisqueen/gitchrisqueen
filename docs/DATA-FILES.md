@@ -55,7 +55,7 @@ The rows of the status table. The file is an object with a `version` number and 
 | `check` | Short label for the second column. Same character rules as a note, 1 to 60 characters. Write what the run does, in 3 to 6 words. |
 | `release` | Optional, `true` or `false` (default `false`). When `true` the Status cell also shows the repository's latest release as a version badge. Leave it out for a repository with no releases. |
 
-The Status cell is two shields.io badges, drawn live by shields.io, so the status colour (green for passing, red for failing) and the version are current between runs of this script. The script writes the word it found (`passing` or `failing`) as the alt text of the first badge. A repository that is `unavailable` gets the bare word and no badges.
+The Status cell is a status badge, plus a version badge when `release` is `true`, both drawn live by shields.io, so the status colour (green for passing, red for failing) and the version are current between runs of this script. The script writes the word it found (`passing` or `failing`) as the alt text of the status badge; the badge colour is the live answer and the alt text is a fallback. A repository that is `unavailable` gets the bare word and no badges, so its `release` flag has no effect until it is available again. The script does not check that a repository with `release` set has a release: leave the flag out for one that has none.
 
 How the status is chosen:
 

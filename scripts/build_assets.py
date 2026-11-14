@@ -123,7 +123,7 @@ def icon_group(icons: dict, slug: str, x: float, y: float, size: float, bg: str)
 # where that is the home. Each tile is its own small image so it can carry its own link in the README
 # (GitHub does not follow links inside an SVG that is shown as an image).
 SKILL_PANELS = [
-    ("skills-build", "Languages and services", [
+    ("skills-build", "Languages and Back End", [
         ("python", "Python", "https://www.python.org/"),
         ("javascript", "JavaScript", "https://developer.mozilla.org/en-US/docs/Web/JavaScript"),
         ("swift", "Swift", "https://www.swift.org/"),
@@ -133,7 +133,7 @@ SKILL_PANELS = [
         ("redis", "Redis", "https://redis.io/"),
         ("mysql", "MySQL", "https://github.com/mysql/mysql-server"),
     ]),
-    ("skills-ai", "AI, interface, test and ship", [
+    ("skills-ai", "AI, UI, Testing and Delivery", [
         ("langchain", "LangChain", "https://github.com/langchain-ai/langchain"),
         ("mono:Li", "LiteLLM", "https://github.com/BerriAI/litellm"),
         ("mono:OR", "OpenRouter", "https://openrouter.ai/"),
@@ -241,11 +241,11 @@ def skills_readme_block() -> str:
 LEGEND_W, LEGEND_H, LEGEND_MARGIN = 132, 36, 3
 LEGEND = [
     # (file stem, kind in KIND_STYLE, label, what the dot means in the graph above)
-    ("me", "me", "Me", "Legend: the large gold dot at the centre of the graph is Christopher."),
-    ("projects", "project", "Projects", "Legend: gold dots in the graph are projects."),
+    ("me", "me", "Me", "Legend: the glowing gold ball at the center of the graph is Christopher."),
+    ("projects", "project", "Projects", "Legend: the smaller gold dots in the graph are projects."),
     ("practices", "practice", "Practices", "Legend: green dots in the graph are practices."),
     ("tools", "tech", "Tools", "Legend: logos in the graph are tools."),
-    ("audit", "offer", "The LLM audit", "Legend: the pale dot in the graph is the LLM audit I offer."),
+    ("audit", "offer", "LLM audit", "Legend: the pale dot in the graph is the LLM audit I offer."),
 ]
 
 
@@ -265,6 +265,9 @@ def build_legend_chip(stem: str, icons: dict) -> str:
     if kind == "tech":
         out.append(f'<circle cx="{cx}" cy="{cy:g}" r="11" fill="{TILE}" stroke="{MUTED}"/>')
         out.append(icon_group(icons, "python", cx - 7, cy - 7, 14, TILE))
+    elif kind == "me":
+        out.insert(-1, me_defs())
+        out.append(me_ball(cx, cy, 9.5, halo=False))
     else:
         out.append(f'<circle cx="{cx}" cy="{cy:g}" r="8" fill="{fill}"/>')
     out.append(f'<text x="{m + 36}" y="{cy + 4.5:g}" font-size="13" fill="{TEXT}">{escape(label)}</text>')
@@ -274,9 +277,36 @@ def build_legend_chip(stem: str, icons: dict) -> str:
 
 # ---------------------------------------------------------------- knowledge graph
 
+# The "Me" dot is a lit ball in the brand gold and cream, shaded into a dark gold, with a soft halo and a dashed ring, so
+# it stands out from the project dots (which are a flat, darker gold). The same stops are used by the graph, the legend
+# chip and the interactive page (ME_BALL_JS below).
+ME_HIGHLIGHT, ME_CREAM, ME_SHADE = "#fffbe6", "#efe9d2", "#7d6f17"
+ME_BALL_STOPS = [(0, ME_HIGHLIGHT), (0.2, ME_CREAM), (0.55, GOLD), (1, ME_SHADE)]
+
+
+def me_defs() -> str:
+    stops = "".join(f'<stop offset="{o}" stop-color="{c}"/>' for o, c in ME_BALL_STOPS)
+    return (f'<defs><radialGradient id="meBall" cx="0.36" cy="0.3" r="0.8">{stops}</radialGradient>'
+            f'<radialGradient id="meGlow"><stop offset="0.3" stop-color="{GOLD}" stop-opacity="0.5"/>'
+            f'<stop offset="1" stop-color="{GOLD}" stop-opacity="0"/></radialGradient></defs>')
+
+
+def me_ball(x: float, y: float, r: float, halo: bool = True) -> str:
+    """The lit ball: halo, dashed ring, shaded sphere, a small highlight."""
+    out = ""
+    if halo:
+        out += (f'<circle cx="{x:g}" cy="{y:g}" r="{r * 2.6:g}" fill="url(#meGlow)"/>'
+                f'<circle cx="{x:g}" cy="{y:g}" r="{r * 1.55:g}" fill="none" stroke="{GOLD}" stroke-opacity="0.6" '
+                f'stroke-width="1.4" stroke-dasharray="2 6" stroke-linecap="round"/>')
+    out += (f'<circle cx="{x:g}" cy="{y:g}" r="{r:g}" fill="url(#meBall)" stroke="{BG}" stroke-width="2"/>'
+            f'<ellipse cx="{x - r * 0.34:g}" cy="{y - r * 0.4:g}" rx="{r * 0.3:g}" ry="{r * 0.17:g}" '
+            f'transform="rotate(-35 {x - r * 0.34:g} {y - r * 0.4:g})" fill="#ffffff" fill-opacity="0.85"/>')
+    return out
+
+
 KIND_STYLE = {
     # kind: (radius, fill, label size, bold). Tools are drawn as logo discs and carry no label.
-    "me": (18, GOLD, 17, True),
+    "me": (21, GOLD, 17, True),
     "project": (13, "#c4b228", 16, True),
     "offer": (13, "#efe9d2", 16, True),
     "practice": (11, GREEN, 16, True),
@@ -387,6 +417,7 @@ def build_graph_svg(animated: bool) -> str:
     out = svg_open(width, height, "What I work with, as a knowledge graph",
                    "A graph of how my projects, practices and tools connect. Nodes: " + names + ". "
                    "Open the interactive version to drag the nodes.", css)
+    out.append(me_defs())
     for x, y, sx, sy in ((10, 10, 1, 1), (510, 10, -1, 1), (10, 420, 1, -1), (510, 420, -1, -1)):
         out.append(f'<path d="M{x} {y + 16 * sy} V{y} H{x + 16 * sx}" fill="none" stroke="{GOLD}" stroke-width="2"/>')
     flow_kinds = {"practice", "offer"}
@@ -414,7 +445,8 @@ def build_graph_svg(animated: bool) -> str:
                          f'L{x + 4.5} {y - 1.5} H{x + 0.5} Z" fill="{BG}"/>')
             out.append(f"<g{cls}>{body}</g>")
             continue
-        out.append(f'<g{cls}><circle cx="{x}" cy="{y}" r="{r}" fill="{fill}" stroke="{BG}" stroke-width="2"/>'
+        dot = me_ball(x, y, r) if node["kind"] == "me" else f'<circle cx="{x}" cy="{y}" r="{r}" fill="{fill}" stroke="{BG}" stroke-width="2"/>'
+        out.append(f'<g{cls}>{dot}'
                    f'<text x="{x}" y="{y + r + size + 1}" text-anchor="middle" font-size="{size}" '
                    f'font-weight="{700 if bold else 400}" fill="{TEXT}" paint-order="stroke" stroke="{BG}" '
                    f'stroke-width="4">{escape(node["label"])}</text></g>')
@@ -461,7 +493,7 @@ max-height:50vh;overflow:auto}
 <script>
 const DATA = __DATA__;
 const COLORS = {me:'#e9d437',project:'#c4b228',offer:'#efe9d2',practice:'#3fb950',tech:'#58a6ff'};
-const RADIUS = {me:17,project:12,offer:12,practice:10,tech:7};
+const RADIUS = {me:20,project:12,offer:12,practice:10,tech:7};
 const LABEL = {me:'700 15px',project:'700 13px',offer:'700 13px',practice:'700 12.5px',tech:'400 11.5px'};
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const cv = document.getElementById('g'), ctx = cv.getContext('2d');
@@ -481,7 +513,7 @@ const list = document.getElementById('list');
 nodes.forEach(n => {const li = document.createElement('li'); li.textContent = n.label + ' (' + n.kind + '): ' + (n.note ? n.note + ' ' : '') + 'Connected to ' + connected(n).join(', ') + '.'; list.appendChild(li);});
 const legend = document.getElementById('legend');
 [['me','me'],['project','projects'],['offer','offer'],['practice','practices'],['tech','tools']].forEach(([k, t]) => {
-  const d = document.createElement('div'); d.innerHTML = '<i style="background:' + COLORS[k] + '"></i>' + t; legend.appendChild(d);});
+  const d = document.createElement('div'); d.innerHTML = '<i style="background:' + (k === 'me' ? 'radial-gradient(circle at 36% 30%,#fffbe6,#efe9d2 22%,#e9d437 55%,#7d6f17)' : COLORS[k]) + '"></i>' + t; legend.appendChild(d);});
 function resize() {
   dpr = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight;
   cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -507,6 +539,18 @@ function step() {
     n.x = Math.max(n.r + 8, Math.min(W - n.r - 8, n.x)); n.y = Math.max(n.r + 64, Math.min(H - n.r - card.offsetHeight - 30, n.y));
   });
 }
+function drawMe(x, y, r) {
+  let g = ctx.createRadialGradient(x, y, 0, x, y, r * 2.6);
+  g.addColorStop(0.3, 'rgba(233,212,55,0.5)'); g.addColorStop(1, 'rgba(233,212,55,0)');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 2.6, 0, 6.283); ctx.fill();
+  ctx.save(); ctx.strokeStyle = 'rgba(233,212,55,0.6)'; ctx.lineWidth = 1.4; ctx.lineCap = 'round'; ctx.setLineDash([2, 6]);
+  ctx.beginPath(); ctx.arc(x, y, r * 1.55, 0, 6.283); ctx.stroke(); ctx.restore();
+  g = ctx.createRadialGradient(x - r * 0.28, y - r * 0.4, r * 0.05, x, y, r * 1.05);
+  g.addColorStop(0, '#fffbe6'); g.addColorStop(0.25, '#efe9d2'); g.addColorStop(0.6, '#e9d437'); g.addColorStop(1, '#7d6f17');
+  ctx.fillStyle = g; ctx.strokeStyle = '#0d1117'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.beginPath(); ctx.ellipse(x - r * 0.34, y - r * 0.4, r * 0.3, r * 0.17, -0.61, 0, 6.283); ctx.fill();
+}
 function draw() {
   ctx.clearRect(0, 0, W, H);
   const focus = hover >= 0 ? hover : (dragging >= 0 ? dragging : sel);
@@ -519,8 +563,10 @@ function draw() {
   nodes.forEach((n, i) => {
     const lit = focus < 0 || i === focus || near.has(i);
     ctx.globalAlpha = lit ? 1 : 0.28;
-    ctx.fillStyle = COLORS[n.kind]; ctx.strokeStyle = '#0d1117'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(n.x, n.y, n.r + (i === focus ? 3 : 0), 0, 6.283); ctx.fill(); ctx.stroke();
+    if (n.kind === 'me') drawMe(n.x, n.y, n.r + (i === focus ? 3 : 0)); else {
+      ctx.fillStyle = COLORS[n.kind]; ctx.strokeStyle = '#0d1117'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(n.x, n.y, n.r + (i === focus ? 3 : 0), 0, 6.283); ctx.fill(); ctx.stroke();
+    }
     ctx.font = LABEL[n.kind] + ' -apple-system, Segoe UI, Helvetica, Arial, sans-serif'; ctx.textAlign = 'center';
     ctx.lineWidth = 3; ctx.strokeStyle = '#0d1117'; ctx.fillStyle = '#e6edf3';
     ctx.strokeText(n.label, n.x, n.y + n.r + 15); ctx.fillText(n.label, n.x, n.y + n.r + 15);
@@ -911,7 +957,7 @@ CARDS = [
     },
     {
         "id": "cpcc", "tag": "Instructor admin tool", "title": "CPCC Task Automation",
-        "what": "Grading and admin tool for my own courses.",
+        "what": "A grading and admin tool for my own courses.",
         "stake": ["One false \"does not compile\" verdict floored", "a submission's whole grade."],
         "did": ["A real compiler now overrules the model.", "\"Can't verify\" never counts as a fail; the", "compile check never runs student code."],
         "familiar": ["Does an AI verdict in your workflow ever count", "with no hard check behind it?"],
@@ -919,8 +965,8 @@ CARDS = [
         "built": "Python, Streamlit, Selenium and LangChain",
     },
     {
-        "id": "hearing", "tag": "Speaker identification", "title": "hearing-copilot",
-        "what": "Names the speakers in a hearing transcript.",
+        "id": "hearing", "tag": "Speaker identification", "title": "Hearing Copilot",
+        "what": "A tool that names the speakers in a hearing transcript.",
         "stake": ["A wrong speaker name pins words on the", "wrong person."],
         "did": ["Scored 91 min of real court audio first:", "99.2% right on the 89.8% it auto-accepted.", "One hearing, not held out, no interval."],
         "familiar": ["Does your AI guess who said what, with", "nobody checking the guesses?"],
@@ -928,8 +974,8 @@ CARDS = [
         "built": "JavaScript and Node.js",
     },
     {
-        "id": "panthera", "tag": "Prediction pipeline, paper only", "title": "panthera",
-        "what": "An MLB prediction pipeline, no real money.",
+        "id": "panthera", "tag": "Prediction pipeline, paper only", "title": "Panthera",
+        "what": "An MLB prediction pipeline.",
         "stake": ["Scheduled runs produced no picks for 14", "slate days, and every run showed green."],
         "did": ["Fixed the cause; a daily health check now", "flags a no-picks slate about a day later.", "I also won't call +7.99% an edge: it is", "about 1.2 standard errors from zero."],
         "familiar": ["Do your scheduled jobs ever run green for", "weeks while quietly producing nothing?"],

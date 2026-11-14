@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 36" width="132" height="36" role="img">
 <title>Projects</title>
-<desc>Legend: gold dots in the graph are projects.</desc>
+<desc>Legend: the smaller gold dots in the graph are projects.</desc>
 <style>text{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}.m{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace}</style>
 <rect width="132" height="36" fill="#0d1117"/>
 <rect x="3" y="3" width="126" height="30" rx="9" fill="#161b22" stroke="#30363d"/>

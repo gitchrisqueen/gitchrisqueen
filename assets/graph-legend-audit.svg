@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 36" width="132" height="36" role="img">
-<title>The LLM audit</title>
+<title>LLM audit</title>
 <desc>Legend: the pale dot in the graph is the LLM audit I offer.</desc>
 <style>text{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}.m{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace}</style>
 <rect width="132" height="36" fill="#0d1117"/>
 <rect x="3" y="3" width="126" height="30" rx="9" fill="#161b22" stroke="#30363d"/>
 <circle cx="20" cy="18" r="8" fill="#efe9d2"/>
-<text x="39" y="22.5" font-size="13" fill="#e6edf3">The LLM audit</text>
+<text x="39" y="22.5" font-size="13" fill="#e6edf3">LLM audit</text>
 </svg>

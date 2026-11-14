@@ -15,19 +15,19 @@
     },
     {
       "id": "cpcc",
-      "label": "CPCC tool",
+      "label": "CPCC",
       "kind": "project",
       "note": "A real compiler overrules the model on compile errors; the compile check never runs student code."
     },
     {
       "id": "hearing",
-      "label": "hearing-copilot",
+      "label": "Hearing Copilot",
       "kind": "project",
       "note": "Scored on 91 minutes of real court audio before it was trusted; only confident names are accepted. One hearing, not held out."
     },
     {
       "id": "panthera",
-      "label": "panthera",
+      "label": "Panthera",
       "kind": "project",
       "note": "A daily health check flags a dead run the next morning, and results are reported with their error bars. Paper trading only."
     },

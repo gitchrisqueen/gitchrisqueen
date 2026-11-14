@@ -7,10 +7,12 @@ run produced (--new) and exits non-zero unless every rule holds:
   1. each file is a regular file (no symlinks);
   2. exactly one START and one END marker line per block, in order, in both files;
   3. the two files differ only on lines between the markers;
-  4. every line between the markers matches the exact row grammar (no raw HTML,
-     no images) and is not shorter than the base block (a block may not empty);
-     the merged block may not lose rows unless --allow-shrink is given;
-  5. every URL is https://github.com/...;
+  4. every line between the markers matches the exact row grammar (no raw HTML;
+     the only images are the fixed shields.io badges in a flagship row's Status
+     cell) and is not shorter than the base block (a block may not empty); the
+     merged block may not lose rows unless --allow-shrink is given;
+  5. every URL is https://github.com/..., except the fixed shields.io badge URLs
+     inside a flagship row that matches the grammar;
   6. every row's owner/repo is in the allowlist for that block;
   7. with --root or --git-diff, no symlink exists anywhere in the tree;
   8. with --git-diff, `git diff --name-only` (working tree and index) lists only
@@ -42,7 +44,7 @@ MERGED_ROW_RE = re.compile(
     rf"\(https://github\.com/(?P<lrepo>{REPO_PART}/{REPO_PART})/pull/(?P<lnum>{NUM})\): "
     r"(?P<note>.+)"
 )
-FLAG_HEADER = "| Repo | Check | Status |"
+FLAG_HEADER = "| Project | Check | Status |"
 FLAG_SEPARATOR = "| --- | --- | --- |"
 FLAG_BADGE_STYLE = r"labelColor=24292f&style=flat-square"
 FLAG_WORKFLOW = r"[A-Za-z0-9._-]{1,100}\.ya?ml"

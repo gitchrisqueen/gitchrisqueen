@@ -69,7 +69,7 @@ MERGED_ROW_RE = re.compile(
     rf"\(https://github\.com/(?P<lrepo>{REPO_PART}/{REPO_PART})/pull/(?P<lnum>{NUM})\): "
     r"(?P<note>.+)"
 )
-FLAG_HEADER = "| Repo | Check | Status |"
+FLAG_HEADER = "| Project | Check | Status |"
 FLAG_SEPARATOR = "| --- | --- | --- |"
 FLAG_BADGE_STYLE = r"labelColor=24292f&style=flat-square"
 FLAG_WORKFLOW = r"[A-Za-z0-9._-]{1,100}\.ya?ml"

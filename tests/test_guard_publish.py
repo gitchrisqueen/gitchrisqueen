@@ -225,7 +225,7 @@ def test_flagship_block_rejects_bad_rows(paths, bad_row):
 
 @pytest.mark.parametrize("flags", [
     (FLAG_1,),                                                            # no header or separator
-    ("| Repo | Check | State |", gp.FLAG_SEPARATOR, FLAG_1),
+    ("| Project | Check | State |", gp.FLAG_SEPARATOR, FLAG_1),
     (gp.FLAG_HEADER, "|---|---|---|", FLAG_1),
     (gp.FLAG_HEADER,),
 ])

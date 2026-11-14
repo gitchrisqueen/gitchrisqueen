@@ -30,8 +30,12 @@ class GraphLegendTests(unittest.TestCase):
     def test_chip_colours_are_the_graphs(self):
         files = b.build_all()
         for stem, kind, *_ in b.LEGEND:
-            if kind != "tech":
-                self.assertIn('fill="%s"' % b.KIND_STYLE[kind][1], files[b.legend_file(stem)])
+            svg = files[b.legend_file(stem)]
+            if kind == "me":  # a lit ball: a gradient of the brand gold and cream, not a flat dot
+                self.assertIn('fill="url(#meBall)"', svg)
+                self.assertIn('stop-color="%s"' % b.GOLD, svg)
+            elif kind != "tech":
+                self.assertIn('fill="%s"' % b.KIND_STYLE[kind][1], svg)
 
     def test_a_row_of_chips_wraps_two_to_a_line_on_a_phone(self):
         self.assertLessEqual(2 * b.LEGEND_W, 278)  # the README column on a 360 px phone

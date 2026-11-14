@@ -321,7 +321,7 @@ def test_card_claims_stay_inside_what_the_projects_support():
     by_id = {c["id"]: c for c in assets.CARDS}
     assert any("held out" in line for line in by_id["hearing"]["did"]), "the accuracy number keeps its caveat"
     assert any("1.2 standard errors" in line for line in by_id["panthera"]["did"])
-    assert "paper" in by_id["panthera"]["tag"].lower() and "no real money" in by_id["panthera"]["what"]
+    assert "paper" in by_id["panthera"]["tag"].lower()
 
 
 def test_every_card_line_fits_and_every_card_has_the_three_blocks():

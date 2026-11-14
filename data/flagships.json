@@ -16,14 +16,14 @@
       "release": true
     },
     {
-      "name": "hearing-copilot",
+      "name": "Hearing Copilot",
       "repo": "gitchrisqueen/hearing-copilot",
       "workflow": "ci.yml",
       "check": "Automated tests and lint",
       "release": true
     },
     {
-      "name": "panthera",
+      "name": "Panthera",
       "repo": "gitchrisqueen/panthera",
       "workflow": "mvp-morning.yml",
       "check": "Daily pipeline run"
