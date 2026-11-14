@@ -42,7 +42,7 @@ Test status, live: <a href="https://github.com/christopherqueenconsulting/linked
 More: [the LEM live app](https://lem.christopherqueenconsulting.com/?utm_source=github&utm_medium=profile&utm_campaign=readme), [the CPCC case study](https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation), [hearing-copilot results and caveats](https://github.com/gitchrisqueen/hearing-copilot/blob/main/eval/diarization/RESULTS.md), [the panthera report](https://github.com/gitchrisqueen/panthera/blob/main/reports/BETTING_REPORT.md), and [cqc](https://github.com/gitchrisqueen/cqc), the tool behind the terminal above, and [every number with its caveats](https://github.com/gitchrisqueen/gitchrisqueen/blob/main/docs/PROOF.md). Also [CueSyncAR](https://github.com/gitchrisqueen/CueSyncAR), an iOS augmented-reality billiards prototype in Swift, declared paused on 2026-09-10.
 
 <details>
-<summary><img src="assets/pill-status.svg" alt="Live status of the four checks (select to open)" width="520"></summary>
+<summary><picture><img src="assets/pill-status.svg" alt="Live status of the four checks (select to open)" width="520"></picture></summary>
 
 <!-- FLAGSHIPS:START -->
 | Repo | Check | Status |
@@ -63,7 +63,7 @@ For panthera, passing means the daily pipeline ran, not that its data is healthy
 ## Merged into other people's projects
 
 <details>
-<summary><img src="assets/pill-merged.svg" alt="Merged pull requests in other people's projects (select to open)" width="520"></summary>
+<summary><picture><img src="assets/pill-merged.svg" alt="Merged pull requests in other people's projects (select to open)" width="520"></picture></summary>
 
 Small fixes, merged by each project's maintainers. Generated from public GitHub data by a scheduled check in this repo.
 
@@ -82,7 +82,7 @@ My pull requests that were closed without merge are listed too: [full list on Gi
 ## Hire me, or have me audit your LLM system
 
 <details>
-<summary><img src="assets/pill-hire.svg" alt="Hire me, or book the audit (select to open)" width="520"></summary>
+<summary><picture><img src="assets/pill-hire.svg" alt="Hire me, or book the audit (select to open)" width="520"></picture></summary>
 
 **Hiring:** I start from the job someone still does by hand, write down the boundary before building, put a real check where the model is weakest, and leave a [hand-off document](https://github.com/christopherqueenconsulting/cpcc_task_automation/blob/master/docs/BRIGHTSPACE_AUTOMATION_HANDOFF.md) the next engineer can run from.
 
