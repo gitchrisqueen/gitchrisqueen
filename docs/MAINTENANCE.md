@@ -90,7 +90,7 @@ The script fails below 4.5:1 for text pairs and below 3:1 for graphics pairs. Th
 
 The calendar colours live only in `assets/colors.json`; `scripts/make_growing_snake.py` reads them from there. If you change a colour, edit that file, then run `python scripts/check_contrast.py assets/colors.json`.
 
-The card, tool-logo and graph and terminal graphics (`assets/card-*.svg`, `assets/skills-*.svg`, `assets/graph-*.svg`, `docs/graph/index.html`, `assets/terminal-*.svg`) are built by `python scripts/build_assets.py` from the text inside that script and `data/icons.json` (logo paths from simple-icons, CC0). Edit the script, rebuild, commit the SVGs; CI fails with `out of date` if a committed SVG differs from the build. To add a logo, copy its path from the simple-icons package into `data/icons.json`.
+The card, tool-logo and graph and terminal graphics (`assets/card-*.svg`, `assets/skills-*.svg`, `assets/graph-*.svg`, `docs/graph/index.html`, `assets/terminal-*.svg`) are built by `python scripts/build_assets.py` from the text inside that script and `data/icons.json` (logo paths from simple-icons, CC0). Edit the script, rebuild, commit the SVGs; CI fails with `out of date` if a committed SVG differs from the build. The tools panels are one small image per tool so each can carry its own link: the tool, its label and its link are one entry in `SKILL_PANELS` in the script, and the `## Tools` block in `README.md` repeats the link, so change both (`tests/test_skill_tiles.py` fails if they disagree). To add a logo, copy its path from the simple-icons package into `data/icons.json`.
 
 ## First-run checklist
 
