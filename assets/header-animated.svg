@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 180" width="600" height="180" role="img" aria-label="Christopher Queen, Applied AI / Forward-Deployed Engineer">
   <title>Christopher Queen, Applied AI / Forward-Deployed Engineer</title>
   <style>
-    .drift{animation:drift 36s linear infinite}
+    .drift{animation:drift 12s linear infinite}
     @keyframes drift{from{transform:translateX(0px)}to{transform:translateX(-240px)}}
     @media (prefers-reduced-motion: reduce){*{animation:none!important}}
   </style>

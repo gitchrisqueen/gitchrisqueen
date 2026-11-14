@@ -207,19 +207,26 @@ def test_assets_have_no_external_references_or_script():
         assert "<script" not in low and "<animate" not in low and "<image" not in low, name
 
 
-def test_method_static_twin_has_no_motion_and_shows_every_step():
-    static = assets.build_method(False)
+def test_loop_static_twin_has_no_motion_and_shows_every_stage():
+    static = assets.build_loop(False)
     assert "animation" not in static and "@keyframes" not in static
-    for title, evidence in assets.METHOD_STEPS:
-        assert title in static and evidence in static
+    for chip, _ in assets.LOOP_NODES:
+        assert chip in static
 
 
-def test_method_animated_has_reduced_motion_rule_one_slow_loop_and_only_transform():
-    animated = assets.build_method(True)
+def test_loop_animated_has_reduced_motion_rule_and_bounded_motion():
+    animated = assets.build_loop(True)
     assert "@media (prefers-reduced-motion: reduce){*{animation:none!important}}" in animated
-    assert assets.METHOD_CYCLE >= 12
-    assert animated.count("infinite") == 1
-    assert "opacity" not in animated
+    assert assets.LOOP_CYCLE >= 6
+    assert "visibility" not in animated and "display:none" not in animated
+
+
+def test_neofetch_rows_fit_and_static_twin_has_no_motion():
+    static = assets.build_neofetch(False)
+    assert "animation" not in static
+    for key, value in assets.NEO_ROWS:
+        assert key in static and value in static
+        assert len(value) <= 32
 
 
 def test_contrast_helper_rejects_low_contrast():

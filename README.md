@@ -5,8 +5,6 @@
 
 **I build LLM systems with real checks around the model, ship them, and write down what broke.**
 
-Remote from Jacksonville, FL. Open to Forward-Deployed Engineer roles. I also run a one-week LLM spend and reliability audit.
-
 <a href="https://christopherqueenconsulting.com/resume/?utm_source=github&utm_medium=readme&utm_campaign=resume"><img alt="Résumé" src="https://img.shields.io/badge/-R%C3%A9sum%C3%A9-e9d437?style=for-the-badge&labelColor=e9d437"></a>
 <a href="https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation"><img alt="Case study: what broke and what I changed" src="https://img.shields.io/badge/-Case%20study-21262d?style=for-the-badge&labelColor=21262d"></a>
 <a href="https://christopherqueenconsulting.com/ai-ops-audit/"><img alt="The LLM audit: what you get" src="https://img.shields.io/badge/-LLM%20audit-21262d?style=for-the-badge&labelColor=21262d"></a>
@@ -14,8 +12,13 @@ Remote from Jacksonville, FL. Open to Forward-Deployed Engineer roles. I also ru
 <a href="mailto:christopher.queen@gmail.com"><img alt="Email" src="https://img.shields.io/badge/-Email-21262d?style=for-the-badge&logo=gmail&logoColor=white&labelColor=21262d"></a>
 
 <picture>
-  <source media="(prefers-reduced-motion: no-preference)" srcset="assets/method-animated.svg">
-  <img src="assets/method-static.svg" alt="How I work, in five habits: start from work someone does by hand; write the boundary before building; put a real check where the model is weakest; keep watching after it ships; say what is not proven." width="100%">
+  <source media="(prefers-reduced-motion: no-preference)" srcset="assets/neofetch-animated.svg">
+  <img src="assets/neofetch-static.svg" alt="About me as a terminal readout. Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: open to Forward-Deployed Engineer roles. Builds LLM systems with real checks. Stack: Python, FastAPI, React, Docker. Models: LangChain, LiteLLM, OpenRouter. Rule: a real check beats a prompt. Off duty: books, billiards, aquariums." width="100%">
+</picture>
+
+<picture>
+  <source media="(prefers-reduced-motion: no-preference)" srcset="assets/loop-animated.svg">
+  <img src="assets/loop-static.svg" alt="My automation loop: ingest, language model, tool call, evaluation, human approval, ship. A real check and a person sit between the model and the world." width="100%">
 </picture>
 
 ## What I've built
@@ -54,6 +57,9 @@ For panthera, passing means the daily pipeline ran, not that its data is healthy
 
 ## Merged into other people's projects
 
+<details>
+<summary><code>$ git log --merged upstream</code> (click to open)</summary>
+
 Small fixes, merged by each project's maintainers. Generated from public GitHub data by a scheduled check in this repo.
 
 <!-- MERGED-UPSTREAM:START -->
@@ -66,12 +72,17 @@ Small fixes, merged by each project's maintainers. Generated from public GitHub 
 <!-- MERGED-UPSTREAM:END -->
 
 My pull requests that were closed without merge are listed too: [full list on GitHub](https://github.com/search?q=is%3Apr+is%3Aclosed+is%3Aunmerged+author%3Agitchrisqueen+-user%3Agitchrisqueen+-org%3Achristopherqueenconsulting&type=pullrequests).
+</details>
 
 ## Hire me, or have me audit your LLM system
+
+<details>
+<summary><code>$ sudo hire-me</code> (no password needed)</summary>
 
 **Hiring:** I start from the job someone still does by hand, write down the boundary before building, put a real check where the model is weakest, and leave a [hand-off document](https://github.com/christopherqueenconsulting/cpcc_task_automation/blob/master/docs/BRIGHTSPACE_AUTOMATION_HANDOFF.md) the next engineer can run from.
 
 **The audit:** one week, read-only access to your LLM logs and bills, a graded scorecard and a costed fix list. [See what you get](https://christopherqueenconsulting.com/ai-ops-audit/). [Book a free 30-minute call](https://christopherqueenconsulting.com/schedule/).
+</details>
 
 Straight talk: none of this has an outside paying customer yet, the audit has not been sold yet, and most of the work here, including the upstream pull requests, was written with AI coding agents.
 
@@ -84,12 +95,9 @@ Straight talk: none of this has an outside paying customer yet, the audit has no
 
 The snake grows a little with each active day it eats.
 
-Off the keyboard: reader, billiards player, aquarist.
+LinkedIn: [linkedin.com/in/christopherqueen](https://www.linkedin.com/in/christopherqueen) · Email: christopher.queen@gmail.com · Consulting: [Christopher Queen Consulting](https://christopherqueenconsulting.com)
 
-- LinkedIn: [linkedin.com/in/christopherqueen](https://www.linkedin.com/in/christopherqueen)
-- Email: christopher.queen@gmail.com
-- Consulting: [Christopher Queen Consulting](https://christopherqueenconsulting.com)
-- For AI assistants: https://christopherqueenconsulting.com/for-agents/
+For AI assistants: https://christopherqueenconsulting.com/for-agents/
 
 <picture>
   <source media="(prefers-reduced-motion: no-preference)" srcset="assets/footer-animated.svg">

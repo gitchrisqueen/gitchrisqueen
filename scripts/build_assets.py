@@ -7,7 +7,8 @@ Usage:
 
 Outputs (all opaque-background, no script, no external reference):
     assets/skills-build.svg, assets/skills-ai.svg   tool logos, two panels
-    assets/method-animated.svg, assets/method-static.svg  the "How I work" strip
+    assets/loop-animated.svg, assets/loop-static.svg  the automation-loop graphic
+    assets/neofetch-animated.svg, assets/neofetch-static.svg  the terminal readout about me
     assets/card-<id>.svg                              one card per project
 
 Every text-bearing image is at most 520 units wide, so a phone column scales
@@ -22,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 from pathlib import Path
 from xml.sax.saxutils import escape
@@ -144,50 +146,165 @@ def build_skills(panel_id: str, icons: dict) -> str:
     return "\n".join(out) + "\n"
 
 
-# ---------------------------------------------------------------- method strip
+# ---------------------------------------------------------------- automation loop
 
-# (title, evidence). Each step is backed by a project below on the page.
-METHOD_STEPS = [
-    ("Start from work someone does by hand", "Weekly attendance and grading; a LinkedIn routine."),
-    ("Write the boundary before building", "Drafts and dry runs by default; a human reviews."),
-    ("Put a real check where the model is weakest", "A compiler decides compile errors, not the model."),
-    ("Keep watching after it ships", "Hourly drift check on the live app; daily health check."),
-    ("Say what is not proven", "Caveats sit next to every number."),
+LOOP_CX, LOOP_CY, LOOP_R = 260, 176, 118
+LOOP_CYCLE = 12.0
+# (chip text, icon id). The packet visits them clockwise from the top.
+LOOP_NODES = [
+    ("[ingest]", "in"), ("[llm]", "ai"), ("[tool_call]", "tool"),
+    ("[eval]", "shield"), ("[human ok]", "eye"), ("[ship]", "up"),
 ]
-METHOD_CYCLE = 20.0
+ICON_PATHS = {
+    "in": '<path d="M-5 -10 H5 V-1 H10 L0 10 L-10 -1 H-5 Z"/>',
+    "ai": '<path d="M0 -11 L3 -3 L11 0 L3 3 L0 11 L-3 3 L-11 0 L-3 -3 Z"/>',
+    "tool": ('<circle r="5" fill="none" stroke-width="2.4"/><path stroke-width="2.4" d="M0 -11 V-7 M0 7 V11 '
+             'M-11 0 H-7 M7 0 H11 M-8 -8 L-5 -5 M5 5 L8 8 M-8 8 L-5 5 M5 -5 L8 -8"/>'),
+    "shield": ('<path fill="none" stroke-width="2.4" d="M0 -11 L9 -7 V0 C9 6 4 10 0 12 C-4 10 -9 6 -9 0 V-7 Z"/>'
+               '<path fill="none" stroke-width="2.4" d="M-4 1 L-1 4 L5 -3"/>'),
+    "eye": '<path fill="none" stroke-width="2.4" d="M-11 0 Q0 -10 11 0 Q0 10 -11 0 Z"/><circle r="3.4"/>',
+    "up": '<path d="M0 -11 L8 3 H3 V10 H-3 V3 H-8 Z"/>',
+}
 
 
-def build_method(animated: bool) -> str:
-    width, top, step = 520, 66, 54
-    height = top + step * len(METHOD_STEPS) + 6
+def build_loop(animated: bool) -> str:
+    width, height = 520, 344
+    node_pos = []
+    for i in range(len(LOOP_NODES)):
+        ang = math.radians(-90 + i * 60)
+        node_pos.append((LOOP_CX + LOOP_R * math.cos(ang), LOOP_CY + LOOP_R * math.sin(ang)))
     css = ""
     if animated:
-        travel = step * (len(METHOD_STEPS) - 1)
-        css = (f"@keyframes dot{{0%{{transform:translateY(0)}}80%,100%{{transform:translateY({travel}px)}}}}"
-               f".dot{{animation:dot {METHOD_CYCLE:g}s ease-in-out infinite}}" + REDUCED)
-    out = svg_open(
-        width, height, "How I work",
-        "Five habits, each one from something that broke in the projects on this page: "
-        + "; ".join(f"{t}" for t, _ in METHOD_STEPS) + ".", css)
-    require_text_contrast(GOLD, BG, "method heading")
-    require_text_contrast(TEXT, BG, "method step title")
-    require_text_contrast(MUTED, BG, "method step evidence")
-    out.append(f'<text x="24" y="34" font-size="20" font-weight="700" fill="{GOLD}">How I work</text>')
-    out.append(f'<text x="24" y="54" font-size="13" fill="{MUTED}">Each habit comes from something that broke in '
-               f'the projects below.</text>')
-    x = 40
-    first_y = top + 14
-    last_y = first_y + step * (len(METHOD_STEPS) - 1)
-    out.append(f'<line x1="{x}" y1="{first_y}" x2="{x}" y2="{last_y}" stroke="{LINE}" stroke-width="2"/>')
-    for i, (title, evidence) in enumerate(METHOD_STEPS):
-        cy = first_y + i * step
-        out.append(f'<circle cx="{x}" cy="{cy}" r="13" fill="{TILE}" stroke="{GOLD}" stroke-width="1.5"/>')
-        out.append(f'<text x="{x}" y="{cy + 5}" text-anchor="middle" font-size="14" font-weight="700" '
-                   f'fill="{GOLD}">{i + 1}</text>')
-        out.append(f'<text x="68" y="{cy - 1}" font-size="16" font-weight="700" fill="{TEXT}">{escape(title)}</text>')
-        out.append(f'<text x="68" y="{cy + 18}" font-size="13" fill="{MUTED}">{escape(evidence)}</text>')
+        step = LOOP_CYCLE / len(LOOP_NODES)
+        rules = [
+            f".orb{{transform-origin:{LOOP_CX}px {LOOP_CY}px;animation:spin {LOOP_CYCLE:g}s linear infinite}}",
+            "@keyframes spin{to{transform:rotate(360deg)}}",
+            f".core{{transform-origin:{LOOP_CX}px {LOOP_CY}px;animation:beat 3s ease-in-out infinite}}",
+            "@keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}",
+            f"@keyframes lit{{0%{{stroke:{GOLD};fill:#2b2a10}}16%,100%{{stroke:{LINE};fill:{TILE}}}}}",
+            "@keyframes chip{0%{opacity:1}16%,100%{opacity:.55}}",
+        ]
+        for i in range(len(LOOP_NODES)):
+            rules.append(f".n{i}{{animation:lit {LOOP_CYCLE:g}s linear infinite;animation-delay:{i * step:g}s}}"
+                         f".c{i}{{animation:chip {LOOP_CYCLE:g}s linear infinite;animation-delay:{i * step:g}s}}")
+        css = "".join(rules) + REDUCED
+    out = svg_open(width, height, "The automation loop",
+                   "A loop with six stages: ingest, language model, tool call, evaluation, human approval, ship. "
+                   "A real check and a person sit between the model and the world.", css)
+    out.append(f'<defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">'
+               f'<path d="M20 0 H0 V20" fill="none" stroke="#161b22" stroke-width="1"/></pattern>'
+               f'<radialGradient id="glow"><stop offset="0" stop-color="{GOLD}" stop-opacity=".45"/>'
+               f'<stop offset="1" stop-color="{GOLD}" stop-opacity="0"/></radialGradient></defs>')
+    out.append(f'<rect width="{width}" height="{height}" fill="url(#grid)"/>')
+    for x, y, sx, sy in ((10, 10, 1, 1), (510, 10, -1, 1), (10, 334, 1, -1), (510, 334, -1, -1)):
+        out.append(f'<path d="M{x} {y + 18 * sy} V{y} H{x + 18 * sx}" fill="none" stroke="{GOLD}" stroke-width="2"/>')
+    out.append(f'<circle cx="{LOOP_CX}" cy="{LOOP_CY}" r="{LOOP_R}" fill="none" stroke="{LINE}" stroke-width="2" '
+               f'stroke-dasharray="2 7"/>')
+    out.append(f'<circle cx="{LOOP_CX}" cy="{LOOP_CY}" r="86" fill="url(#glow)"/>')
+    core_cls = ' class="core"' if animated else ""
+    out.append(f'<g{core_cls}><circle cx="{LOOP_CX}" cy="{LOOP_CY}" r="50" fill="{BG}" stroke="{GOLD}" '
+               f'stroke-width="2"/>'
+               f'<text x="{LOOP_CX}" y="{LOOP_CY + 4}" text-anchor="middle" font-size="30" font-weight="800" '
+               f'fill="{GOLD}" class="m">AI</text>'
+               f'<text x="{LOOP_CX}" y="{LOOP_CY + 26}" text-anchor="middle" font-size="11" fill="{MUTED}" '
+               f'class="m">+ real checks</text></g>')
+    require_text_contrast(GOLD, BG, "loop core")
+    require_text_contrast(MUTED, BG, "loop core caption")
+    require_text_contrast(TEXT, BG, "loop chips")
+    for i, ((chip, icon), (x, y)) in enumerate(zip(LOOP_NODES, node_pos)):
+        ncls = f' class="n{i}"' if animated else ""
+        ccls = f' class="m c{i}"' if animated else ' class="m"'
+        out.append(f'<circle{ncls} cx="{x:.1f}" cy="{y:.1f}" r="26" fill="{TILE}" stroke="{LINE}" stroke-width="2"/>')
+        out.append(f'<g transform="translate({x:.1f} {y:.1f}) scale(1.05)" fill="{GOLD}" stroke="{GOLD}" '
+                   f'stroke-linejoin="round">{ICON_PATHS[icon]}</g>')
+        if i == 0:
+            tx, ty, anchor = x, y - 36, "middle"
+        elif i == 3:
+            tx, ty, anchor = x, y + 50, "middle"
+        elif i in (1, 2):
+            tx, ty, anchor = x + 36, y + 5, "start"
+        else:
+            tx, ty, anchor = x - 36, y + 5, "end"
+        out.append(f'<text{ccls} x="{tx:.1f}" y="{ty:.1f}" text-anchor="{anchor}" font-size="14" font-weight="700" '
+                   f'fill="{TEXT}">{escape(chip)}</text>')
     if animated:
-        out.append(f'<circle class="dot" cx="{x}" cy="{first_y}" r="5" fill="{GOLD}"/>')
+        out.append(f'<g class="orb"><circle cx="{LOOP_CX}" cy="{LOOP_CY - LOOP_R}" r="14" fill="{GOLD}" '
+                   f'fill-opacity=".25"/><circle cx="{LOOP_CX}" cy="{LOOP_CY - LOOP_R}" r="6" fill="{GOLD}"/></g>')
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
+# ---------------------------------------------------------------- neofetch panel
+
+LOGO = [
+    " ####   ####  ",
+    "#    # #    # ",
+    "#      #    # ",
+    "#      #  # # ",
+    "#    # #   ## ",
+    " ####   #### #",
+]
+NEO_ROWS = [
+    ("role", "Applied AI, Forward-Deployed"),
+    ("base", "Jacksonville FL, remote"),
+    ("status", "open to FDE roles"),
+    ("builds", "LLM systems with real checks"),
+    ("stack", "Python, FastAPI, React, Docker"),
+    ("models", "LangChain, LiteLLM, OpenRouter"),
+    ("rule", "a real check beats a prompt"),
+    ("off duty", "books, billiards, aquariums"),
+]
+NEO_SWATCH = ["#7d6f17", "#a89816", "#c4b228", GOLD, "#efe9d2", "#3fb950", "#ff7b72", "#58a6ff"]
+NEO_STEP = 0.35
+
+
+def build_neofetch(animated: bool) -> str:
+    width, height = 520, 330
+    css = ""
+    n_lines = 2 + len(NEO_ROWS) + 1
+    if animated:
+        rules = [".n{opacity:0;animation:nf .01s linear forwards}"]
+        rules.append("@keyframes nf{to{opacity:1}}")
+        for i in range(n_lines + 6):
+            rules.append(f".d{i}{{animation-delay:{0.4 + i * NEO_STEP:.2f}s}}")
+        css = "".join(rules) + REDUCED
+    out = svg_open(width, height, "About me, as a terminal readout",
+                   "Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: open to "
+                   "Forward-Deployed Engineer roles. Builds LLM systems with real checks. Stack: Python, FastAPI, "
+                   "React, Docker. Models: LangChain, LiteLLM, OpenRouter. Rule: a real check beats a prompt. "
+                   "Off duty: books, billiards, aquariums.", css)
+    out.append(f'<rect x="8" y="8" width="504" height="314" rx="12" fill="{TILE}" stroke="{LINE}"/>')
+    for i, col in enumerate((RED, GOLD, GREEN)):
+        out.append(f'<circle cx="{30 + i * 20}" cy="30" r="6" fill="{col}"/>')
+    require_text_contrast(MUTED, TILE, "neofetch window title")
+    out.append(f'<text x="260" y="35" text-anchor="middle" font-size="13" fill="{MUTED}">christopher@github: ~</text>')
+
+    def cls(i: int) -> str:
+        return f' class="n d{i}"' if animated else ""
+
+    require_text_contrast(GOLD, TILE, "neofetch gold")
+    require_text_contrast(TEXT, TILE, "neofetch text")
+    out.append(f'<text{cls(0)} x="26" y="66" font-size="15" fill="{GOLD}" class="m">$ neofetch</text>'
+               if not animated else
+               f'<text class="m n d0" x="26" y="66" font-size="15" fill="{GOLD}">$ neofetch</text>')
+    for r, row in enumerate(LOGO):
+        y = 100 + r * 17
+        out.append(f'<text class="m{" n d1" if animated else ""}" x="26" y="{y}" font-size="14" fill="{GOLD}" '
+                   f'xml:space="preserve">{escape(row)}</text>')
+    out.append(f'<text class="m{" n d2" if animated else ""}" x="170" y="92" font-size="14" font-weight="700" '
+               f'fill="{TEXT}">christopher@github</text>')
+    out.append(f'<line class="{"n d2" if animated else ""}" x1="170" y1="100" x2="330" y2="100" stroke="{LINE}"/>'
+               .replace(' class=""', ""))
+    for i, (k, v) in enumerate(NEO_ROWS):
+        y = 124 + i * 22
+        d = f" n d{3 + i}" if animated else ""
+        out.append(f'<text class="m{d}" x="170" y="{y}" font-size="14" fill="{GOLD}" font-weight="700">'
+                   f'{escape(k)}</text>')
+        out.append(f'<text class="m{d}" x="250" y="{y}" font-size="14" fill="{TEXT}">{escape(v)}</text>')
+    for i, col in enumerate(NEO_SWATCH):
+        d = f' class="n d{3 + len(NEO_ROWS)}"' if animated else ""
+        out.append(f'<rect{d} x="{170 + i * 26}" y="{124 + len(NEO_ROWS) * 22 + 6}" width="22" height="14" rx="3" '
+                   f'fill="{col}"/>')
     out.append("</svg>")
     return "\n".join(out) + "\n"
 
@@ -271,8 +388,10 @@ def build_card(card: dict, icons: dict) -> str:
 def build_all() -> dict[str, str]:
     icons = load_icons()
     files = {f"{panel}.svg": build_skills(panel, icons) for panel, _, _ in SKILL_PANELS}
-    files["method-animated.svg"] = build_method(True)
-    files["method-static.svg"] = build_method(False)
+    files["loop-animated.svg"] = build_loop(True)
+    files["loop-static.svg"] = build_loop(False)
+    files["neofetch-animated.svg"] = build_neofetch(True)
+    files["neofetch-static.svg"] = build_neofetch(False)
     for card in CARDS:
         files[f"card-{card['id']}.svg"] = build_card(card, icons)
     return files
