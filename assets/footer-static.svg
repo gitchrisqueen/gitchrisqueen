@@ -1,28 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 140" width="600" height="140" role="img" aria-label="Jacksonville, FL. Remote.">
-  <title>Jacksonville, FL. Remote.</title>
-  <defs>
-    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#0d1117" stop-opacity="1"/>
-      <stop offset="0.14" stop-color="#0d1117" stop-opacity="0"/>
-      <stop offset="0.86" stop-color="#0d1117" stop-opacity="0"/>
-      <stop offset="1" stop-color="#0d1117" stop-opacity="1"/>
-    </linearGradient>
-    <linearGradient id="rule" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#a89816" stop-opacity="0"/>
-      <stop offset="0.5" stop-color="#e9d437" stop-opacity="1"/>
-      <stop offset="1" stop-color="#a89816" stop-opacity="0"/>
-    </linearGradient>
-  </defs>
-  <rect x="0" y="0" width="600" height="140" fill="#0d1117"/>
-  <g class="still" fill="none" stroke="#a89816" stroke-linecap="round">
-    <path d="M-0 108 q60 -10 120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0" stroke-opacity="0.6" stroke-width="1"/>
-    <path d="M-88.8 113 q60 -10 120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0" stroke-opacity="0.45" stroke-width="0.8"/>
-    <path d="M-88.8 118 q30 -8 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0" stroke-opacity="0.34" stroke-width="0.7"/>
-    <path d="M-26.4 123 q60 -10 120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0" stroke-opacity="0.26" stroke-width="0.7"/>
-    <path d="M-38.4 128 q20 -6 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0" stroke-opacity="0.18" stroke-width="0.7"/>
-  </g>
-  <rect x="0" y="0" width="600" height="140" fill="url(#edge)"/>
-  <rect x="40" y="34" width="520" height="1" fill="url(#rule)"/>
-  <rect x="296" y="31" width="7" height="7" fill="#e9d437" transform="rotate(45 299.5 34.5)"/>
-  <text x="300" y="80" text-anchor="middle" fill="#e9d437" font-family="Georgia, 'Times New Roman', 'DejaVu Serif', serif" font-size="28" letter-spacing="0.5">Jacksonville, FL. Remote.</text>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 104" width="600" height="104" role="img">
+<title>Where to find me</title>
+<desc>Jacksonville, FL. Remote. Open to Forward-Deployed Engineer roles.</desc>
+<style>text{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}.m{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace}</style>
+<rect width="600" height="104" fill="#0d1117"/>
+<line x1="24" y1="58" x2="576" y2="58" stroke="#2a313b" stroke-width="2"/>
+<circle cx="100" cy="58" r="8" fill="#161b22" stroke="#a89816" stroke-width="2"/>
+<text x="100" y="92" text-anchor="middle" font-size="17" fill="#e6edf3">Jacksonville, FL</text>
+<circle cx="300" cy="58" r="8" fill="#161b22" stroke="#a89816" stroke-width="2"/>
+<text x="300" y="92" text-anchor="middle" font-size="17" fill="#e6edf3">Remote</text>
+<circle cx="500" cy="58" r="8" fill="#161b22" stroke="#a89816" stroke-width="2"/>
+<text x="500" y="92" text-anchor="middle" font-size="17" fill="#e6edf3">Open to FDE roles</text>
 </svg>

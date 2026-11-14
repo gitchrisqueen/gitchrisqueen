@@ -11,6 +11,7 @@ Outputs (all opaque-background, no script, no external reference):
     docs/graph/index.html                              its interactive, draggable version
     assets/terminal-animated.svg, assets/terminal-static.svg  the terminal session about me
     assets/card-<id>.svg                              one card per project
+    assets/header-*.svg, assets/footer-*.svg          the CLI-session header and footer
 
 Every text-bearing image is at most 520 units wide, so a phone column scales
 it by no less than about 0.6 and the smallest text stays near 9 px.
@@ -735,6 +736,115 @@ def build_card(card: dict, icons: dict) -> str:
     return "\n".join(out) + "\n"
 
 
+# ---------------------------------------------------------------- header and footer
+
+SERIF = "Georgia,'Times New Roman',serif"
+NET_CYCLE = 4.8          # seconds for one forward pass through the network
+SHINE_CYCLE = 8.0        # seconds between sweeps of light across the name
+LAYERS = [3, 4, 4, 2]    # nodes per layer of the little network
+LAYER_X = [432, 484, 536, 578]
+
+
+def _net_nodes(height: int) -> list[list[tuple[float, float]]]:
+    mid = height / 2 + 4
+    layers = []
+    for count in LAYERS:
+        gap = 30 if count > 2 else 44
+        top = mid - gap * (count - 1) / 2
+        layers.append([(0.0, top + gap * i) for i in range(count)])
+    return [[(LAYER_X[li], y) for _, y in layer] for li, layer in enumerate(layers)]
+
+
+def build_header(animated: bool) -> str:
+    """The name, with a small network doing a forward pass beside it. No terminal, no window."""
+    width, height = 600, 200
+    layers = _net_nodes(height)
+    rules: list[str] = []
+    if animated:
+        rules += [f"@keyframes shine{{0%,55%{{transform:translateX(-140px)}}100%{{transform:translateX(480px)}}}}"
+                  f".shine{{animation:shine {SHINE_CYCLE:g}s ease-in-out infinite}}",
+                  "@keyframes lit{0%{fill:#3a3611;stroke:#e9d437}12%,100%{fill:#161b22;stroke:#a89816}}"]
+    out_edges, out_nodes, lengths = [], [], {}
+    for li in range(len(layers) - 1):
+        for ai, (x1, y1) in enumerate(layers[li]):
+            for bi, (x2, y2) in enumerate(layers[li + 1]):
+                length = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+                out_edges.append(f'<line x1="{x1}" y1="{y1:.1f}" x2="{x2}" y2="{y2:.1f}" stroke="#2a313b" stroke-width="1.3"/>')
+                if animated:
+                    start = li * 1.0 + (ai + bi) * 0.08
+                    a, b = start / NET_CYCLE * 100, (start + 0.8) / NET_CYCLE * 100
+                    key = f"p{li}{ai}{bi}"
+                    rules.append(f"@keyframes {key}{{0%,{a:.2f}%{{stroke-dashoffset:16}}{b:.2f}%,100%{{stroke-dashoffset:-{length + 16:.0f}}}}}"
+                                 f".{key}{{animation:{key} {NET_CYCLE:g}s linear infinite}}")
+                    out_edges.append(f'<line class="{key}" x1="{x1}" y1="{y1:.1f}" x2="{x2}" y2="{y2:.1f}" stroke="{GOLD}" '
+                                     f'stroke-width="2.8" stroke-linecap="round" stroke-dasharray="16 1000" stroke-dashoffset="16"/>')
+    for li, layer in enumerate(layers):
+        for ni, (x, y) in enumerate(layer):
+            r = 7 if li < len(layers) - 1 else 9
+            cls = ""
+            if animated:
+                key = f"n{li}"
+                if f".{key}{{" not in "".join(rules):
+                    rules.append(f".{key}{{animation:lit {NET_CYCLE:g}s linear infinite;animation-delay:{li * 1.0 + 0.7:g}s}}")
+                cls = f' class="{key}"'
+            fill = GOLD if li == len(layers) - 1 else TILE
+            out_nodes.append(f'<circle{cls} cx="{x}" cy="{y:.1f}" r="{r}" fill="{fill}" stroke="#a89816" stroke-width="2"/>')
+    css = (f".serif{{font-family:{SERIF}}}" + "".join(rules) + (REDUCED if animated else ""))
+    out = svg_open(width, height, "Christopher Queen",
+                   "Christopher Queen, Applied AI and Forward-Deployed Engineer, beside a small neural network.", css)
+    out.append('<defs><pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">'
+               '<path d="M24 0 H0 V24" fill="none" stroke="#14191f" stroke-width="1"/></pattern>'
+               '<linearGradient id="beam" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffffff" stop-opacity="0"/>'
+               '<stop offset="0.5" stop-color="#fff7b0" stop-opacity="0.85"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/>'
+               '</linearGradient><linearGradient id="fade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0d1117" stop-opacity="0"/>'
+               '<stop offset="1" stop-color="#0d1117" stop-opacity="0.9"/></linearGradient>'
+               '<clipPath id="name"><text class="serif" x="34" y="116" font-size="44">Christopher Queen</text></clipPath></defs>')
+    out.append(f'<rect width="{width}" height="{height}" fill="url(#grid)"/>')
+    for x, y, sx, sy in ((12, 12, 1, 1), (588, 12, -1, 1), (12, 188, 1, -1), (588, 188, -1, -1)):
+        out.append(f'<path d="M{x} {y + 16 * sy} V{y} H{x + 16 * sx}" fill="none" stroke="{GOLD}" stroke-width="2"/>')
+    out += out_edges + out_nodes
+    out.append(f'<rect x="34" y="52" width="40" height="3" fill="{GOLD}"/>')
+    out.append(f'<text class="serif" x="34" y="116" font-size="44" fill="{GOLD}">Christopher Queen</text>')
+    if animated:
+        out.append('<rect class="shine" clip-path="url(#name)" x="0" y="60" width="90" height="70" fill="url(#beam)" '
+                   'transform="skewX(-18)"/>')
+    require_text_contrast(GOLD, BG, "header name")
+    require_text_contrast(TEXT, BG, "header role")
+    out.append(f'<text x="34" y="152" font-size="18" fill="{TEXT}" letter-spacing="0.4">Applied AI / Forward-Deployed Engineer</text>')
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
+def build_footer(animated: bool) -> str:
+    """A signal passes three stops: where, how, what for."""
+    width, height = 600, 104
+    stops = [(100, "Jacksonville, FL"), (300, "Remote"), (500, "Open to FDE roles")]
+    rules: list[str] = []
+    y = 58
+    if animated:
+        span = 552
+        rules += [f"@keyframes go{{0%{{stroke-dashoffset:30}}100%{{stroke-dashoffset:-{span + 30}}}}}"
+                  f".go{{animation:go {NET_CYCLE + 1.2:g}s linear infinite}}",
+                  "@keyframes lit{0%{fill:#3a3611;stroke:#e9d437}14%,100%{fill:#161b22;stroke:#a89816}}"]
+        for i in range(len(stops)):
+            delay = (stops[i][0] - 24) / 552 * (NET_CYCLE + 1.2)
+            rules.append(f".s{i}{{animation:lit {NET_CYCLE + 1.2:g}s linear infinite;animation-delay:{delay:.2f}s}}")
+    css = "".join(rules) + (REDUCED if animated else "")
+    out = svg_open(width, height, "Where to find me",
+                   "Jacksonville, FL. Remote. Open to Forward-Deployed Engineer roles.", css)
+    out.append(f'<line x1="24" y1="{y}" x2="576" y2="{y}" stroke="#2a313b" stroke-width="2"/>')
+    if animated:
+        out.append(f'<line class="go" x1="24" y1="{y}" x2="576" y2="{y}" stroke="{GOLD}" stroke-width="3" '
+                   f'stroke-dasharray="30 2000" stroke-dashoffset="30"/>')
+    for i, (x, label) in enumerate(stops):
+        cls = f' class="s{i}"' if animated else ""
+        out.append(f'<circle{cls} cx="{x}" cy="{y}" r="8" fill="{TILE}" stroke="#a89816" stroke-width="2"/>')
+        require_text_contrast(TEXT, BG, "footer label")
+        out.append(f'<text x="{x}" y="{y + 34}" text-anchor="middle" font-size="17" fill="{TEXT}">{escape(label)}</text>')
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
 # ---------------------------------------------------------------- click-to-open pills
 
 PILLS = [
@@ -769,6 +879,10 @@ def build_all() -> dict[str, str]:
     files["terminal-static.svg"] = build_terminal(False)
     for card in CARDS:
         files[f"card-{card['id']}.svg"] = build_card(card, icons)
+    files["header-animated.svg"] = build_header(True)
+    files["header-static.svg"] = build_header(False)
+    files["footer-animated.svg"] = build_footer(True)
+    files["footer-static.svg"] = build_footer(False)
     for pill_id, _, _ in PILLS:
         files[f"{pill_id}.svg"] = build_pill(pill_id)
     files["docs/graph/index.html"] = build_graph_page()  # a key with a slash is relative to the repo root

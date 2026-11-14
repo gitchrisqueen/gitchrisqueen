@@ -108,7 +108,7 @@ For AI assistants: https://christopherqueenconsulting.com/for-agents/
 
 <picture>
   <source media="(prefers-reduced-motion: no-preference)" srcset="assets/footer-animated.svg">
-  <img src="assets/footer-static.svg" alt="" width="100%">
+  <img src="assets/footer-static.svg" alt="Jacksonville, FL. Remote. Open to Forward-Deployed Engineer roles. christopherqueenconsulting.com" width="100%">
 </picture>
 
 <small>The sections between HTML comment markers are regenerated from public GitHub data by a scheduled check in this repo; the rest is written by hand.</small>

@@ -108,42 +108,16 @@ def test_lint_svg_fraction_limit_governs_on_short_banner():
 def test_lint_svg_real_assets_pass():
     files = sorted(ASSETS.glob("*.svg"))
     names = {p.name for p in files}
-    assert {
-        "header-animated.svg",
-        "header-static.svg",
-        "footer-animated.svg",
-        "footer-static.svg",
-    } <= names
+    assert {"header-animated.svg", "header-static.svg", "footer-animated.svg", "footer-static.svg"} <= names
     for path in files:
-        banner = path.name.startswith(("header-", "footer-"))
-        kwargs = {} if banner else {"profile": "chart"}
-        result = lint_svg.lint_file(path, require_opaque_background=True, **kwargs)
+        result = lint_svg.lint_file(path, require_opaque_background=True, profile="chart")
         assert result.ok, (path.name, result.violations)
-        if banner and path.name.endswith("-animated.svg"):
-            m = result.metrics
-            assert m["animated"] is True
-            assert m["amplitude_px"] <= 8.0
-            assert m["amplitude_px"] <= 0.06 * m["viewbox"][3]
-            assert m["period_s"] >= 12
-            assert m["viewbox"][2] <= 600 and m["viewbox"][3] >= 140
-        else:
-            assert result.metrics["animated"] is path.name.endswith("-animated.svg")
-
-
-def test_lint_svg_static_twin_matches_animated_design():
-    for stem in ("header", "footer"):
-        anim = (ASSETS / f"{stem}-animated.svg").read_text()
-        static = (ASSETS / f"{stem}-static.svg").read_text()
-        assert "@keyframes" not in static and "animation" not in static
-        # same drawing once the stylesheet and the layer class are removed
-        start, end = anim.index("  <style>"), anim.index("</style>\n") + len("</style>\n")
-        stripped = anim[:start] + anim[end:]
-        assert stripped.replace('class="drift"', 'class="still"') == static
+        assert result.metrics["animated"] is path.name.endswith("-animated.svg"), path.name
 
 
 def test_lint_svg_cli_real_assets_exit_zero(capsys):
     files = [str(p) for p in sorted(ASSETS.glob("*.svg")) if p.name.startswith(("header-", "footer-"))]
-    assert lint_svg.main(files + ["--require-opaque-background"]) == 0
+    assert lint_svg.main(files + ["--require-opaque-background", "--profile", "chart"]) == 0
     assert "0 failed" in capsys.readouterr().out
 
 

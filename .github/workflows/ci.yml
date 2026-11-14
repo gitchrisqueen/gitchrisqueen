@@ -62,15 +62,12 @@ jobs:
       - name: actionlint
         run: '"${RUNNER_TEMP}/actionlint/actionlint" -color'
 
-      - name: Lint the banner SVGs
-        run: python scripts/lint_svg.py --require-opaque-background assets/header-*.svg assets/footer-*.svg
-
       - name: Check the built assets are current, then lint them
         run: |
           set -euo pipefail
           python scripts/build_assets.py --check
           python scripts/lint_svg.py --profile chart --require-opaque-background --min-bytes 500 --max-bytes 200000 \
-            assets/skills-*.svg assets/pill-*.svg assets/graph-*.svg assets/terminal-*.svg assets/card-*.svg
+            assets/header-*.svg assets/footer-*.svg assets/skills-*.svg assets/pill-*.svg assets/graph-*.svg assets/terminal-*.svg assets/card-*.svg
 
       - name: Check colour contrast
         run: python scripts/check_contrast.py assets/colors.json

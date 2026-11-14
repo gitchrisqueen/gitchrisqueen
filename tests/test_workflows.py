@@ -426,7 +426,6 @@ def test_ci_steps():
     for needle in (
         "python -m pytest tests -q",
         "actionlint",
-        "scripts/lint_svg.py --require-opaque-background assets/header-*.svg assets/footer-*.svg",
         "scripts/build_assets.py --check",
         "scripts/check_contrast.py assets/colors.json",
         "scripts/update_profile.py --readme README.md",

@@ -16,43 +16,11 @@
       "where": "assets/header-*.svg: role line"
     },
     {
-      "id": "header-accent",
-      "kind": "graphic",
-      "foreground": "#e9d437",
-      "background": "#0d1117",
-      "where": "assets/header-*.svg: short gold rule above the name"
-    },
-    {
-      "id": "header-wave",
-      "kind": "graphic",
-      "foreground": "#a89816",
-      "background": "#0d1117",
-      "where": "assets/header-*.svg: wave lines (drawn at 18-75% stroke opacity)",
-      "exempt": true,
-      "reason": "decorative texture; carries no information"
-    },
-    {
       "id": "footer-text",
       "kind": "text",
       "foreground": "#e9d437",
       "background": "#0d1117",
-      "where": "assets/footer-*.svg: location line"
-    },
-    {
-      "id": "footer-rule",
-      "kind": "graphic",
-      "foreground": "#e9d437",
-      "background": "#0d1117",
-      "where": "assets/footer-*.svg: centre of the tapered rule and the diamond"
-    },
-    {
-      "id": "footer-wave",
-      "kind": "graphic",
-      "foreground": "#a89816",
-      "background": "#0d1117",
-      "where": "assets/footer-*.svg: wave lines (drawn at 18-60% stroke opacity)",
-      "exempt": true,
-      "reason": "decorative texture; carries no information"
+      "where": "assets/footer-*.svg: lines"
     },
     {
       "id": "badge-label",
