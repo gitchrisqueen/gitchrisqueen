@@ -230,10 +230,13 @@ CARDS = [
 ]
 
 
+CARD_HEIGHT = 272  # every card the same height so a pair sits level
+
+
 def build_card(card: dict, icons: dict) -> str:
     width = 392
     broke_lines = card["broke"]
-    height = 252 + 20 * (len(broke_lines) - 2)
+    height = CARD_HEIGHT
     out = svg_open(width, height, card["title"],
                    f'{card["title"]}. {" ".join(card["lines"])} {card["label"]}: {" ".join(broke_lines)}')
     out.append(f'<defs><clipPath id="r"><rect x="1" y="1" width="{width - 2}" height="{height - 2}" rx="12"/>'
@@ -257,7 +260,7 @@ def build_card(card: dict, icons: dict) -> str:
         y += 20
     x = 26
     for slug in card["icons"]:
-        out.append(icon_group(icons, slug, x, y + 2, 24, TILE))
+        out.append(icon_group(icons, slug, x, height - 44, 24, TILE))
         x += 34
     out.append("</svg>")
     return "\n".join(out) + "\n"
