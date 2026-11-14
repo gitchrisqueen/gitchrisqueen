@@ -45,9 +45,12 @@ def test_empty_key_means_no_script_no_network_and_no_posthog_text():
     assert html.count("<script") == 1
 
 
-def test_off_state_page_is_the_committed_page():
+def test_committed_page_matches_the_committed_analytics_settings():
     committed = (ROOT / "docs" / "graph" / "index.html").read_text(encoding="utf-8")
-    assert page(OFF) == committed
+    settings = assets.load_analytics()
+    assert page(settings) == committed
+    if not settings["posthog_key"]:
+        assert "posthog" not in committed.lower()
 
 
 def test_missing_settings_file_means_off(monkeypatch, tmp_path):

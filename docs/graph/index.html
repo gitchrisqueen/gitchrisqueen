@@ -26,6 +26,7 @@ details ul{margin:6px 0 0;padding:10px 14px 10px 28px;background:var(--tile);bor
 max-height:50vh;overflow:auto}
 @media (max-width:640px){#legend{display:none}}
 </style>
+<style>#privacy{position:fixed;left:12px;right:12px;bottom:6px;margin:0;font-size:11px;color:var(--muted)}#card,#legend{bottom:28px}</style>
 </head>
 <body>
 <canvas id="g" role="img" aria-label="Knowledge graph of the projects, practices and tools I work with. A text list of the same connections is under the Text version control."></canvas>
@@ -129,6 +130,12 @@ function release(e) {
 cv.addEventListener('pointerup', release); cv.addEventListener('pointercancel', release);
 cv.addEventListener('pointerleave', () => {if (dragging < 0 && hover >= 0) {hover = -1; cv.classList.remove('over'); card.innerHTML = describe(nodes[sel >= 0 ? sel : 0]); draw();}});
 card.innerHTML = describe(nodes[0]);
+</script>
+<p id="privacy">Anonymous page-view counts, no cookies.</p>
+<script>
+!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src="https://us-assets.i.posthog.com"+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],Object.defineProperty(u,"toString",{configurable:!0,enumerable:!0,writable:!0,value:function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e}}),Object.defineProperty(u.people,"toString",{configurable:!0,enumerable:!0,writable:!0,value:function(){return u.toString(1)+".people (stub)"}}),o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+posthog.init("phc_5L33eLHs4pJxToLgd4tJS6iho0fYekyq2uaMcKk1ipt",{api_host:"https://us.i.posthog.com",persistence:'memory',autocapture:false,capture_pageview:true,capture_pageleave:false,disable_session_recording:true,disable_surveys:true,respect_dnt:true,person_profiles:'never'});
+(function(){var sent=false;function track(a){if(sent)return;sent=true;try{posthog.capture('graph_interact',{action:a});}catch(e){}}cv.addEventListener('pointermove',function(){if(dragging>=0&&moved>=4)track('drag');});document.querySelector('details').addEventListener('toggle',function(e){if(e.target.open)track('text_list');});})();
 </script>
 </body>
 </html>
