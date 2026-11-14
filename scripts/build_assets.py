@@ -7,7 +7,7 @@ Usage:
 
 Outputs (all opaque-background, no script, no external reference):
     assets/skills-build.svg, assets/skills-ai.svg   tool logos, two panels
-    assets/gate-animated.svg, assets/gate-static.svg  the compiler-gate terminal
+    assets/method-animated.svg, assets/method-static.svg  the "How I work" strip
     assets/card-<id>.svg                              one card per project
 
 Every text-bearing image is at most 520 units wide, so a phone column scales
@@ -144,53 +144,50 @@ def build_skills(panel_id: str, icons: dict) -> str:
     return "\n".join(out) + "\n"
 
 
-# ---------------------------------------------------------------- gate terminal
+# ---------------------------------------------------------------- method strip
 
-GATE_LINES = [
-    # (text, fill, x offset)
-    ("$ grade submission.cpp", GOLD, 0),
-    ('LLM verdict: "does not compile"', TEXT, 0),
-    ("wrong: the code is valid", RED, 20),
-    ("$ compile submission.cpp", GOLD, 0),
-    ("compiler exit code: 0", TEXT, 0),
-    ("verdict: compiles, grade stands", GREEN, 0),
+# (title, evidence). Each step is backed by a project below on the page.
+METHOD_STEPS = [
+    ("Start from work someone does by hand", "Weekly attendance and grading; a LinkedIn routine."),
+    ("Write the boundary before building", "Drafts and dry runs by default; a human reviews."),
+    ("Put a real check where the model is weakest", "A compiler decides compile errors, not the model."),
+    ("Keep watching after it ships", "Hourly drift check on the live app; daily health check."),
+    ("Say what is not proven", "Caveats sit next to every number."),
 ]
-GATE_CYCLE = 18.0
-GATE_START = [0.6, 2.2, 3.4, 5.6, 7.2, 8.8]
-GATE_HIDE = 16.4
+METHOD_CYCLE = 20.0
 
 
-def build_gate(animated: bool) -> str:
-    width, height = 520, 290
+def build_method(animated: bool) -> str:
+    width, top, step = 520, 66, 54
+    height = top + step * len(METHOD_STEPS) + 6
     css = ""
     if animated:
-        rules = []
-        for i, start in enumerate(GATE_START):
-            a = start / GATE_CYCLE * 100
-            b = (start + 0.5) / GATE_CYCLE * 100
-            c = GATE_HIDE / GATE_CYCLE * 100
-            d = (GATE_HIDE + 0.8) / GATE_CYCLE * 100
-            rules.append(f"@keyframes g{i}{{0%,{a:.2f}%{{opacity:0}}{b:.2f}%,{c:.2f}%{{opacity:1}}"
-                         f"{d:.2f}%,100%{{opacity:0}}}}.l{i}{{animation:g{i} {GATE_CYCLE:g}s linear infinite}}")
-        css = "".join(rules) + REDUCED
+        travel = step * (len(METHOD_STEPS) - 1)
+        css = (f"@keyframes dot{{0%{{transform:translateY(0)}}80%,100%{{transform:translateY({travel}px)}}}}"
+               f".dot{{animation:dot {METHOD_CYCLE:g}s ease-in-out infinite}}" + REDUCED)
     out = svg_open(
-        width, height, "The compiler gate",
-        "Illustration, not a recording. A language model first judges valid C++ as not compiling; a real compiler "
-        "then returns exit code 0, so the grade stands.",
-        css)
-    out.append(f'<rect x="8" y="8" width="504" height="274" rx="12" fill="{TILE}" stroke="{LINE}"/>')
-    for i, col in enumerate((RED, GOLD, GREEN)):
-        out.append(f'<circle cx="{30 + i * 20}" cy="30" r="6" fill="{col}"/>')
-    out.append(f'<text x="260" y="35" text-anchor="middle" font-size="13" fill="{MUTED}">'
-               f'the compiler gate (illustration)</text>')
-    require_text_contrast(MUTED, TILE, "gate window title")
-    y = 78
-    for i, (text, fill, dx) in enumerate(GATE_LINES):
-        require_text_contrast(fill, TILE, f"gate line {i}")
-        cls = f"m l{i}" if animated else "m"
-        out.append(f'<text class="{cls}" x="{30 + dx}" y="{y}" font-size="18" fill="{fill}" '
-                   f'xml:space="preserve">{escape(text)}</text>')
-        y += 36
+        width, height, "How I work",
+        "Five habits, each one from something that broke in the projects on this page: "
+        + "; ".join(f"{t}" for t, _ in METHOD_STEPS) + ".", css)
+    require_text_contrast(GOLD, BG, "method heading")
+    require_text_contrast(TEXT, BG, "method step title")
+    require_text_contrast(MUTED, BG, "method step evidence")
+    out.append(f'<text x="24" y="34" font-size="20" font-weight="700" fill="{GOLD}">How I work</text>')
+    out.append(f'<text x="24" y="54" font-size="13" fill="{MUTED}">Each habit comes from something that broke in '
+               f'the projects below.</text>')
+    x = 40
+    first_y = top + 14
+    last_y = first_y + step * (len(METHOD_STEPS) - 1)
+    out.append(f'<line x1="{x}" y1="{first_y}" x2="{x}" y2="{last_y}" stroke="{LINE}" stroke-width="2"/>')
+    for i, (title, evidence) in enumerate(METHOD_STEPS):
+        cy = first_y + i * step
+        out.append(f'<circle cx="{x}" cy="{cy}" r="13" fill="{TILE}" stroke="{GOLD}" stroke-width="1.5"/>')
+        out.append(f'<text x="{x}" y="{cy + 5}" text-anchor="middle" font-size="14" font-weight="700" '
+                   f'fill="{GOLD}">{i + 1}</text>')
+        out.append(f'<text x="68" y="{cy - 1}" font-size="16" font-weight="700" fill="{TEXT}">{escape(title)}</text>')
+        out.append(f'<text x="68" y="{cy + 18}" font-size="13" fill="{MUTED}">{escape(evidence)}</text>')
+    if animated:
+        out.append(f'<circle class="dot" cx="{x}" cy="{first_y}" r="5" fill="{GOLD}"/>')
     out.append("</svg>")
     return "\n".join(out) + "\n"
 
@@ -271,8 +268,8 @@ def build_card(card: dict, icons: dict) -> str:
 def build_all() -> dict[str, str]:
     icons = load_icons()
     files = {f"{panel}.svg": build_skills(panel, icons) for panel, _, _ in SKILL_PANELS}
-    files["gate-animated.svg"] = build_gate(True)
-    files["gate-static.svg"] = build_gate(False)
+    files["method-animated.svg"] = build_method(True)
+    files["method-static.svg"] = build_method(False)
     for card in CARDS:
         files[f"card-{card['id']}.svg"] = build_card(card, icons)
     return files

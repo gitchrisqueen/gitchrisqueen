@@ -207,18 +207,19 @@ def test_assets_have_no_external_references_or_script():
         assert "<script" not in low and "<animate" not in low and "<image" not in low, name
 
 
-def test_gate_static_twin_has_no_motion_and_shows_every_line():
-    static = assets.build_gate(False)
+def test_method_static_twin_has_no_motion_and_shows_every_step():
+    static = assets.build_method(False)
     assert "animation" not in static and "@keyframes" not in static
-    for text, *_ in assets.GATE_LINES:
-        assert text.replace('"', "&quot;") in static or text in static
+    for title, evidence in assets.METHOD_STEPS:
+        assert title in static and evidence in static
 
 
-def test_gate_animated_has_reduced_motion_rule_and_a_slow_loop():
-    animated = assets.build_gate(True)
+def test_method_animated_has_reduced_motion_rule_one_slow_loop_and_only_transform():
+    animated = assets.build_method(True)
     assert "@media (prefers-reduced-motion: reduce){*{animation:none!important}}" in animated
-    assert assets.GATE_CYCLE >= 12
-    assert animated.count("infinite") == len(assets.GATE_LINES)
+    assert assets.METHOD_CYCLE >= 12
+    assert animated.count("infinite") == 1
+    assert "opacity" not in animated
 
 
 def test_contrast_helper_rejects_low_contrast():

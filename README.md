@@ -14,11 +14,9 @@ Remote from Jacksonville, FL. Open to Forward-Deployed Engineer roles. I also ru
 <a href="mailto:christopher.queen@gmail.com"><img alt="Email" src="https://img.shields.io/badge/-Email-21262d?style=for-the-badge&logo=gmail&logoColor=white&labelColor=21262d"></a>
 
 <picture>
-  <source media="(prefers-reduced-motion: no-preference)" srcset="assets/gate-animated.svg">
-  <img src="assets/gate-static.svg" alt="Illustration: a language model wrongly judges valid C++ as not compiling, then a real compiler returns exit code 0, so the grade stands." width="100%">
+  <source media="(prefers-reduced-motion: no-preference)" srcset="assets/method-animated.svg">
+  <img src="assets/method-static.svg" alt="How I work, in five habits: start from work someone does by hand; write the boundary before building; put a real check where the model is weakest; keep watching after it ships; say what is not proven." width="100%">
 </picture>
-
-Illustration of the real-compiler check added to CPCC Task Automation ([pull request #267](https://github.com/christopherqueenconsulting/cpcc_task_automation/pull/267)), not a recording. When the compiler cannot run, the model's judgment stands; that is never counted as "does not compile".
 
 ## What I've built
 
@@ -71,7 +69,7 @@ My pull requests that were closed without merge are listed too: [full list on Gi
 
 ## Hire me, or have me audit your LLM system
 
-**Hiring:** I start from the job someone still does by hand, write down the boundary before building, put a real check where the model is weakest (the compiler gate above), and leave a [hand-off document](https://github.com/christopherqueenconsulting/cpcc_task_automation/blob/master/docs/BRIGHTSPACE_AUTOMATION_HANDOFF.md) the next engineer can run from.
+**Hiring:** I start from the job someone still does by hand, write down the boundary before building, put a real check where the model is weakest, and leave a [hand-off document](https://github.com/christopherqueenconsulting/cpcc_task_automation/blob/master/docs/BRIGHTSPACE_AUTOMATION_HANDOFF.md) the next engineer can run from.
 
 **The audit:** one week, read-only access to your LLM logs and bills, a graded scorecard and a costed fix list. [See what you get](https://christopherqueenconsulting.com/ai-ops-audit/). [Book a free 30-minute call](https://christopherqueenconsulting.com/schedule/).
 

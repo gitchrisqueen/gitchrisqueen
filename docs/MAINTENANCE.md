@@ -90,7 +90,7 @@ The script fails below 4.5:1 for text pairs and below 3:1 for graphics pairs. Th
 
 The calendar colours live only in `assets/colors.json`; `scripts/make_growing_snake.py` reads them from there. If you change a colour, edit that file, then run `python scripts/check_contrast.py assets/colors.json`.
 
-The card, tool-logo and terminal graphics (`assets/card-*.svg`, `assets/skills-*.svg`, `assets/gate-*.svg`) are built by `python scripts/build_assets.py` from the text inside that script and `data/icons.json` (logo paths from simple-icons, CC0). Edit the script, rebuild, commit the SVGs; CI fails with `out of date` if a committed SVG differs from the build. To add a logo, copy its path from the simple-icons package into `data/icons.json`.
+The card, tool-logo and method-strip graphics (`assets/card-*.svg`, `assets/skills-*.svg`, `assets/method-*.svg`) are built by `python scripts/build_assets.py` from the text inside that script and `data/icons.json` (logo paths from simple-icons, CC0). Edit the script, rebuild, commit the SVGs; CI fails with `out of date` if a committed SVG differs from the build. To add a logo, copy its path from the simple-icons package into `data/icons.json`.
 
 ## First-run checklist
 
