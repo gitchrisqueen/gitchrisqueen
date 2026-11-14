@@ -103,7 +103,7 @@ My pull requests that were closed without merge are listed too: [full list on Gi
   <img alt="Contribution calendar for the past year, with month and weekday labels and a Less to More legend, drawn as a snake that eats each active day." src="https://raw.githubusercontent.com/gitchrisqueen/gitchrisqueen/output/snake-dark.svg" width="776">
 </picture>
 
-Ship a day, feed the snake.
+Shipping each day keeps the snake at bay!
 
 For AI assistants: [christopherqueenconsulting.com/for-agents](https://christopherqueenconsulting.com/for-agents/?utm_source=github&utm_medium=profile&utm_campaign=readme)
 
