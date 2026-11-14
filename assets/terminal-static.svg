@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 330" width="520" height="330" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 366" width="520" height="366" role="img">
 <title>About me, as a simulated terminal session</title>
 <desc>A simulated terminal, not a real tool or a real session. First cqc --help lists four commands. Then it connects my skills over MCP and lists six tools: llm_audit, real_check, drift_watch, browser_flow, ci_pipeline and human_gate. Then it calls llm_audit on synthetic sample data and prints sample grades. Then cqc about prints: Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: open to Forward-Deployed Engineer roles. Builds LLM systems with real checks. Stack: Python, FastAPI, React, Docker. Models: LangChain, LiteLLM, OpenRouter. Rule: a real check beats a prompt. Off duty: books, billiards, aquariums.</desc>
 <style>text{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}.m{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace}</style>
-<rect width="520" height="330" fill="#0d1117"/>
-<rect x="8" y="8" width="504" height="314" rx="12" fill="#161b22" stroke="#30363d"/>
+<rect width="520" height="366" fill="#0d1117"/>
+<rect x="8" y="8" width="504" height="350" rx="12" fill="#161b22" stroke="#30363d"/>
 <circle cx="30" cy="30" r="6" fill="#ff7b72"/>
 <circle cx="50" cy="30" r="6" fill="#e9d437"/>
 <circle cx="70" cy="30" r="6" fill="#3fb950"/>
-<text x="260" y="35" text-anchor="middle" font-size="13" fill="#9ba7b4">simulated terminal (illustration)</text>
-<text class="m" x="26" y="66" font-size="14" fill="#e9d437" xml:space="preserve">$ cqc about --verbose</text>
-<text class="m" x="26" y="100" font-size="14" fill="#e9d437" xml:space="preserve"> ####   ####  </text>
-<text class="m" x="26" y="117" font-size="14" fill="#e9d437" xml:space="preserve">#    # #    # </text>
-<text class="m" x="26" y="134" font-size="14" fill="#e9d437" xml:space="preserve">#      #    # </text>
-<text class="m" x="26" y="151" font-size="14" fill="#e9d437" xml:space="preserve">#      #  # # </text>
-<text class="m" x="26" y="168" font-size="14" fill="#e9d437" xml:space="preserve">#    # #   ## </text>
-<text class="m" x="26" y="185" font-size="14" fill="#e9d437" xml:space="preserve"> ####   #### #</text>
-<text class="m" x="170" y="92" font-size="14" font-weight="700" fill="#e6edf3">Christopher Queen</text>
-<line x1="170" y1="100" x2="330" y2="100" stroke="#30363d"/>
-<g><text class="m" x="170" y="124" font-size="14" fill="#e9d437" font-weight="700">role</text><text class="m" x="250" y="124" font-size="14" fill="#e6edf3">Applied AI, Forward-Deployed</text></g>
-<g><text class="m" x="170" y="146" font-size="14" fill="#e9d437" font-weight="700">base</text><text class="m" x="250" y="146" font-size="14" fill="#e6edf3">Jacksonville FL, remote</text></g>
-<g><text class="m" x="170" y="168" font-size="14" fill="#e9d437" font-weight="700">status</text><text class="m" x="250" y="168" font-size="14" fill="#e6edf3">open to FDE roles</text></g>
-<g><text class="m" x="170" y="190" font-size="14" fill="#e9d437" font-weight="700">builds</text><text class="m" x="250" y="190" font-size="14" fill="#e6edf3">LLM systems with real checks</text></g>
-<g><text class="m" x="170" y="212" font-size="14" fill="#e9d437" font-weight="700">stack</text><text class="m" x="250" y="212" font-size="14" fill="#e6edf3">Python, FastAPI, React, Docker</text></g>
-<g><text class="m" x="170" y="234" font-size="14" fill="#e9d437" font-weight="700">models</text><text class="m" x="250" y="234" font-size="14" fill="#e6edf3">LangChain, LiteLLM, OpenRouter</text></g>
-<g><text class="m" x="170" y="256" font-size="14" fill="#e9d437" font-weight="700">rule</text><text class="m" x="250" y="256" font-size="14" fill="#e6edf3">a real check beats a prompt</text></g>
-<g><text class="m" x="170" y="278" font-size="14" fill="#e9d437" font-weight="700">off duty</text><text class="m" x="250" y="278" font-size="14" fill="#e6edf3">books, billiards, aquariums</text></g>
-<g><rect x="170" y="306" width="22" height="14" rx="3" fill="#7d6f17"/><rect x="196" y="306" width="22" height="14" rx="3" fill="#a89816"/><rect x="222" y="306" width="22" height="14" rx="3" fill="#c4b228"/><rect x="248" y="306" width="22" height="14" rx="3" fill="#e9d437"/><rect x="274" y="306" width="22" height="14" rx="3" fill="#efe9d2"/><rect x="300" y="306" width="22" height="14" rx="3" fill="#3fb950"/><rect x="326" y="306" width="22" height="14" rx="3" fill="#ff7b72"/><rect x="352" y="306" width="22" height="14" rx="3" fill="#58a6ff"/></g>
+<text x="260" y="35" text-anchor="middle" font-size="15" fill="#9ba7b4">simulated terminal (illustration)</text>
+<text class="m" x="26" y="66" font-size="16" fill="#e9d437" xml:space="preserve">$ cqc about --verbose</text>
+<text class="m" x="26" y="100" font-size="16" fill="#e9d437" xml:space="preserve"> ####   ####  </text>
+<text class="m" x="26" y="117" font-size="16" fill="#e9d437" xml:space="preserve">#    # #    # </text>
+<text class="m" x="26" y="134" font-size="16" fill="#e9d437" xml:space="preserve">#      #    # </text>
+<text class="m" x="26" y="151" font-size="16" fill="#e9d437" xml:space="preserve">#      #  # # </text>
+<text class="m" x="26" y="168" font-size="16" fill="#e9d437" xml:space="preserve">#    # #   ## </text>
+<text class="m" x="26" y="185" font-size="16" fill="#e9d437" xml:space="preserve"> ####   #### #</text>
+<text class="m" x="176" y="92" font-size="16" font-weight="700" fill="#e6edf3">Christopher Queen</text>
+<line x1="176" y1="102" x2="420" y2="102" stroke="#30363d"/>
+<g><text class="m" x="176" y="128" font-size="16" fill="#e9d437" font-weight="700">role</text><text class="m" x="272" y="128" font-size="16" fill="#e6edf3">Applied AI / FDE</text></g>
+<g><text class="m" x="176" y="152" font-size="16" fill="#e9d437" font-weight="700">base</text><text class="m" x="272" y="152" font-size="16" fill="#e6edf3">Jacksonville FL, remote</text></g>
+<g><text class="m" x="176" y="176" font-size="16" fill="#e9d437" font-weight="700">status</text><text class="m" x="272" y="176" font-size="16" fill="#e6edf3">open to FDE roles</text></g>
+<g><text class="m" x="176" y="200" font-size="16" fill="#e9d437" font-weight="700">builds</text><text class="m" x="272" y="200" font-size="16" fill="#e6edf3">LLM systems, real checks</text></g>
+<g><text class="m" x="176" y="224" font-size="16" fill="#e9d437" font-weight="700">stack</text><text class="m" x="272" y="224" font-size="16" fill="#e6edf3">Python, FastAPI, React</text></g>
+<g><text class="m" x="176" y="248" font-size="16" fill="#e9d437" font-weight="700">models</text><text class="m" x="272" y="248" font-size="16" fill="#e6edf3">LangChain, LiteLLM</text></g>
+<g><text class="m" x="176" y="272" font-size="16" fill="#e9d437" font-weight="700">rule</text><text class="m" x="272" y="272" font-size="16" fill="#e6edf3">checks beat prompts</text></g>
+<g><text class="m" x="176" y="296" font-size="16" fill="#e9d437" font-weight="700">off duty</text><text class="m" x="272" y="296" font-size="16" fill="#e6edf3">billiards, books, fish</text></g>
+<g><rect x="176" y="324" width="24" height="14" rx="3" fill="#7d6f17"/><rect x="204" y="324" width="24" height="14" rx="3" fill="#a89816"/><rect x="232" y="324" width="24" height="14" rx="3" fill="#c4b228"/><rect x="260" y="324" width="24" height="14" rx="3" fill="#e9d437"/><rect x="288" y="324" width="24" height="14" rx="3" fill="#efe9d2"/><rect x="316" y="324" width="24" height="14" rx="3" fill="#3fb950"/><rect x="344" y="324" width="24" height="14" rx="3" fill="#ff7b72"/><rect x="372" y="324" width="24" height="14" rx="3" fill="#58a6ff"/></g>
 </svg>

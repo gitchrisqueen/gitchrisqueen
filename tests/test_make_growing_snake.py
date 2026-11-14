@@ -316,3 +316,23 @@ def test_terminal_sample_report_is_labelled_synthetic_and_tools_match_the_skills
     for name, _ in assets.TOOLS:
         assert name in svg
     assert len(assets.TOOLS) == 6 and all(g in "ABC" for _, g, _ in assets.AUDIT_ROWS)
+
+
+def test_pills_are_lined_up_with_the_readme_and_say_select_to_open():
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    for pill_id, cmd, alt in assets.PILLS:
+        svg = assets.build_pill(pill_id)
+        assert cmd in svg and "select to open" in svg
+        assert f'src="assets/{pill_id}.svg" alt="{alt}"' in readme.replace("&#39;", "'")
+
+
+def test_no_card_or_doc_says_what_broke_any_more():
+    for path in (ROOT / "README.md", ROOT / "docs" / "PROOF.md", ROOT / "scripts" / "build_assets.py"):
+        assert "what broke" not in path.read_text(encoding="utf-8").lower(), path.name
+
+
+def test_graph_tool_nodes_are_logo_discs_and_every_labelled_node_is_at_least_16px():
+    for kind, (radius, _, size, _) in assets.KIND_STYLE.items():
+        assert size == 0 or size >= 16, kind
+    graph = assets.load_graph()
+    assert all(n["id"] in assets.TECH_ICON or n["id"] == "litellm" for n in graph["nodes"] if n["kind"] == "tech")

@@ -3,36 +3,36 @@
   <img src="assets/header-static.svg" alt="Christopher Queen, Applied AI / Forward-Deployed Engineer" width="100%">
 </picture>
 
-**I build LLM systems with real checks around the model, ship them, and write down what broke.**
+**I build LLM systems with real checks and traceability, so problems get fixed before customers see them.**
 
 <a href="https://christopherqueenconsulting.com/resume/?utm_source=github&utm_medium=readme&utm_campaign=resume"><img alt="Résumé" src="https://img.shields.io/badge/-R%C3%A9sum%C3%A9-e9d437?style=for-the-badge&labelColor=e9d437"></a>
-<a href="https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation"><img alt="Case study: what broke and what I changed" src="https://img.shields.io/badge/-Case%20study-21262d?style=for-the-badge&labelColor=21262d"></a>
+<a href="https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation"><img alt="Case study: what I caught and how I fixed it" src="https://img.shields.io/badge/-Case%20study-21262d?style=for-the-badge&labelColor=21262d"></a>
 <a href="https://christopherqueenconsulting.com/ai-ops-audit/"><img alt="The LLM audit: what you get" src="https://img.shields.io/badge/-LLM%20audit-21262d?style=for-the-badge&labelColor=21262d"></a>
 <a href="https://www.linkedin.com/in/christopherqueen"><img alt="LinkedIn" src="https://img.shields.io/badge/-LinkedIn-21262d?style=for-the-badge&logo=linkedin&logoColor=white&labelColor=21262d"></a>
 <a href="mailto:christopher.queen@gmail.com"><img alt="Email" src="https://img.shields.io/badge/-Email-21262d?style=for-the-badge&logo=gmail&logoColor=white&labelColor=21262d"></a>
 
 <picture>
   <source media="(prefers-reduced-motion: no-preference)" srcset="assets/terminal-animated.svg">
-  <img src="assets/terminal-static.svg" alt="A simulated terminal, not a real tool or session. It lists four commands, connects my skills over MCP and lists six tools (llm_audit, real_check, drift_watch, browser_flow, ci_pipeline, human_gate), calls llm_audit on synthetic sample data and prints sample grades, then prints: Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: open to Forward-Deployed Engineer roles. Builds LLM systems with real checks. Stack: Python, FastAPI, React, Docker. Models: LangChain, LiteLLM, OpenRouter. Rule: a real check beats a prompt. Off duty: books, billiards, aquariums." width="100%">
+  <img src="assets/terminal-static.svg" alt="A simulated terminal, not a real tool or session. It lists four commands, connects my skills over MCP and lists six tools (llm_audit, real_check, drift_watch, browser_flow, ci_pipeline, human_gate), calls llm_audit on synthetic sample data and prints sample grades, then prints: Title: Applied AI, Forward-Deployed Engineer. Base: Jacksonville, Florida, remote. Status: open to Forward-Deployed Engineer roles. Builds LLM systems with real checks. Stack: Python, FastAPI, React, Docker. Models: LangChain, LiteLLM, OpenRouter. Rule: a real check beats a prompt. Off duty: books, billiards, aquariums." width="776">
 </picture>
 
-<sub>A simulated terminal for fun: <code>cqc</code> is not a real tool, the six tool names are labels for skills (no MCP server is published), the sample grades are invented, and nothing in it is a recording. <a href="https://github.com/gitchrisqueen/gitchrisqueen/blob/main/docs/PROOF.md#the-six-skills-in-the-terminal-graphic">Where each skill comes from</a>.</sub>
+<sub>A simulated terminal for fun: <code>cqc</code> is not a real tool, the six tool names are labels for skills, the sample grades are invented, and nothing in it is a recording. <a href="https://github.com/gitchrisqueen/gitchrisqueen/blob/main/docs/PROOF.md#the-six-skills-in-the-terminal-graphic">Where each skill comes from</a>.</sub>
 
 <a href="https://gitchrisqueen.github.io/gitchrisqueen/graph/">
 <picture>
   <source media="(prefers-reduced-motion: no-preference)" srcset="assets/graph-animated.svg">
-  <img src="assets/graph-static.svg" alt="A knowledge graph of what I work with. Christopher connects to four projects (LEM, the CPCC tool, hearing-copilot, panthera) and the LLM audit. Practices (real checks, drift watch, human review, honest caveats) and tools (Python, FastAPI, Redis, React, Selenium, LangChain, LiteLLM, Docker, GitHub Actions, Node.js) tie them together. Select it to open the interactive version, where you can drag the nodes." width="100%">
+  <img src="assets/graph-static.svg" alt="A knowledge graph of what I work with. Christopher connects to four projects (LEM, the CPCC tool, hearing-copilot, panthera) and the LLM audit. Practices (real checks, drift watch, human review, honest caveats) and tools (Python, FastAPI, Redis, React, Selenium, LangChain, LiteLLM, Docker, GitHub Actions, Node.js) tie them together. Select it to open the interactive version, where you can drag the nodes." width="776">
 </picture>
 </a>
 
-<sub>Select the graph to open the interactive version: drag the nodes and see how they tie together.</sub>
+<sub>Gold dots are projects, green dots are practices, logos are tools. Select the graph to open the interactive version and drag the nodes.</sub>
 
 ## What I've built
 
-<a href="https://github.com/christopherqueenconsulting/linkedin_engagement_manager"><img alt="LinkedIn Engagement Manager, a live web app: a 30-day content plan, quality-gated AI posts and daily-capped engagement. What broke: the live app sat behind new releases for a day, inside a green run; an hourly check now flags it. Built with FastAPI, Celery, Redis, MySQL, React and Docker." src="assets/card-lem.svg" width="390"></a>
-<a href="https://github.com/christopherqueenconsulting/cpcc_task_automation"><img alt="CPCC Task Automation, an instructor admin tool: attendance, withdrawals and rubric grading with a human review step. What broke: the model called valid C++ not compiling; a real compiler now makes that call. Built with Python, Streamlit, Selenium and LangChain." src="assets/card-cpcc.svg" width="390"></a>
-<a href="https://github.com/gitchrisqueen/hearing-copilot"><img alt="hearing-copilot, speaker identification for live transcripts, scored offline on real oral-argument audio. Limits: the headline score comes from one hearing, with no confidence interval; caveats are in RESULTS.md. Built with JavaScript and Node.js." src="assets/card-hearing.svg" width="390"></a>
-<a href="https://github.com/gitchrisqueen/panthera"><img alt="panthera, an MLB paper-trading experiment graded against rules declared in git; paper trading only, and the ROI is a screen, not proof. What broke: a config whitelist skipped the postseason and 14 slate days passed unnoticed; a health check now flags it. Built with Python and GitHub Actions." src="assets/card-panthera.svg" width="390"></a>
+<a href="https://github.com/christopherqueenconsulting/linkedin_engagement_manager"><img alt="LinkedIn Engagement Manager, a live web app: a 30-day content plan, quality-gated AI posts and daily-capped engagement. Caught and fixed: the live app sat behind new releases for a day, inside a green run; an hourly check now flags it. Built with FastAPI, Celery, Redis, MySQL, React and Docker." src="assets/card-lem.svg" width="386"></a>
+<a href="https://github.com/christopherqueenconsulting/cpcc_task_automation"><img alt="CPCC Task Automation, an instructor admin tool: attendance, withdrawals and rubric grading, with grades written back as drafts. Caught and fixed: the model called valid C++ not compiling; a real compiler now makes that call. Built with Python, Streamlit, Selenium and LangChain." src="assets/card-cpcc.svg" width="386"></a>
+<a href="https://github.com/gitchrisqueen/hearing-copilot"><img alt="hearing-copilot, speaker identification for live transcripts, scored offline on real oral-argument audio. Limits: the headline score comes from one hearing, with no confidence interval; caveats are in RESULTS.md. Built with JavaScript and Node.js." src="assets/card-hearing.svg" width="386"></a>
+<a href="https://github.com/gitchrisqueen/panthera"><img alt="panthera, an MLB paper-trading experiment graded against rules declared in git; paper trading only, and the ROI is a screen, not proof. Caught and fixed: a config whitelist skipped the postseason and 14 slate days passed unnoticed; a health check now flags it. Built with Python and GitHub Actions." src="assets/card-panthera.svg" width="386"></a>
 
 Test status, live: <a href="https://github.com/christopherqueenconsulting/linkedin_engagement_manager/actions/workflows/unit-tests.yml"><img alt="LinkedIn Engagement Manager automated tests status" src="https://img.shields.io/github/actions/workflow/status/christopherqueenconsulting/linkedin_engagement_manager/unit-tests.yml?branch=main&label=LEM&labelColor=24292f&color=57606a&style=flat-square"></a>
 <a href="https://github.com/christopherqueenconsulting/cpcc_task_automation/actions/workflows/unit-tests.yml"><img alt="CPCC Task Automation automated tests status" src="https://img.shields.io/github/actions/workflow/status/christopherqueenconsulting/cpcc_task_automation/unit-tests.yml?branch=master&label=CPCC&labelColor=24292f&color=57606a&style=flat-square"></a>
@@ -42,7 +42,7 @@ Test status, live: <a href="https://github.com/christopherqueenconsulting/linked
 More: [the LEM live app](https://lem.christopherqueenconsulting.com/), [the CPCC case study](https://christopherqueenconsulting.com/work/cpcc-task-automation/?utm_source=github&utm_medium=readme&utm_campaign=cpcc-task-automation), [hearing-copilot results and caveats](https://github.com/gitchrisqueen/hearing-copilot/blob/main/eval/diarization/RESULTS.md), [the panthera report](https://github.com/gitchrisqueen/panthera/blob/main/reports/BETTING_REPORT.md), and [every number with its caveats](https://github.com/gitchrisqueen/gitchrisqueen/blob/main/docs/PROOF.md). Also [CueSyncAR](https://github.com/gitchrisqueen/CueSyncAR), an iOS augmented-reality billiards prototype in Swift, declared paused on 2026-09-10.
 
 <details>
-<summary>Live status of the four checks (generated from GitHub Actions)</summary>
+<summary><img src="assets/pill-status.svg" alt="Live status of the four checks (select to open)" width="520"></summary>
 
 <!-- FLAGSHIPS:START -->
 | Repo | Check | Status |
@@ -58,13 +58,13 @@ For panthera, passing means the daily pipeline ran, not that its data is healthy
 
 ## Tools
 
-<img src="assets/skills-build.svg" alt="Languages and services used in the projects above: Python, JavaScript, Swift, Node.js, FastAPI, Celery, Redis and MySQL." width="390">
-<img src="assets/skills-ai.svg" alt="AI, interface, test and ship tools used in the projects above: LangChain, LiteLLM, OpenRouter, React, Streamlit, Selenium, Docker and GitHub Actions." width="390">
+<img src="assets/skills-build.svg" alt="Languages and services used in the projects above: Python, JavaScript, Swift, Node.js, FastAPI, Celery, Redis and MySQL." width="386">
+<img src="assets/skills-ai.svg" alt="AI, interface, test and ship tools used in the projects above: LangChain, LiteLLM, OpenRouter, React, Streamlit, Selenium, Docker and GitHub Actions." width="386">
 
 ## Merged into other people's projects
 
 <details>
-<summary><code>$ git log --merged upstream</code> (click to open)</summary>
+<summary><img src="assets/pill-merged.svg" alt="Merged pull requests in other people's projects (select to open)" width="520"></summary>
 
 Small fixes, merged by each project's maintainers. Generated from public GitHub data by a scheduled check in this repo.
 
@@ -83,7 +83,7 @@ My pull requests that were closed without merge are listed too: [full list on Gi
 ## Hire me, or have me audit your LLM system
 
 <details>
-<summary><code>$ sudo hire-me</code> (no password needed)</summary>
+<summary><img src="assets/pill-hire.svg" alt="Hire me, or book the audit (select to open)" width="520"></summary>
 
 **Hiring:** I start from the job someone still does by hand, write down the boundary before building, put a real check where the model is weakest, and leave a [hand-off document](https://github.com/christopherqueenconsulting/cpcc_task_automation/blob/master/docs/BRIGHTSPACE_AUTOMATION_HANDOFF.md) the next engineer can run from.
 
@@ -96,7 +96,7 @@ Straight talk: none of this has an outside paying customer yet, the audit has no
 
 <picture>
   <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/gitchrisqueen/gitchrisqueen/output/snake-static-dark.svg">
-  <img alt="Contribution calendar for the past year, drawn as a snake that eats each active day." src="https://raw.githubusercontent.com/gitchrisqueen/gitchrisqueen/output/snake-dark.svg" width="100%">
+  <img alt="Contribution calendar for the past year, drawn as a snake that eats each active day." src="https://raw.githubusercontent.com/gitchrisqueen/gitchrisqueen/output/snake-dark.svg" width="776">
 </picture>
 
 The snake grows a little with each active day it eats.

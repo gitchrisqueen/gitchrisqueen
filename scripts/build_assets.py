@@ -98,9 +98,16 @@ def load_icons() -> dict:
     return json.loads((ROOT / "data" / "icons.json").read_text(encoding="utf-8"))["icons"]
 
 
+SIZE_BOOST = {"mysql": 1.3}  # a few marks sit small in their 24-unit box
+
+
 def icon_group(icons: dict, slug: str, x: float, y: float, size: float, bg: str) -> str:
     icon = icons[slug]
     colour = glyph_colour(slug, icon["hex"], bg)
+    boost = SIZE_BOOST.get(slug, 1.0)
+    x -= size * (boost - 1) / 2
+    y -= size * (boost - 1) / 2
+    size *= boost
     scale = size / 24
     path = escape(icon["path"], {'"': "&quot;"})
     return (f'<g transform="translate({x:g} {y:g}) scale({scale:.4f})" fill="{colour}">'
@@ -151,14 +158,18 @@ def build_skills(panel_id: str, icons: dict) -> str:
 # ---------------------------------------------------------------- knowledge graph
 
 KIND_STYLE = {
-    # kind: (radius, fill, label size, bold)
-    "me": (17, GOLD, 15, True),
-    "project": (12, "#c4b228", 13, True),
-    "offer": (12, "#efe9d2", 13, True),
-    "practice": (10, GREEN, 12.5, True),
-    "tech": (7, "#58a6ff", 11.5, False),
+    # kind: (radius, fill, label size, bold). Tools are drawn as logo discs and carry no label.
+    "me": (18, GOLD, 17, True),
+    "project": (13, "#c4b228", 16, True),
+    "offer": (13, "#efe9d2", 16, True),
+    "practice": (11, GREEN, 16, True),
+    "tech": (15, TILE, 0, False),
 }
-GRAPH_W, GRAPH_H = 520, 400
+TECH_ICON = {
+    "python": "python", "fastapi": "fastapi", "redis": "redis", "react": "react", "selenium": "selenium",
+    "langchain": "langchain", "docker": "docker", "actions": "githubactions", "node": "nodedotjs",
+}
+GRAPH_W, GRAPH_H = 520, 430
 
 
 def load_graph() -> dict:
@@ -173,15 +184,15 @@ def layout_graph(graph: dict, width: int = GRAPH_W, height: int = GRAPH_H) -> di
         out = []
         for nid, (x, y) in pos.items():
             r, _, size, _ = KIND_STYLE[nodes[nid]["kind"]]
-            w = len(nodes[nid]["label"]) * size * 0.58
-            out.append((x - w / 2, y - r, x + w / 2, y + r + size + 4))
+            w = len(nodes[nid]["label"]) * size * 0.6 if size else 0
+            out.append((x - max(w / 2, r), y - r, x + max(w / 2, r), y + r + (size + 4 if size else 0)))
         return out
 
     def overlaps(pos: dict) -> float:
         bs, total = boxes(pos), 0.0
         for i, a in enumerate(bs):
-            if a[0] < 6 or a[2] > width - 6:
-                total += 50
+            if a[0] < 6 or a[2] > width - 6 or a[1] < 6 or a[3] > height - 6:
+                total += 80
             for b in bs[i + 1:]:
                 dx = min(a[2], b[2]) - max(a[0], b[0])
                 dy = min(a[3], b[3]) - max(a[1], b[1])
@@ -189,7 +200,7 @@ def layout_graph(graph: dict, width: int = GRAPH_W, height: int = GRAPH_H) -> di
                     total += dx * dy
         return total
 
-    best = min((_layout_once(graph, width, height, seed) for seed in range(40)), key=overlaps)
+    best = min((_layout_once(graph, width, height, seed) for seed in range(60)), key=overlaps)
     return best
 
 
@@ -199,7 +210,12 @@ def _layout_once(graph: dict, width: int, height: int, seed: int) -> dict[str, t
     pos = {i: [width / 2 + rnd.uniform(-90, 90), height / 2 + rnd.uniform(-70, 70)] for i in ids}
     pos["me"] = [width / 2, height / 2]
     k = math.sqrt(width * height / len(ids)) * 0.78
-    pad = 46
+    nodes_by_id = {n["id"]: n for n in graph["nodes"]}
+
+    def bounds(nid: str) -> tuple[float, float, float, float]:
+        r, _, size, _ = KIND_STYLE[nodes_by_id[nid]["kind"]]
+        half = max(r, len(nodes_by_id[nid]["label"]) * size * 0.3) + 8 if size else r + 8
+        return half, width - half, r + 8, height - (r + (size + 6 if size else 0) + 8)
     for it in range(500):
         temp = 24 * (1 - it / 500) + 0.6
         disp = {i: [0.0, 0.0] for i in ids}
@@ -224,8 +240,9 @@ def _layout_once(graph: dict, width: int, height: int, seed: int) -> dict[str, t
             disp[i][1] += (height / 2 - pos[i][1]) * 0.9
             d = math.hypot(*disp[i]) or 0.01
             step = min(d, temp)
-            pos[i][0] = min(width - pad, max(pad, pos[i][0] + disp[i][0] / d * step))
-            pos[i][1] = min(height - pad, max(pad, pos[i][1] + disp[i][1] / d * step))
+            x0, x1, y0, y1 = bounds(i)
+            pos[i][0] = min(x1, max(x0, pos[i][0] + disp[i][0] / d * step))
+            pos[i][1] = min(y1, max(y0, pos[i][1] + disp[i][1] / d * step))
     return {i: (round(v[0], 1), round(v[1], 1)) for i, v in pos.items()}
 
 
@@ -252,7 +269,7 @@ def build_graph_svg(animated: bool) -> str:
     out = svg_open(width, height, "What I work with, as a knowledge graph",
                    "A graph of how my projects, practices and tools connect. Nodes: " + names + ". "
                    "Open the interactive version to drag the nodes.", css)
-    for x, y, sx, sy in ((10, 10, 1, 1), (510, 10, -1, 1), (10, 390, 1, -1), (510, 390, -1, -1)):
+    for x, y, sx, sy in ((10, 10, 1, 1), (510, 10, -1, 1), (10, 420, 1, -1), (510, 420, -1, -1)):
         out.append(f'<path d="M{x} {y + 16 * sy} V{y} H{x + 16 * sx}" fill="none" stroke="{GOLD}" stroke-width="2"/>')
     flow_kinds = {"practice", "offer"}
     for a_, b_ in graph["edges"]:
@@ -261,15 +278,28 @@ def build_graph_svg(animated: bool) -> str:
         if animated and (nodes[a_]["kind"] in flow_kinds or nodes[b_]["kind"] in flow_kinds):
             out.append(f'<line class="fl" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{GOLD}" stroke-width="1.8" '
                        f'stroke-linecap="round" stroke-dasharray="1 13"/>')
+    icons = load_icons()
     for n, node in enumerate(graph["nodes"]):
         r, fill, size, bold = KIND_STYLE[node["kind"]]
         x, y = pos[node["id"]]
         cls = f' class="n{n}"' if animated else ""
         require_text_contrast(TEXT, BG, "graph label")
+        if node["kind"] == "tech":
+            stroke = LINE
+            body = f'<circle cx="{x}" cy="{y}" r="{r}" fill="{TILE}" stroke="{stroke}" stroke-width="2"/>'
+            slug = TECH_ICON.get(node["id"])
+            if slug:
+                body += icon_group(icons, slug, x - 9, y - 9, 18, TILE)
+            else:
+                body += (f'<rect x="{x - 9}" y="{y - 9}" width="18" height="18" rx="4" fill="{GOLD}"/>'
+                         f'<text x="{x}" y="{y + 5}" text-anchor="middle" font-size="11" font-weight="800" fill="{BG}">'
+                         f'{escape(node["label"][:2])}</text>')
+            out.append(f"<g{cls}>{body}</g>")
+            continue
         out.append(f'<g{cls}><circle cx="{x}" cy="{y}" r="{r}" fill="{fill}" stroke="{BG}" stroke-width="2"/>'
-                   f'<text x="{x}" y="{y + r + size + 2}" text-anchor="middle" font-size="{size}" '
+                   f'<text x="{x}" y="{y + r + size + 1}" text-anchor="middle" font-size="{size}" '
                    f'font-weight="{700 if bold else 400}" fill="{TEXT}" paint-order="stroke" stroke="{BG}" '
-                   f'stroke-width="3">{escape(node["label"])}</text></g>')
+                   f'stroke-width="4">{escape(node["label"])}</text></g>')
     out.append("</svg>")
     return "\n".join(out) + "\n"
 
@@ -428,20 +458,20 @@ LOGO = [
     " ####   #### #",
 ]
 NEO_ROWS = [
-    ("role", "Applied AI, Forward-Deployed"),
+    ("role", "Applied AI / FDE"),
     ("base", "Jacksonville FL, remote"),
     ("status", "open to FDE roles"),
-    ("builds", "LLM systems with real checks"),
-    ("stack", "Python, FastAPI, React, Docker"),
-    ("models", "LangChain, LiteLLM, OpenRouter"),
-    ("rule", "a real check beats a prompt"),
-    ("off duty", "books, billiards, aquariums"),
+    ("builds", "LLM systems, real checks"),
+    ("stack", "Python, FastAPI, React"),
+    ("models", "LangChain, LiteLLM"),
+    ("rule", "checks beat prompts"),
+    ("off duty", "billiards, books, fish"),
 ]
 NEO_SWATCH = ["#7d6f17", "#a89816", "#c4b228", GOLD, "#efe9d2", "#3fb950", "#ff7b72", "#58a6ff"]
 
 
 TERM_CYCLE = 39.0
-CHAR_W = 8.4
+CHAR_W = 9.6
 HELP_LINES = [
     ("cqc: applied AI, forward-deployed engineer", TEXT),
     None,
@@ -455,11 +485,11 @@ HELP_LINES = [
 # The skills, each one backed by a project on the page.
 TOOLS = [
     ("llm_audit", "grade an LLM stack, A to F"),
-    ("real_check", "verify the model, deterministically"),
-    ("drift_watch", "flag live vs released mismatch"),
-    ("browser_flow", "automate web apps, dry run first"),
-    ("ci_pipeline", "GitHub Actions that fail closed"),
-    ("human_gate", "draft, review, then ship"),
+    ("real_check", "a real check, not a guess"),
+    ("drift_watch", "live vs released mismatch"),
+    ("browser_flow", "web automation, dry-run modes"),
+    ("ci_pipeline", "Actions that fail closed"),
+    ("human_gate", "drafts; a person publishes"),
 ]
 # Synthetic sample, labelled as such in the image: (area, grade, filled bars of 5).
 AUDIT_ROWS = [
@@ -483,7 +513,7 @@ def build_terminal(animated: bool) -> str:
 
     The static twin shows only the last act.
     """
-    width, height = 520, 330
+    width, height = 520, 366
     css_rules: list[str] = []
     counter = [0]
 
@@ -497,7 +527,7 @@ def build_terminal(animated: bool) -> str:
 
     def typed(text: str, x: float, y: float, start: float, dur: float, end: float, fill: str) -> list[str]:
         cls = "m " + appear(start, end) if animated else "m"
-        out = [f'<text class="{cls}" x="{x}" y="{y}" font-size="14" fill="{fill}" xml:space="preserve">'
+        out = [f'<text class="{cls}" x="{x}" y="{y}" font-size="16" fill="{fill}" xml:space="preserve">'
                f'{escape(text)}</text>']
         if animated:
             n = counter[0]
@@ -522,13 +552,13 @@ def build_terminal(animated: bool) -> str:
                    "open to Forward-Deployed Engineer roles. Builds LLM systems with real checks. Stack: Python, "
                    "FastAPI, React, Docker. Models: LangChain, LiteLLM, OpenRouter. Rule: a real check beats a prompt. "
                    "Off duty: books, billiards, aquariums.", "")
-    out.append(f'<rect x="8" y="8" width="504" height="314" rx="12" fill="{TILE}" stroke="{LINE}"/>')
+    out.append(f'<rect x="8" y="8" width="504" height="350" rx="12" fill="{TILE}" stroke="{LINE}"/>')
     for i, col in enumerate((RED, GOLD, GREEN)):
         out.append(f'<circle cx="{30 + i * 20}" cy="30" r="6" fill="{col}"/>')
     require_text_contrast(MUTED, TILE, "terminal window title")
     for fg in (GOLD, TEXT, GREEN, RED):
         require_text_contrast(fg, TILE, "terminal text")
-    out.append(f'<text x="260" y="35" text-anchor="middle" font-size="13" fill="{MUTED}">simulated terminal (illustration)</text>')  # preflight: ok
+    out.append(f'<text x="260" y="35" text-anchor="middle" font-size="15" fill="{MUTED}">simulated terminal (illustration)</text>')  # preflight: ok
 
     if animated:
         # Act 1: --help
@@ -540,51 +570,51 @@ def build_terminal(animated: bool) -> str:
                 y += 10
                 continue
             text, fill = line
-            out.append(f'<text class="m {appear(t, a1)}" x="26" y="{y}" font-size="14" fill="{fill}" '
+            out.append(f'<text class="m {appear(t, a1)}" x="26" y="{y}" font-size="16" fill="{fill}" '
                        f'xml:space="preserve">{escape(text)}</text>')
             t += 0.4
-            y += 20
+            y += 22
         # Act 2: connect over MCP, list the tools
         b0, b1 = ACTS[1]
         out += typed("$ cqc mcp connect skills", 26, 66, b0 + 0.3, 1.5, b1, GOLD)
         t = b0 + 2.2
         vis = appear(t, b1)
         out.append(f'<circle class="{vis}" cx="32" cy="90" r="4" fill="{TEXT}"/>')
-        out.append(f'<text class="m {vis}" x="46" y="94" font-size="14" fill="{TEXT}">connecting to my skills over MCP</text>')  # preflight: ok
+        out.append(f'<text class="m {vis}" x="46" y="94" font-size="16" fill="{TEXT}">connecting to my skills over MCP</text>')  # preflight: ok
         out.append(f'<path class="{appear(t + 0.8, b1)}" d="M{width - 50} 89 l4 4 l8 -9" fill="none" stroke="{GREEN}" '
                    f'stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>')
-        out.append(f'<text class="m {appear(t + 1.6, b1)}" x="46" y="120" font-size="14" fill="{MUTED}">'
+        out.append(f'<text class="m {appear(t + 1.6, b1)}" x="46" y="120" font-size="16" fill="{MUTED}">'
                    f'connected (simulated). {len(TOOLS)} tools found:</text>')
         t, y = t + 2.4, 148
         for name, note in TOOLS:
             vis = appear(t, b1)
-            out.append(f'<text class="m {vis}" x="46" y="{y}" font-size="14" fill="{GOLD}" font-weight="700">'
+            out.append(f'<text class="m {vis}" x="46" y="{y}" font-size="16" fill="{GOLD}" font-weight="700">'
                        f'{escape(name)}</text>')
-            out.append(f'<text class="m {vis}" x="170" y="{y}" font-size="14" fill="{TEXT}">{escape(note)}</text>')
+            out.append(f'<text class="m {vis}" x="186" y="{y}" font-size="16" fill="{TEXT}">{escape(note)}</text>')
             t += 0.55
-            y += 24
+            y += 26
         # Act 3: call one tool, read the report (synthetic sample)
         c0_, c1_ = ACTS[2]
         out += typed("$ cqc call llm_audit --sample", 26, 66, c0_ + 0.3, 1.7, c1_, GOLD)
         t = c0_ + 2.4
         vis = appear(t, c1_)
         out.append(f'<circle class="{vis}" cx="32" cy="90" r="4" fill="{TEXT}"/>')
-        out.append(f'<text class="m {vis}" x="46" y="94" font-size="14" fill="{TEXT}">llm_audit: read-only, synthetic data</text>')  # preflight: ok
+        out.append(f'<text class="m {vis}" x="46" y="94" font-size="16" fill="{TEXT}">llm_audit: read-only, synthetic data</text>')  # preflight: ok
         t, y = t + 1.0, 126
         for area, grade, bars in AUDIT_ROWS:
             vis = appear(t, c1_)
-            out.append(f'<text class="m {vis}" x="46" y="{y}" font-size="14" fill="{TEXT}">{escape(area)}</text>')
-            out.append(f'<text class="m {vis}" x="190" y="{y}" font-size="14" font-weight="700" '
+            out.append(f'<text class="m {vis}" x="46" y="{y}" font-size="16" fill="{TEXT}">{escape(area)}</text>')
+            out.append(f'<text class="m {vis}" x="214" y="{y}" font-size="16" font-weight="700" '
                        f'fill="{GRADE_FILL[grade]}">{grade}</text>')
             for k in range(5):
                 fill = GRADE_FILL[grade] if k < bars else LINE
-                out.append(f'<rect class="{vis}" x="{220 + k * 20}" y="{y - 11}" width="16" height="12" rx="2" '
+                out.append(f'<rect class="{vis}" x="{244 + k * 20}" y="{y - 11}" width="16" height="12" rx="2" '
                            f'fill="{fill}"/>')
             t += 0.55
-            y += 24
+            y += 26
         vis = appear(t + 0.4, c1_)
-        out.append(f'<text class="m {vis}" x="46" y="{y + 8}" font-size="14" fill="{GOLD}">next: put a real check behind the model</text>')  # preflight: ok
-        out.append(f'<text class="m {appear(t + 1.2, c1_)}" x="46" y="{y + 32}" font-size="13" fill="{MUTED}">'
+        out.append(f'<text class="m {vis}" x="46" y="{y + 8}" font-size="16" fill="{GOLD}">next: put a real check behind the model</text>')  # preflight: ok
+        out.append(f'<text class="m {appear(t + 1.2, c1_)}" x="46" y="{y + 32}" font-size="16" fill="{MUTED}">'
                    f'sample output, not a real audit</text>')
         c0, c1 = ACTS[3]
     else:
@@ -595,18 +625,18 @@ def build_terminal(animated: bool) -> str:
     t0 = c0 + 2.4
     for r, row in enumerate(LOGO):
         out.append(f'<text class="m{(" " + appear(t0, c1)) if animated else ""}" x="26" y="{100 + r * 17}" '
-                   f'font-size="14" fill="{GOLD}" xml:space="preserve">{escape(row)}</text>')
-    out.append(f'<text class="m{(" " + appear(t0 + 0.3, c1)) if animated else ""}" x="170" y="92" font-size="14" '
+                   f'font-size="16" fill="{GOLD}" xml:space="preserve">{escape(row)}</text>')
+    out.append(f'<text class="m{(" " + appear(t0 + 0.3, c1)) if animated else ""}" x="176" y="92" font-size="16" '
                f'font-weight="700" fill="{TEXT}">Christopher Queen</text>')
-    out.append(f'<line{shown(t0 + 0.3, c1)} x1="170" y1="100" x2="330" y2="100" stroke="{LINE}"/>')
+    out.append(f'<line{shown(t0 + 0.3, c1)} x1="176" y1="102" x2="420" y2="102" stroke="{LINE}"/>')
     for i, (k, v) in enumerate(NEO_ROWS):
-        y = 124 + i * 22
+        y = 128 + i * 24
         vis = f' class="{appear(t0 + 0.7 + i * 0.5, c1)}"' if animated else ""
-        out.append(f'<g{vis}><text class="m" x="170" y="{y}" font-size="14" fill="{GOLD}" font-weight="700">'
-                   f'{escape(k)}</text><text class="m" x="250" y="{y}" font-size="14" fill="{TEXT}">'
+        out.append(f'<g{vis}><text class="m" x="176" y="{y}" font-size="16" fill="{GOLD}" font-weight="700">'
+                   f'{escape(k)}</text><text class="m" x="272" y="{y}" font-size="16" fill="{TEXT}">'
                    f'{escape(v)}</text></g>')
     sw_vis = f' class="{appear(t0 + 0.7 + len(NEO_ROWS) * 0.5, c1)}"' if animated else ""
-    swatches = "".join(f'<rect x="{170 + i * 26}" y="{124 + len(NEO_ROWS) * 22 + 6}" width="22" height="14" rx="3" '
+    swatches = "".join(f'<rect x="{176 + i * 28}" y="{128 + len(NEO_ROWS) * 24 + 4}" width="24" height="14" rx="3" '
                        f'fill="{col}"/>' for i, col in enumerate(NEO_SWATCH))
     out.append(f"<g{sw_vis}>{swatches}</g>")
     if animated:
@@ -623,15 +653,15 @@ CARDS = [
     {
         "id": "lem", "tag": "Live web app", "title": "LinkedIn Engagement Manager",
         "lines": ["Builds a 30-day content plan, gates AI-written", "posts on quality, caps daily engagement."],
-        "label": "What broke",
+        "label": "Caught and fixed",
         "broke": ["The live app sat behind new releases for a day,",
                   "inside a green run. An hourly check now flags it."],
         "icons": ["fastapi", "celery", "redis", "mysql", "react", "docker"],
     },
     {
         "id": "cpcc", "tag": "Instructor admin tool", "title": "CPCC Task Automation",
-        "lines": ["Attendance, withdrawals and rubric grading for", "my own courses, with a human review step."],
-        "label": "What broke",
+        "lines": ["Attendance, withdrawals and rubric grading for", "my own courses. Grades go back as drafts."],
+        "label": "Caught and fixed",
         "broke": ["The model called valid C++ \"does not compile\".", "A real compiler now makes that call."],
         "icons": ["python", "streamlit", "selenium", "langchain"],
     },
@@ -647,7 +677,7 @@ CARDS = [
         "id": "panthera", "tag": "Paper trading experiment", "title": "panthera",
         "lines": ["MLB picks graded against rules declared in git.",
                   "Paper trading only; the ROI is a screen, not proof."],
-        "label": "What broke",
+        "label": "Caught and fixed",
         "broke": ["A config whitelist skipped the postseason and",
                   "14 slate days passed unnoticed. A health check", "now flags it."],
         "icons": ["python", "githubactions"],
@@ -691,6 +721,29 @@ def build_card(card: dict, icons: dict) -> str:
     return "\n".join(out) + "\n"
 
 
+# ---------------------------------------------------------------- click-to-open pills
+
+PILLS = [
+    ("pill-merged", "$ git log --merged upstream", "Merged pull requests in other people's projects (select to open)"),
+    ("pill-hire", "$ sudo hire-me", "Hire me, or book the audit (select to open)"),
+    ("pill-status", "$ cat live-status", "Live status of the four checks (select to open)"),
+]
+
+
+def build_pill(pill_id: str) -> str:
+    _, cmd, alt = next(p for p in PILLS if p[0] == pill_id)
+    width, height = 520, 46
+    out = svg_open(width, height, alt, alt)
+    require_text_contrast(GOLD, TILE, "pill command")
+    require_text_contrast(MUTED, TILE, "pill hint")
+    out.append(f'<rect x="1" y="1" width="{width - 2}" height="{height - 2}" rx="10" fill="{TILE}" stroke="{GOLD}" '
+               f'stroke-width="1.5"/>')
+    out.append(f'<text class="m" x="18" y="29" font-size="16" fill="{GOLD}">{escape(cmd)}</text>')
+    out.append(f'<text x="{width - 18}" y="29" text-anchor="end" font-size="15" fill="{MUTED}">select to open</text>')
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
 # ---------------------------------------------------------------- main
 
 def build_all() -> dict[str, str]:
@@ -702,6 +755,8 @@ def build_all() -> dict[str, str]:
     files["terminal-static.svg"] = build_terminal(False)
     for card in CARDS:
         files[f"card-{card['id']}.svg"] = build_card(card, icons)
+    for pill_id, _, _ in PILLS:
+        files[f"{pill_id}.svg"] = build_pill(pill_id)
     files["docs/graph/index.html"] = build_graph_page()  # a key with a slash is relative to the repo root
     return files
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 392 272" width="392" height="272" role="img">
 <title>panthera</title>
-<desc>panthera. MLB picks graded against rules declared in git. Paper trading only; the ROI is a screen, not proof. What broke: A config whitelist skipped the postseason and 14 slate days passed unnoticed. A health check now flags it.</desc>
+<desc>panthera. MLB picks graded against rules declared in git. Paper trading only; the ROI is a screen, not proof. Caught and fixed: A config whitelist skipped the postseason and 14 slate days passed unnoticed. A health check now flags it.</desc>
 <style>text{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}.m{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace}</style>
 <rect width="392" height="272" fill="#0d1117"/>
 <defs><clipPath id="r"><rect x="1" y="1" width="390" height="270" rx="12"/></clipPath></defs>
@@ -12,7 +12,7 @@
 <text x="26" y="92" font-size="13.5" fill="#9ba7b4">MLB picks graded against rules declared in git.</text>
 <text x="26" y="112" font-size="13.5" fill="#9ba7b4">Paper trading only; the ROI is a screen, not proof.</text>
 <line x1="26" y1="136" x2="366" y2="136" stroke="#30363d"/>
-<text x="26" y="160" font-size="13" font-weight="700" fill="#e9d437">What broke</text>
+<text x="26" y="160" font-size="13" font-weight="700" fill="#e9d437">Caught and fixed</text>
 <text x="26" y="182" font-size="13.5" fill="#e6edf3">A config whitelist skipped the postseason and</text>
 <text x="26" y="202" font-size="13.5" fill="#e6edf3">14 slate days passed unnoticed. A health check</text>
 <text x="26" y="222" font-size="13.5" fill="#e6edf3">now flags it.</text>
