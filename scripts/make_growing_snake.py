@@ -147,7 +147,7 @@ def build_svg(cells: list[dict], total: int, theme: str, animated: bool, freeze:
     board_w = cols * PITCH - (PITCH - CELL)
     left = (WIDTH - board_w) / 2
     top = 14
-    height = top + 7 * PITCH - (PITCH - CELL) + 36
+    height = top + 7 * PITCH - (PITCH - CELL) + 14
     path = build_path(cols)
     steps = len(path) - 1
     by_pos = {(c["col"], c["row"]): c for c in cells}
@@ -164,9 +164,8 @@ def build_svg(cells: list[dict], total: int, theme: str, animated: bool, freeze:
     css = [f"text{{font-family:{SANS}}}"]
     body = []
     eaten_idx = sorted(index_of[(c["col"], c["row"])] for c in cells if c["level"] > 0)
-    desc = (f"{total} contributions in the last year, drawn as a calendar. "
+    desc = ("Contribution calendar for the last year. "
             + ("A snake eats each active day and grows longer as it goes." if animated else "Static view, no motion."))
-    summary = f"{total} contributions in the last year"
 
     # board squares
     refill_at = pct(run + HOLD + FADE + EMPTY_HOLD)
@@ -210,15 +209,11 @@ def build_svg(cells: list[dict], total: int, theme: str, animated: bool, freeze:
         d = "M" + " L".join(f"{fmt(centre(p)[0])} {fmt(centre(p)[1])}" for p in path)
         stroke = (f'fill="none" stroke-linecap="round" stroke-linejoin="round" pathLength="{steps}"')
         body.append(
-            f'<g class="a sg"><path class="a sb" d="{d}" {stroke} stroke="{col["snake"]}" stroke-width="9" '
+            f'<g class="a sg"><path class="a sb" d="{d}" {stroke} stroke="{col["snake"]}" stroke-width="7" '
             f'stroke-dasharray="{START_LEN} 1000" stroke-dashoffset="{START_LEN}"/>'
-            f'<path class="a sh" d="{d}" {stroke} stroke="{col["head"]}" stroke-width="13" '
+            f'<path class="a sh" d="{d}" {stroke} stroke="{col["head"]}" stroke-width="10" '
             f'stroke-dasharray="1 1000" stroke-dashoffset="1"/></g>')
 
-    caption_y = top + 7 * PITCH - (PITCH - CELL) + 24
-    body.append(f'<text x="{fmt(left)}" y="{caption_y}" font-size="12" fill="{col["caption"]}">{summary}'
-                + (". The snake grows a little with each active day it eats." if animated else ".")
-                + "</text>")
     head = [
         '<?xml version="1.0" encoding="UTF-8"?>',
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {WIDTH} {height}" width="{WIDTH}" '
@@ -231,10 +226,11 @@ def build_svg(cells: list[dict], total: int, theme: str, animated: bool, freeze:
 
 
 def build_all(cells: list[dict], total: int) -> dict[str, str]:
+    # Both themes use the dark panel, so the gold levels and the cream snake read on any page theme.
     return {
-        "snake.svg": build_svg(cells, total, "light", True),
+        "snake.svg": build_svg(cells, total, "dark", True),
         "snake-dark.svg": build_svg(cells, total, "dark", True),
-        "snake-static-light.svg": build_svg(cells, total, "light", False),
+        "snake-static-light.svg": build_svg(cells, total, "dark", False),
         "snake-static-dark.svg": build_svg(cells, total, "dark", False),
     }
 

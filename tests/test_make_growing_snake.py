@@ -232,3 +232,27 @@ def test_card_claims_are_the_short_forms_of_the_readme_claims():
     joined = " ".join(" ".join(c["lines"] + c["broke"]) for c in assets.CARDS).lower()
     for banned in ("roi of", "%", "revenue", "customers", "production-grade"):
         assert banned not in joined
+
+
+def test_every_output_uses_the_dark_panel_and_carries_no_count_text():
+    cells, total = cells_of(payload())
+    dark_bg = snake.theme_colours("dark")["bg"]
+    for name, svg in snake.build_all(cells, total).items():
+        assert f'fill="{dark_bg}"/>' in svg, name
+        assert "<text" not in svg and "contributions in the last year" not in svg, name
+        assert f"{total} contributions" not in svg, name
+
+
+def test_snake_body_is_thinner_than_a_square():
+    cells, total = cells_of(payload())
+    svg = snake.build_svg(cells, total, "dark", True)
+    width = float(re.search(r'class="a sb"[^>]*stroke-width="([\d.]+)"', svg).group(1))
+    assert width <= snake.CELL * 0.65
+
+
+def test_card_and_skills_images_stay_narrow_enough_for_a_phone():
+    for name, text in assets.build_all().items():
+        if name.startswith("header-") or name.startswith("footer-"):
+            continue
+        width = int(re.search(r'viewBox="0 0 (\d+) ', text).group(1))
+        assert width <= 520, f"{name} is {width} wide"
