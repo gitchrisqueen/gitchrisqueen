@@ -966,7 +966,7 @@ CARDS = [
     },
     {
         "id": "hearing", "tag": "Speaker identification", "title": "Hearing Copilot",
-        "what": "A tool that names the speakers in a hearing transcript.",
+        "what": "A local app that names hearing speakers.",
         "stake": ["A wrong speaker name pins words on the", "wrong person."],
         "did": ["Scored 91 min of real court audio first:", "99.2% right on the 89.8% it auto-accepted.", "One hearing, not held out, no interval."],
         "familiar": ["Does your AI guess who said what, with", "nobody checking the guesses?"],

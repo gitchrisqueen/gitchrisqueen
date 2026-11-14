@@ -115,7 +115,7 @@
       "id": "cqc",
       "label": "cqc",
       "kind": "project",
-      "note": "A small command line tool of AI-reliability checks, served as MCP tools. The terminal above runs it."
+      "note": "A small command-line tool of AI-reliability checks, served as MCP tools. The terminal above runs it."
     }
   ],
   "edges": [
