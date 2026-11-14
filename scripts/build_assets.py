@@ -1139,7 +1139,7 @@ def build_footer(animated: bool) -> str:
 # ---------------------------------------------------------------- click-to-open pills
 
 PILLS = [
-    ("pill-merged", "$ git log --merged upstream", "Merged pull requests in other people's projects (select to open)"),
+    ("pill-merged", "$ git log --merged upstream", "Merged open source pull requests (select to open)"),
     ("pill-hire", "$ sudo hire-me", "Hire me, or book the audit (select to open)"),
     ("pill-status", "$ cat live-status", "Live status of the four checks (select to open)"),
 ]

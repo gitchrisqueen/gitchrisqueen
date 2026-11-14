@@ -15,6 +15,9 @@ longer from then on. All motion is CSS keyframes (no script, no SMIL). The
 body is a single stroked path whose dash window (length and offset) is
 animated; the dash window is `length` squares long and ends at the head.
 
+Like GitHub's own calendar it has month names above the board, Mon, Wed and Fri beside it and a Less to More
+legend below. The labels are names only, never counts.
+
 Calendar data comes from the GitHub GraphQL API (one read-only query) or from
 a fixture file with the same JSON shape. Any malformed value fails the run, so
 a bad response never replaces the published files.
@@ -25,6 +28,7 @@ import argparse
 from collections import deque
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -52,6 +56,14 @@ FADE = 1.0
 EMPTY_HOLD = 1.5
 REFILL = 1.0
 MAX_WEEKS = 60
+DATE_RE = re.compile(r"[0-9]{4}-(0[1-9]|1[0-2])-[0-3][0-9]")
+MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+WEEKDAY_LABELS = {1: "Mon", 3: "Wed", 5: "Fri"}   # the rows GitHub's own calendar labels
+LABEL_W = 30        # room left of the board for the weekday labels, px
+MONTH_H = 14        # room above the board for the month labels, px
+LEGEND_H = 24       # room below the board for the legend, px
+LABEL_SIZE = 10.5
+MIN_MONTH_GAP = 3   # columns between two month labels, so neighbours never touch
 REDUCED = "@media (prefers-reduced-motion: reduce){*{animation:none!important}}"
 SANS = "-apple-system,'Segoe UI',Helvetica,Arial,sans-serif"
 
@@ -89,7 +101,10 @@ def parse_calendar(payload: object) -> tuple[list[dict], int]:
                 raise CalendarError("a calendar count is invalid")
             if level not in LEVELS:
                 raise CalendarError("a calendar level is unknown")
-            cells.append({"col": col, "row": row, "count": count, "level": LEVELS[level]})
+            date = day.get("date")
+            if date is not None and not (isinstance(date, str) and DATE_RE.fullmatch(date)):
+                raise CalendarError("a calendar date is malformed")
+            cells.append({"col": col, "row": row, "count": count, "level": LEVELS[level], "date": date})
     if len({(c["col"], c["row"]) for c in cells}) != len(cells):
         raise CalendarError("a calendar day appears twice")
     if sum(c["count"] for c in cells) != total:
@@ -267,9 +282,11 @@ def build_svg(cells: list[dict], total: int, theme: str, animated: bool, freeze:
     col = theme_colours(theme)
     cols = max(c["col"] for c in cells) + 1
     board_w = cols * PITCH - (PITCH - CELL)
-    left = (WIDTH - board_w) / 2
-    top = 14
-    height = top + 7 * PITCH - (PITCH - CELL) + 14
+    group_left = (WIDTH - LABEL_W - board_w) / 2          # weekday labels plus board are centred together
+    left = group_left + LABEL_W
+    top = 12 + MONTH_H
+    board_h = 7 * PITCH - (PITCH - CELL)
+    height = top + board_h + LEGEND_H + 10
     walk = plan_walk(cells)
     path, steps, speed = walk.path, len(walk.path) - 1, walk.speed
 
@@ -283,9 +300,42 @@ def build_svg(cells: list[dict], total: int, theme: str, animated: bool, freeze:
 
     css = [f"text{{font-family:{SANS}}}"]
     body = []
-    desc = ("Contribution calendar for the last year. "
+    desc = ("Contribution calendar for the last year, with month and weekday labels and a Less to More legend. "
             + ("A snake wanders over the calendar, eats each active day and grows longer as it goes."
                if animated else "Static view, no motion."))
+
+    # axes: month names above the board, Mon, Wed and Fri beside it, like GitHub's own calendar
+    caption = col["caption"]
+    labels = []
+    first_day: dict[int, str] = {}
+    for c in cells:
+        if c["date"] and (c["col"] not in first_day or c["row"] < first_day[c["col"]][0]):
+            first_day[c["col"]] = (c["row"], c["date"])
+    last_month, last_col = None, -10 ** 6
+    for cx in sorted(first_day):
+        month = int(first_day[cx][1][5:7])
+        if month != last_month:
+            last_month = month
+            if cx - last_col >= MIN_MONTH_GAP:
+                labels.append(f'<text x="{fmt(left + cx * PITCH)}" y="{top - 8}" font-size="{LABEL_SIZE}" '
+                              f'fill="{caption}">{MONTHS[month - 1]}</text>')
+                last_col = cx
+    for row, name in WEEKDAY_LABELS.items():
+        labels.append(f'<text x="{fmt(group_left)}" y="{fmt(top + row * PITCH + CELL / 2 + 3.5)}" '
+                      f'font-size="{LABEL_SIZE}" fill="{caption}">{name}</text>')
+    # legend, bottom right: Less, the five levels, More
+    right = left + board_w
+    ly = top + board_h + 12
+    more_w, less_w, gap = 27, 24, 3
+    sq0 = right - more_w - 6 - (5 * CELL + 4 * gap)
+    legend = [f'<text x="{fmt(sq0 - 6)}" y="{fmt(ly + CELL - 2)}" font-size="{LABEL_SIZE}" text-anchor="end" '
+              f'fill="{caption}">Less</text>']
+    for n, colour in enumerate(col["levels"]):
+        legend.append(f'<rect x="{fmt(sq0 + n * (CELL + gap))}" y="{fmt(ly)}" width="{CELL}" height="{CELL}" rx="2" '
+                      f'fill="{colour}"/>')
+    legend.append(f'<text x="{fmt(right - more_w)}" y="{fmt(ly + CELL - 2)}" font-size="{LABEL_SIZE}" '
+                  f'fill="{caption}">More</text>')
+    body.extend(labels + legend)
 
     # board squares
     refill_at = pct(run + HOLD + FADE + EMPTY_HOLD)
