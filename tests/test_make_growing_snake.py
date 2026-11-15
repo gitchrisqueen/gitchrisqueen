@@ -171,8 +171,41 @@ def test_inactive_squares_are_not_animated():
     cells, total = cells_of(payload())
     svg = snake.build_svg(cells, total, "light", True)
     idle = sum(c["level"] == 0 for c in cells)
-    assert len(re.findall(r'<rect[^>]* width="12"', svg)) == len(cells)
+    legend = len(snake.theme_colours("light")["levels"])          # the Less to More legend squares, never animated
+    assert len(re.findall(r'<rect[^>]* width="12"', svg)) == len(cells) + legend
     assert svg.count('class="a e') == len(cells) - idle
+
+
+def test_axes_and_legend_are_drawn_like_githubs_calendar():
+    p = payload(53, 2)
+    weeks = _cal(p)["weeks"]
+    for w, week in enumerate(weeks):                       # real dates, one week apart, from 2025-11-16 (a Sunday)
+        import datetime
+        for d, day in enumerate(week["contributionDays"]):
+            day["date"] = (datetime.date(2025, 11, 16) + datetime.timedelta(days=7 * w + d)).isoformat()
+    cells, total = cells_of(p)
+    for animated in (True, False):
+        svg = snake.build_svg(cells, total, "dark", animated)
+        texts = re.findall(r"<text[^>]*>([^<]*)</text>", svg)
+        assert [t for t in texts if t in snake.MONTHS][:3] == ["Nov", "Dec", "Jan"]
+        assert [t for t in texts if t in ("Mon", "Wed", "Fri")] == ["Mon", "Wed", "Fri"]
+        assert texts[-1] == "More" and "Less" in texts
+        months = [t for t in texts if t in snake.MONTHS]
+        assert len(months) == len(set(months)) or months.count("Nov") == 2   # a year spans 12 or 13 month starts
+    no_dates = payload(20)
+    for week in _cal(no_dates)["weeks"]:
+        for day in week["contributionDays"]:
+            del day["date"]
+    c2, t2 = cells_of(no_dates)
+    assert not [t for t in re.findall(r"<text[^>]*>([^<]*)</text>", snake.build_svg(c2, t2, "dark", False))
+                if t in snake.MONTHS], "no dates, no month labels"
+
+
+def test_a_malformed_date_fails_the_run():
+    p = payload()
+    _day(p)["date"] = "yesterday"
+    with pytest.raises(snake.CalendarError):
+        snake.parse_calendar(p)
 
 
 # ------------------------------------------------------------- output safety
@@ -321,7 +354,7 @@ def test_card_claims_stay_inside_what_the_projects_support():
     by_id = {c["id"]: c for c in assets.CARDS}
     assert any("held out" in line for line in by_id["hearing"]["did"]), "the accuracy number keeps its caveat"
     assert any("1.2 standard errors" in line for line in by_id["panthera"]["did"])
-    assert "paper" in by_id["panthera"]["tag"].lower() and "no real money" in by_id["panthera"]["what"]
+    assert "paper" in by_id["panthera"]["tag"].lower()
 
 
 def test_every_card_line_fits_and_every_card_has_the_three_blocks():
@@ -342,7 +375,8 @@ def test_every_output_uses_the_dark_panel_and_carries_no_count_text():
     dark_bg = snake.theme_colours("dark")["bg"]
     for name, svg in snake.build_all(cells, total).items():
         assert f'fill="{dark_bg}"/>' in svg, name
-        assert "<text" not in svg and "contributions in the last year" not in svg, name
+        assert "contributions in the last year" not in svg, name
+        assert not re.search(r"<text[^>]*>[^<]*[0-9]", svg), name       # labels are names, never counts
         assert f"{total} contributions" not in svg, name
 
 

@@ -36,9 +36,9 @@ max-height:50vh;overflow:auto}
 <div id="card"><b>Christopher</b><br>Applied AI / Forward-Deployed Engineer. Builds LLM systems with real checks around the model.<small>Pull a node to see the web move.</small></div>
 <div id="legend"></div>
 <script>
-const DATA = {"version":1,"nodes":[{"id":"me","label":"Christopher","kind":"me","note":"Applied AI / Forward-Deployed Engineer. Builds LLM systems with real checks around the model."},{"id":"lem","label":"LEM","kind":"project","note":"Safe database changes ship on their own; risky ones hold and alert me. An hourly check flags a release that stalls."},{"id":"cpcc","label":"CPCC tool","kind":"project","note":"A real compiler overrules the model on compile errors; the compile check never runs student code."},{"id":"hearing","label":"hearing-copilot","kind":"project","note":"Scored on 91 minutes of real court audio before it was trusted; only confident names are accepted. One hearing, not held out."},{"id":"panthera","label":"panthera","kind":"project","note":"A daily health check flags a dead run the next morning, and results are reported with their error bars. Paper trading only."},{"id":"audit","label":"LLM audit","kind":"offer","note":"One-week, read-only audit of LLM spend and reliability, ending in a graded scorecard and a costed fix list."},{"id":"checks","label":"real checks","kind":"practice","note":"A deterministic check where the model is weakest."},{"id":"drift","label":"drift watch","kind":"practice","note":"Checks that keep running after a thing ships."},{"id":"review","label":"human review","kind":"practice","note":"Drafts, dry runs and approval steps before anything goes out."},{"id":"caveats","label":"honest caveats","kind":"practice","note":"Limits stated next to the numbers."},{"id":"python","label":"Python","kind":"tech"},{"id":"fastapi","label":"FastAPI","kind":"tech"},{"id":"redis","label":"Redis","kind":"tech"},{"id":"react","label":"React","kind":"tech"},{"id":"selenium","label":"Selenium","kind":"tech"},{"id":"langchain","label":"LangChain","kind":"tech"},{"id":"litellm","label":"LiteLLM","kind":"tech"},{"id":"docker","label":"Docker","kind":"tech"},{"id":"actions","label":"GitHub Actions","kind":"tech"},{"id":"node","label":"Node.js","kind":"tech"},{"id":"cqc","label":"cqc","kind":"project","note":"A small command line tool of AI-reliability checks, served as MCP tools. The terminal above runs it."}],"edges":[["me","lem"],["me","cpcc"],["me","hearing"],["me","panthera"],["me","audit"],["lem","fastapi"],["lem","redis"],["lem","react"],["lem","docker"],["lem","selenium"],["lem","litellm"],["cpcc","python"],["cpcc","selenium"],["cpcc","langchain"],["hearing","node"],["panthera","python"],["panthera","actions"],["cpcc","checks"],["lem","drift"],["panthera","drift"],["cpcc","review"],["lem","review"],["hearing","caveats"],["panthera","caveats"],["me","cqc"],["cqc","python"],["cqc","checks"],["cqc","drift"],["cqc","review"]]};
+const DATA = {"version":1,"nodes":[{"id":"me","label":"Christopher","kind":"me","note":"Applied AI / Forward-Deployed Engineer. Builds LLM systems with real checks around the model."},{"id":"lem","label":"LEM","kind":"project","note":"Safe database changes ship on their own; risky ones hold and alert me. An hourly check flags a release that stalls."},{"id":"cpcc","label":"CPCC","kind":"project","note":"A real compiler overrules the model on compile errors; the compile check never runs student code."},{"id":"hearing","label":"Hearing Copilot","kind":"project","note":"Scored on 91 minutes of real court audio before it was trusted; only confident names are accepted. One hearing, not held out."},{"id":"panthera","label":"Panthera","kind":"project","note":"A daily health check flags a dead run the next morning, and results are reported with their error bars. Paper trading only."},{"id":"audit","label":"LLM audit","kind":"offer","note":"One-week, read-only audit of LLM spend and reliability, ending in a graded scorecard and a costed fix list."},{"id":"checks","label":"real checks","kind":"practice","note":"A deterministic check where the model is weakest."},{"id":"drift","label":"drift watch","kind":"practice","note":"Checks that keep running after a thing ships."},{"id":"review","label":"human review","kind":"practice","note":"Drafts, dry runs and approval steps before anything goes out."},{"id":"caveats","label":"honest caveats","kind":"practice","note":"Limits stated next to the numbers."},{"id":"python","label":"Python","kind":"tech"},{"id":"fastapi","label":"FastAPI","kind":"tech"},{"id":"redis","label":"Redis","kind":"tech"},{"id":"react","label":"React","kind":"tech"},{"id":"selenium","label":"Selenium","kind":"tech"},{"id":"langchain","label":"LangChain","kind":"tech"},{"id":"litellm","label":"LiteLLM","kind":"tech"},{"id":"docker","label":"Docker","kind":"tech"},{"id":"actions","label":"GitHub Actions","kind":"tech"},{"id":"node","label":"Node.js","kind":"tech"},{"id":"cqc","label":"cqc","kind":"project","note":"A small command-line tool of AI-reliability checks, served as MCP tools. The terminal above runs it."}],"edges":[["me","lem"],["me","cpcc"],["me","hearing"],["me","panthera"],["me","audit"],["lem","fastapi"],["lem","redis"],["lem","react"],["lem","docker"],["lem","selenium"],["lem","litellm"],["cpcc","python"],["cpcc","selenium"],["cpcc","langchain"],["hearing","node"],["panthera","python"],["panthera","actions"],["cpcc","checks"],["lem","drift"],["panthera","drift"],["cpcc","review"],["lem","review"],["hearing","caveats"],["panthera","caveats"],["me","cqc"],["cqc","python"],["cqc","checks"],["cqc","drift"],["cqc","review"]]};
 const COLORS = {me:'#e9d437',project:'#c4b228',offer:'#efe9d2',practice:'#3fb950',tech:'#58a6ff'};
-const RADIUS = {me:17,project:12,offer:12,practice:10,tech:7};
+const RADIUS = {me:20,project:12,offer:12,practice:10,tech:7};
 const LABEL = {me:'700 15px',project:'700 13px',offer:'700 13px',practice:'700 12.5px',tech:'400 11.5px'};
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const cv = document.getElementById('g'), ctx = cv.getContext('2d');
@@ -58,7 +58,7 @@ const list = document.getElementById('list');
 nodes.forEach(n => {const li = document.createElement('li'); li.textContent = n.label + ' (' + n.kind + '): ' + (n.note ? n.note + ' ' : '') + 'Connected to ' + connected(n).join(', ') + '.'; list.appendChild(li);});
 const legend = document.getElementById('legend');
 [['me','me'],['project','projects'],['offer','offer'],['practice','practices'],['tech','tools']].forEach(([k, t]) => {
-  const d = document.createElement('div'); d.innerHTML = '<i style="background:' + COLORS[k] + '"></i>' + t; legend.appendChild(d);});
+  const d = document.createElement('div'); d.innerHTML = '<i style="background:' + (k === 'me' ? 'radial-gradient(circle at 36% 30%,#fffbe6,#efe9d2 22%,#e9d437 55%,#7d6f17)' : COLORS[k]) + '"></i>' + t; legend.appendChild(d);});
 function resize() {
   dpr = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight;
   cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -84,6 +84,18 @@ function step() {
     n.x = Math.max(n.r + 8, Math.min(W - n.r - 8, n.x)); n.y = Math.max(n.r + 64, Math.min(H - n.r - card.offsetHeight - 30, n.y));
   });
 }
+function drawMe(x, y, r) {
+  let g = ctx.createRadialGradient(x, y, 0, x, y, r * 2.6);
+  g.addColorStop(0.3, 'rgba(233,212,55,0.5)'); g.addColorStop(1, 'rgba(233,212,55,0)');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 2.6, 0, 6.283); ctx.fill();
+  ctx.save(); ctx.strokeStyle = 'rgba(233,212,55,0.6)'; ctx.lineWidth = 1.4; ctx.lineCap = 'round'; ctx.setLineDash([2, 6]);
+  ctx.beginPath(); ctx.arc(x, y, r * 1.55, 0, 6.283); ctx.stroke(); ctx.restore();
+  g = ctx.createRadialGradient(x - r * 0.28, y - r * 0.4, r * 0.05, x, y, r * 1.05);
+  g.addColorStop(0, '#fffbe6'); g.addColorStop(0.25, '#efe9d2'); g.addColorStop(0.6, '#e9d437'); g.addColorStop(1, '#7d6f17');
+  ctx.fillStyle = g; ctx.strokeStyle = '#0d1117'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.beginPath(); ctx.ellipse(x - r * 0.34, y - r * 0.4, r * 0.3, r * 0.17, -0.61, 0, 6.283); ctx.fill();
+}
 function draw() {
   ctx.clearRect(0, 0, W, H);
   const focus = hover >= 0 ? hover : (dragging >= 0 ? dragging : sel);
@@ -96,8 +108,10 @@ function draw() {
   nodes.forEach((n, i) => {
     const lit = focus < 0 || i === focus || near.has(i);
     ctx.globalAlpha = lit ? 1 : 0.28;
-    ctx.fillStyle = COLORS[n.kind]; ctx.strokeStyle = '#0d1117'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(n.x, n.y, n.r + (i === focus ? 3 : 0), 0, 6.283); ctx.fill(); ctx.stroke();
+    if (n.kind === 'me') drawMe(n.x, n.y, n.r + (i === focus ? 3 : 0)); else {
+      ctx.fillStyle = COLORS[n.kind]; ctx.strokeStyle = '#0d1117'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(n.x, n.y, n.r + (i === focus ? 3 : 0), 0, 6.283); ctx.fill(); ctx.stroke();
+    }
     ctx.font = LABEL[n.kind] + ' -apple-system, Segoe UI, Helvetica, Arial, sans-serif'; ctx.textAlign = 'center';
     ctx.lineWidth = 3; ctx.strokeStyle = '#0d1117'; ctx.fillStyle = '#e6edf3';
     ctx.strokeText(n.label, n.x, n.y + n.r + 15); ctx.fillText(n.label, n.x, n.y + n.r + 15);

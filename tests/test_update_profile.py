@@ -250,7 +250,7 @@ def test_happy_path_rows_notes_and_status(tmp_path, monkeypatch, capsys):
     assert flags[:2] == [up.FLAG_HEADER, up.FLAG_SEPARATOR]
     assert len(flags) == 6
     for line in flags[2:]:
-        assert line.count("|") == 4 and line.endswith("| passing |")
+        assert line.count("|") == 4 and "[![passing](https://img.shields.io/github/actions/workflow/status/" in line
     # text outside the markers is untouched
     assert text.replace(text[text.index(START_F):text.index(END_F)], "") .count("Hand-written") == 2
     assert f"api calls: {len(fake.calls)}" in out
@@ -619,7 +619,9 @@ CPCC_RUNS = CPCC + r"/actions/workflows/unit-tests\.yml/runs"
 def status_of(readme, repo_fragment):
     for line in block_lines(readme, "FLAGSHIPS")[2:]:
         if repo_fragment in line:
-            return line.rsplit("| ", 1)[1].rstrip(" |")
+            cell = line.split(" | ")[2].rstrip(" |")
+            m = re.match(r"\[!\[(passing|failing)\]", cell)
+            return m.group(1) if m else cell
     raise AssertionError("row missing")
 
 
@@ -998,11 +1000,23 @@ def test_row_grammar_is_identical_in_generator_and_guard():
     ]
     for s in samples:
         assert (up.validate_merged_row(s) is not None) == (gp.merged_row(s) is not None), s
+    st = ("[![passing](https://img.shields.io/github/actions/workflow/status/a/b/ci.yml?label=status&labelColor=24292f"
+          "&style=flat-square)](https://github.com/a/b/actions/workflows/ci.yml)")
+    ver = (" [![Latest release](https://img.shields.io/github/v/release/a/b?include_prereleases&label=version"
+           "&labelColor=24292f&style=flat-square)](https://github.com/a/b/releases)")
     flag_samples = [
+        "| [N](https://github.com/a/b) | check text | unavailable |",
         "| [N](https://github.com/a/b) | check text | passing |",
-        "| [N](https://github.com/a/b) | check text | great |",
-        "| [N](https://evil.example/a/b) | check text | passing |",
-        "| [N | x](https://github.com/a/b) | check | passing |",
+        "| [N](https://github.com/a/b) | check text | " + st + " |",
+        "| [N](https://github.com/a/b) | check text | " + st + ver + " |",
+        "| [N](https://github.com/a/b) | check text | " + st.replace("passing", "great") + " |",
+        "| [N](https://github.com/a/b) | check text | " + st.replace("github/a/b/actions", "github/c/d/actions") + " |",
+        "| [N](https://github.com/a/b) | check text | " + st.replace("ci.yml)", "other.yml)") + " |",
+        "| [N](https://github.com/a/b) | check text | " + st + ver.replace("v/release/a/b", "v/release/c/d") + " |",
+        "| [N](https://github.com/a/b) | check text | " + st + ver.replace("a/b/releases", "c/d/releases") + " |",
+        "| [N](https://github.com/a/b) | check text | " + st.replace("img.shields.io", "evil.example") + " |",
+        "| [N](https://evil.example/a/b) | check text | " + st + " |",
+        "| [N | x](https://github.com/a/b) | check | " + st + " |",
     ]
     for s in flag_samples:
         assert (up.validate_flagship_row(s) is not None) == (gp.flagship_row(s) is not None), s

@@ -22,8 +22,17 @@ ROW_A = ("- [langchain-ai/langchain #15251](https://github.com/langchain-ai/lang
 ROW_B = ("- [future-agi/future-agi #1327](https://github.com/future-agi/future-agi/pull/1327): "
          "`fix(evals): add scroll (#1071)`")
 ROW_C = "- [PostHog/posthog-openclaw #15](https://github.com/PostHog/posthog-openclaw/pull/15): PR #15"
-FLAG_1 = "| [panthera](https://github.com/gitchrisqueen/panthera) | Daily pipeline run | passing |"
-FLAG_2 = "| [hearing-copilot](https://github.com/gitchrisqueen/hearing-copilot) | Automated tests and lint | failing |"
+
+
+def _badge(repo, wf):
+    return (f"[![passing](https://img.shields.io/github/actions/workflow/status/{repo}/{wf}"
+            f"?label=status&labelColor=24292f&style=flat-square)](https://github.com/{repo}/actions/workflows/{wf})")
+
+
+FLAG_1 = ("| [panthera](https://github.com/gitchrisqueen/panthera) | Daily pipeline run | "
+          + _badge("gitchrisqueen/panthera", "mvp-morning.yml") + " |")
+FLAG_2 = ("| [hearing-copilot](https://github.com/gitchrisqueen/hearing-copilot) | Automated tests and lint | "
+          + _badge("gitchrisqueen/hearing-copilot", "ci.yml").replace("[![passing]", "[![failing]") + " |")
 
 
 def readme(merged=(ROW_A,), flags=(gp.FLAG_HEADER, gp.FLAG_SEPARATOR, FLAG_1),
@@ -191,7 +200,8 @@ def test_flagship_repo_in_merged_block_fails(paths):
 
 
 def test_merged_repo_in_flagship_block_fails(paths):
-    row = "| [LangChain](https://github.com/langchain-ai/langchain) | Automated tests | passing |"
+    row = ("| [LangChain](https://github.com/langchain-ai/langchain) | Automated tests | "
+           + _badge("langchain-ai/langchain", "ci.yml") + " |")
     new = readme(flags=(gp.FLAG_HEADER, gp.FLAG_SEPARATOR, row))
     assert has(run(paths, readme(), new), "not in the allowlist")
 
@@ -215,7 +225,7 @@ def test_flagship_block_rejects_bad_rows(paths, bad_row):
 
 @pytest.mark.parametrize("flags", [
     (FLAG_1,),                                                            # no header or separator
-    ("| Repo | Check | State |", gp.FLAG_SEPARATOR, FLAG_1),
+    ("| Project | Check | State |", gp.FLAG_SEPARATOR, FLAG_1),
     (gp.FLAG_HEADER, "|---|---|---|", FLAG_1),
     (gp.FLAG_HEADER,),
 ])

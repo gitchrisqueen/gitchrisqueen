@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 46" width="520" height="46" role="img">
-<title>Merged pull requests in other people's projects (select to open)</title>
-<desc>Merged pull requests in other people's projects (select to open)</desc>
+<title>Merged open source pull requests (select to open)</title>
+<desc>Merged open source pull requests (select to open)</desc>
 <style>text{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}.m{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace}</style>
 <rect width="520" height="46" fill="#0d1117"/>
 <rect x="1" y="1" width="518" height="44" rx="10" fill="#161b22" stroke="#e9d437" stroke-width="1.5"/>
