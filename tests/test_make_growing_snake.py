@@ -67,7 +67,6 @@ def _day(p):
     lambda p: p["data"]["user"].update(contributionsCollection=None),
     lambda p: _cal(p).update(weeks=[]),
     lambda p: _cal(p).update(totalContributions=-1),
-    lambda p: _cal(p).update(totalContributions=10**6),
     lambda p: _day(p).update(weekday=9),
     lambda p: _day(p).update(contributionLevel="HUGE"),
     lambda p: _day(p).update(contributionCount=True),
@@ -78,6 +77,15 @@ def test_parse_rejects_malformed_payloads(mutate):
     mutate(p)
     with pytest.raises(snake.CalendarError):
         cells_of(p)
+
+
+def test_parse_warns_and_uses_day_sum_when_total_disagrees(capsys):
+    p = payload()
+    day_sum = _cal(p)["totalContributions"]
+    _cal(p).update(totalContributions=day_sum + 20)
+    cells, total = cells_of(p)
+    assert total == day_sum == sum(c["count"] for c in cells)
+    assert "does not match its days" in capsys.readouterr().err
 
 
 # ------------------------------------------------------------- path and growth

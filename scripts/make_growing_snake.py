@@ -107,8 +107,14 @@ def parse_calendar(payload: object) -> tuple[list[dict], int]:
             cells.append({"col": col, "row": row, "count": count, "level": LEVELS[level], "date": date})
     if len({(c["col"], c["row"]) for c in cells}) != len(cells):
         raise CalendarError("a calendar day appears twice")
-    if sum(c["count"] for c in cells) != total:
-        raise CalendarError("calendar total does not match its days")
+    day_sum = sum(c["count"] for c in cells)
+    if day_sum != total:
+        # GitHub's totalContributions can briefly disagree with its own daily
+        # counts (seen 2026-11-15: 9100 vs 9080). The squares are drawn from the
+        # daily counts, so warn and carry on with their sum instead of failing.
+        print(f"::warning::snake: calendar total {total} does not match its days ({day_sum}); "
+              "using the sum of the days", file=sys.stderr)
+        total = day_sum
     return cells, total
 
 
