@@ -394,5 +394,6 @@
 <rect x="819" y="41" width="12" height="12" rx="2" fill="#a89816"/>
 <rect x="819" y="56" width="12" height="12" rx="2" fill="#e9d437"/>
 <rect x="819" y="71" width="12" height="12" rx="2" fill="#7d6f17"/>
-<rect x="819" y="86" width="12" height="12" rx="2" fill="#161b22"/>
+<rect x="819" y="86" width="12" height="12" rx="2" fill="#7d6f17"/>
+<rect x="819" y="101" width="12" height="12" rx="2" fill="#7d6f17"/>
 </svg>
